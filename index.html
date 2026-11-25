@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
-    [x-cloak] { display: none; }
     .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
   </style>
@@ -101,7 +100,7 @@
             <span>👥</span> Customers & Expiry
           </button>
           <button data-tab="devices" onclick="switchTab('devices')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
-            <span>📶</span> Devices & SSID/Login
+            <span>📶</span> Devices, Cameras & SSID
           </button>
           <button data-tab="complaints" onclick="switchTab('complaints')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
             <span>🛠️</span> Complaints & Faults
@@ -112,12 +111,15 @@
           <button data-tab="sms" onclick="switchTab('sms')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
             <span>📩</span> Bulk SMS Outage Alert
           </button>
+          <button data-tab="reports" onclick="switchTab('reports')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
+            <span>📑</span> Reports (CA / Tax Excel)
+          </button>
         </nav>
       </div>
 
       <div class="p-3 border-t border-slate-800 space-y-2">
-        <button onclick="exportAllCSV()" class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 cursor-pointer">
-          ⬇️ Export Backup CSV
+        <button onclick="switchTab('reports')" class="w-full py-2 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-xs font-semibold text-white cursor-pointer">
+          📊 CA Tax Excel Report
         </button>
         <button onclick="logoutAdmin()" class="hidden lg:block w-full py-2 px-3 rounded-lg bg-rose-600/90 hover:bg-rose-600 text-xs font-semibold text-white cursor-pointer">
           Logout
@@ -134,7 +136,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 class="text-xl font-bold text-slate-900">Dashboard Overview</h2>
-            <p class="text-xs text-slate-500">Live summary of customers, expiry alerts, towers, devices & profit/loss</p>
+            <p class="text-xs text-slate-500">Live summary of customers, expiry alerts, towers, devices, cameras & profit/loss</p>
           </div>
           <button onclick="refreshAllData()" class="px-3.5 py-2 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-xs font-semibold shadow-sm cursor-pointer">
             🔄 Refresh Data
@@ -155,9 +157,9 @@
           </div>
 
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
-            <div class="text-xs text-slate-500 font-medium">Towers & Deployed Devices</div>
+            <div class="text-xs text-slate-500 font-medium">Towers & Deployed Hardware</div>
             <div id="kpiTowers" class="text-2xl font-bold text-indigo-600 mt-1">0 Towers</div>
-            <div id="kpiDevices" class="text-xs text-slate-500 mt-1">0 Devices Logged</div>
+            <div id="kpiDevices" class="text-xs text-slate-500 mt-1">0 Devices & Cameras</div>
           </div>
 
           <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
@@ -167,7 +169,6 @@
           </div>
         </div>
 
-        <!-- Expiring Soon Quick Action Table -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
           <div class="flex items-center justify-between mb-3">
             <h3 class="font-bold text-sm text-slate-800">⚠️ Expiring Soon / Expired Customers (Quick Reminder)</h3>
@@ -231,11 +232,11 @@
       <section id="tab-customers" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Customers & Plan Expiry</h2>
-            <p class="text-xs text-slate-500">Track plans, expiry dates, dues, renew quickly, and send WhatsApp reminders</p>
+            <h2 class="text-xl font-bold text-slate-900">Customers, Plan Expiry & Tower Transfer</h2>
+            <p class="text-xs text-slate-500">Track plans, expiry dates, dues, transfer customers between towers, and send WhatsApp reminders</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <input id="customerSearch" oninput="renderCustomers()" type="text" placeholder="Search name, phone, village..."
+            <input id="customerSearch" oninput="renderCustomers()" type="text" placeholder="Search name, phone, village, tower..."
               class="px-3 py-2 bg-white border rounded-lg text-xs w-56" />
             <select id="customerFilter" onchange="renderCustomers()" class="px-3 py-2 bg-white border rounded-lg text-xs">
               <option value="ALL">All Customers</option>
@@ -267,11 +268,11 @@
           <table class="w-full text-left border-collapse text-xs">
             <thead>
               <tr class="border-b bg-slate-50 text-slate-600">
-                <th class="py-2.5 px-3">Customer & Area</th>
+                <th class="py-2.5 px-3">Customer & Connected Tower</th>
                 <th class="py-2.5 px-3">Phone</th>
                 <th class="py-2.5 px-3">Plan & Billing</th>
                 <th class="py-2.5 px-3">Expiry / Status</th>
-                <th class="py-2.5 px-3">Actions</th>
+                <th class="py-2.5 px-3">Actions & Transfer</th>
               </tr>
             </thead>
             <tbody id="customersTableBody" class="divide-y"></tbody>
@@ -279,37 +280,50 @@
         </div>
       </section>
 
-      <!-- ================= TAB 4: DEVICES ================= -->
+      <!-- ================= TAB 4: DEVICES & CAMERAS ================= -->
       <section id="tab-devices" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h2 class="text-xl font-bold text-slate-900">Devices, Serials, Login & SSID/PSK</h2>
-            <p class="text-xs text-slate-500">Track serial numbers, install dates, tower/customer placement, admin logins & wireless SSIDs</p>
+            <h2 class="text-xl font-bold text-slate-900">Devices, Cameras, Serials, Login & SSID/PSK</h2>
+            <p class="text-xs text-slate-500">Manage Sectors, PtP, Routers, ONUs & CCTV Cameras — plus instant Tower/Customer Transfer</p>
           </div>
-          <input id="deviceSearch" oninput="renderDevices()" type="text" placeholder="Search serial, MAC, SSID, tower..."
-            class="px-3 py-2 bg-white border rounded-lg text-xs w-64" />
+          <div class="flex flex-wrap gap-2">
+            <input id="deviceSearch" oninput="renderDevices()" type="text" placeholder="Search serial, camera, MAC, SSID, tower..."
+              class="px-3 py-2 bg-white border rounded-lg text-xs w-64" />
+            <select id="deviceTypeFilter" onchange="renderDevices()" class="px-3 py-2 bg-white border rounded-lg text-xs">
+              <option value="ALL">All Device Types</option>
+              <option value="Camera">Cameras Only</option>
+              <option value="Sector">Sectors</option>
+              <option value="PtP">PtP Links</option>
+              <option value="Router">Routers</option>
+              <option value="ONU">ONU / Fiber</option>
+              <option value="AP">Access Points</option>
+              <option value="Switch">Switch / NVR / PoE</option>
+            </select>
+          </div>
         </div>
 
         <form id="deviceForm" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            <select id="devType" class="px-3 py-2 border rounded-lg text-xs bg-white">
+            <select id="devType" class="px-3 py-2 border rounded-lg text-xs bg-white font-medium">
               <option value="Sector">Sector</option>
               <option value="PtP">PtP Link</option>
+              <option value="Camera">Camera (CCTV / IP)</option>
               <option value="Router">Router</option>
               <option value="ONU">ONU / Fiber</option>
               <option value="AP">Access Point (AP)</option>
-              <option value="Switch">Switch / PoE</option>
+              <option value="Switch">Switch / NVR / PoE</option>
             </select>
-            <input id="devModel" type="text" required placeholder="Model (e.g. LHG XL 5 ax / RB3011) *" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devModel" type="text" required placeholder="Model (e.g. Imou Bullet 2E / LHG XL 5 ax) *" class="px-3 py-2 border rounded-lg text-xs" />
             <input id="devSerial" type="text" required placeholder="Serial Number *" class="px-3 py-2 border rounded-lg text-xs" />
             <input id="devMac" type="text" placeholder="MAC Address" class="px-3 py-2 border rounded-lg text-xs" />
             <input id="devIp" type="text" placeholder="IP Address (Optional)" class="px-3 py-2 border rounded-lg text-xs" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-            <input id="devUser" type="text" placeholder="Device Login ID / User" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="devPass" type="text" placeholder="Device Login Password" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="devSsid" type="text" placeholder="SSID (for Sector / PtP / AP)" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devUser" type="text" placeholder="Login ID / Username" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devPass" type="text" placeholder="Login / Safety Code Password" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devSsid" type="text" placeholder="SSID (Sector / PtP / Camera Wi-Fi)" class="px-3 py-2 border rounded-lg text-xs" />
             <input id="devWifiPass" type="text" placeholder="Wi-Fi / Wireless Password" class="px-3 py-2 border rounded-lg text-xs" />
             <select id="devTower" class="px-3 py-2 border rounded-lg text-xs bg-white">
               <option value="">Tower (If on Tower)</option>
@@ -319,11 +333,11 @@
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <select id="devCustomer" class="px-3 py-2 border rounded-lg text-xs bg-white">
-              <option value="">Customer (If at Customer)</option>
+              <option value="">Customer / Shop (If at Customer)</option>
             </select>
-            <input id="devNotes" type="text" placeholder="Notes (e.g. Facing North, 24V PoE)" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devNotes" type="text" placeholder="Notes (e.g. Gate View, North Sector, 12V DC)" class="px-3 py-2 border rounded-lg text-xs" />
             <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">
-              + Save Device
+              + Save Device / Camera
             </button>
           </div>
         </form>
@@ -332,11 +346,11 @@
           <table class="w-full text-left border-collapse text-xs">
             <thead>
               <tr class="border-b bg-slate-50 text-slate-600">
-                <th class="py-2.5 px-3">Device & Serial</th>
-                <th class="py-2.5 px-3">Location & Date</th>
+                <th class="py-2.5 px-3">Device / Camera & Serial</th>
+                <th class="py-2.5 px-3">Current Location & Date</th>
                 <th class="py-2.5 px-3">Login ID / Pass</th>
                 <th class="py-2.5 px-3">SSID / Wi-Fi Pass</th>
-                <th class="py-2.5 px-3">Delete</th>
+                <th class="py-2.5 px-3">Transfer & Actions</th>
               </tr>
             </thead>
             <tbody id="devicesTableBody" class="divide-y"></tbody>
@@ -348,11 +362,11 @@
       <section id="tab-complaints" class="tab-panel hidden space-y-6">
         <div>
           <h2 class="text-xl font-bold text-slate-900">Complaints & Fault Log</h2>
-          <p class="text-xs text-slate-500">Track outages, cable cuts, device issues, and resolution status</p>
+          <p class="text-xs text-slate-500">Track outages, cable cuts, camera/device issues, and resolution status</p>
         </div>
 
         <form id="complaintForm" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
-          <input id="compTitle" type="text" required placeholder="Issue Title (e.g. Fiber Cut / Slow Speed) *" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="compTitle" type="text" required placeholder="Issue Title (e.g. Fiber Cut / Camera Offline) *" class="px-3 py-2 border rounded-lg text-xs" />
           <select id="compTower" class="px-3 py-2 border rounded-lg text-xs bg-white">
             <option value="">Select Tower (Optional)</option>
           </select>
@@ -445,7 +459,6 @@
           <p class="text-xs text-slate-500">Configure your SMS gateway API & template once, and broadcast alerts in one click when server/tower is down</p>
         </div>
 
-        <!-- Gateway Configuration -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
           <h3 class="font-bold text-sm text-slate-800">1. SMS Gateway API Configuration (Saved in Browser)</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -467,7 +480,6 @@
           </div>
         </div>
 
-        <!-- Broadcast Message Box -->
         <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
           <h3 class="font-bold text-sm text-slate-800">2. Send Outage SMS to All (or Selected Tower) Customers</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -487,11 +499,9 @@
               class="px-5 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer">
               🚨 Send Bulk SMS Now
             </button>
-            <span class="text-[11px] text-slate-500">Tip: Use {name} in message if your gateway supports per-recipient text, otherwise static approved DLT template text is sent.</span>
           </div>
         </div>
 
-        <!-- SMS Dispatch Log -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
           <h3 class="font-bold text-sm text-slate-800 mb-3">3. Recent Bulk SMS Dispatch Log</h3>
           <div class="overflow-x-auto scrollbar-thin">
@@ -509,12 +519,163 @@
           </div>
         </div>
       </section>
+
+      <!-- ================= TAB 8: REPORTS (CA / TAX EXCEL) ================= -->
+      <section id="tab-reports" class="tab-panel hidden space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Reports & CA Tax Excel Export</h2>
+            <p class="text-xs text-slate-500">Select sections & date range to generate an Excel (.xls) workbook for tax filing & record keeping</p>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="toggleAllReportChecks(true)" class="px-3 py-1.5 rounded-lg bg-white border text-xs font-semibold hover:bg-slate-50 cursor-pointer">
+              Select All
+            </button>
+            <button type="button" onclick="toggleAllReportChecks(false)" class="px-3 py-1.5 rounded-lg bg-white border text-xs font-semibold hover:bg-slate-50 cursor-pointer">
+              Clear All
+            </button>
+          </div>
+        </div>
+
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-5">
+          <!-- Date Range Calendar -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">From Date (Calendar)</label>
+              <input id="repFromDate" type="date" onchange="renderReportPreview()" class="w-full px-3 py-2 border rounded-lg text-xs" />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">To Date (Calendar)</label>
+              <input id="repToDate" type="date" onchange="renderReportPreview()" class="w-full px-3 py-2 border rounded-lg text-xs" />
+            </div>
+            <div class="lg:col-span-2 flex flex-wrap gap-2">
+              <button type="button" onclick="setQuickDateRange('THIS_MONTH')" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-medium cursor-pointer">This Month</button>
+              <button type="button" onclick="setQuickDateRange('LAST_MONTH')" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-medium cursor-pointer">Last Month</button>
+              <button type="button" onclick="setQuickDateRange('FY_IN')" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-medium cursor-pointer">Indian FY (Apr–Mar)</button>
+              <button type="button" onclick="setQuickDateRange('ALL')" class="px-3 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-xs font-medium cursor-pointer">All Dates</button>
+            </div>
+          </div>
+
+          <!-- Section Checkboxes -->
+          <div>
+            <div class="text-xs font-semibold text-slate-700 mb-2">Select Report Sections:</div>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                <input type="checkbox" id="chkIncome" checked onchange="renderReportPreview()" class="rep-chk rounded text-indigo-600" />
+                <span class="font-semibold text-emerald-700">Income</span>
+              </label>
+
+              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                <input type="checkbox" id="chkExpenses" checked onchange="renderReportPreview()" class="rep-chk rounded text-indigo-600" />
+                <span class="font-semibold text-rose-700">Expenses</span>
+              </label>
+
+              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                <input type="checkbox" id="chkCustomers" onchange="renderReportPreview()" class="rep-chk rounded text-indigo-600" />
+                <span class="font-semibold text-slate-800">Customer Data</span>
+              </label>
+
+              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                <input type="checkbox" id="chkTower" onchange="renderReportPreview()" class="rep-chk rounded text-indigo-600" />
+                <span class="font-semibold text-slate-800">Tower</span>
+              </label>
+
+              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                <input type="checkbox" id="chkDevice" onchange="renderReportPreview()" class="rep-chk rounded text-indigo-600" />
+                <span class="font-semibold text-slate-800">Device</span>
+              </label>
+
+              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                <input type="checkbox" id="chkOther" onchange="renderReportPreview()" class="rep-chk rounded text-indigo-600" />
+                <span class="font-semibold text-slate-800">Other</span>
+              </label>
+            </div>
+            <p class="mt-2 text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5">
+              Note: <b>Income</b> aur <b>Expenses</b> report mein customer ka personal data (name, phone, address) include nahi kiya jata—taaki aap CA / tax filing ke liye clean accounting sheet share kar sakein.
+            </p>
+          </div>
+
+          <!-- Generate Excel Button -->
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t">
+            <div id="repSummaryText" class="text-xs font-semibold text-slate-700">
+              Selected: Income, Expenses
+            </div>
+            <button type="button" onclick="downloadExcelReport()"
+              class="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow cursor-pointer">
+              📥 Download Excel Report (.xls)
+            </button>
+          </div>
+        </div>
+
+        <!-- Live Report Preview -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <h3 class="font-bold text-sm text-slate-800">Live Report Preview (Date Filtered)</h3>
+          <div id="repPreviewContainer" class="space-y-5 text-xs"></div>
+        </div>
+      </section>
     </main>
+  </div>
+
+  <!-- ================= TRANSFER MODAL (CUSTOMER & DEVICE) ================= -->
+  <div id="transferModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b pb-2.5">
+        <h3 id="transferModalTitle" class="font-bold text-sm text-slate-900">Transfer</h3>
+        <button onclick="closeTransferModal()" class="text-slate-400 hover:text-slate-700 text-sm font-bold cursor-pointer">✕</button>
+      </div>
+
+      <div id="transferCurrentInfo" class="p-3 rounded-lg bg-slate-50 border border-slate-200 text-xs text-slate-700"></div>
+
+      <form id="transferForm" class="space-y-3">
+        <input type="hidden" id="transferEntityType" />
+        <input type="hidden" id="transferEntityId" />
+
+        <div id="transferModeWrap" class="hidden">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Move Device To:</label>
+          <select id="transferDeviceTargetType" onchange="toggleDeviceTransferInputs()" class="w-full px-3 py-2 border rounded-lg text-xs bg-white">
+            <option value="TOWER">Another Tower (Tower → Tower)</option>
+            <option value="CUSTOMER">Customer / Shop Location</option>
+            <option value="STOCK">In Stock / Office (Unassigned)</option>
+          </select>
+        </div>
+
+        <div id="transferTowerSelectWrap">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Select Destination Tower:</label>
+          <select id="transferDestTower" class="w-full px-3 py-2 border rounded-lg text-xs bg-white">
+            <option value="">-- Unassigned / No Tower --</option>
+          </select>
+        </div>
+
+        <div id="transferCustomerSelectWrap" class="hidden">
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Select Destination Customer / Shop:</label>
+          <select id="transferDestCustomer" class="w-full px-3 py-2 border rounded-lg text-xs bg-white">
+            <option value="">-- Select Customer --</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Transfer Date:</label>
+          <input id="transferDate" type="date" class="w-full px-3 py-2 border rounded-lg text-xs" />
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Transfer Reason / Note (Optional):</label>
+          <input id="transferNote" type="text" placeholder="e.g. Shifted from Tower A to Tower C for better signal" class="w-full px-3 py-2 border rounded-lg text-xs" />
+        </div>
+
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeTransferModal()" class="px-3.5 py-2 rounded-lg border text-xs font-medium cursor-pointer">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">
+            Confirm Transfer
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <script>
     // =========================================================================
-    // CONFIGURATION (Aap yahan ya Login screen ke config box mein apni keys daalein)
+    // CONFIGURATION
     // =========================================================================
     const DEFAULT_SUPABASE_URL = "https://zobrjfquplgqiegrtnof.supabase.co";
     const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvYnJqZnF1cGxncWllZ3J0bm9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MTkwNDIsImV4cCI6MjExMTE5NTA0Mn0.7tSegwPfpB9P8TGeNsVhb9l46J_b__B0gLiWdZXy830";
@@ -525,8 +686,7 @@
       customers: [],
       devices: [],
       complaints: [],
-      transactions: [],
-      smsLogs: []
+      transactions: []
     };
 
     function getSupabaseCredentials() {
@@ -599,6 +759,7 @@
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("appShell").classList.remove("hidden");
       document.getElementById("adminEmailBadge").textContent = user.email;
+      setQuickDateRange("THIS_MONTH");
       loadSmsConfigToUI();
       renderSmsLogs();
       refreshAllData();
@@ -631,6 +792,10 @@
         }
       });
 
+      if (tabName === "reports") {
+        renderReportPreview();
+      }
+
       if (window.innerWidth < 1024) {
         document.getElementById("sidebar").classList.add("-translate-x-full");
       }
@@ -645,7 +810,7 @@
       t.textContent = msg;
       t.classList.remove("hidden");
       clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3000);
+      window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3200);
     }
 
     // =========================================================================
@@ -675,6 +840,7 @@
       renderComplaints();
       renderAccounts();
       updateSmsRecipientCount();
+      renderReportPreview();
     }
 
     function populateDropdowns() {
@@ -683,14 +849,16 @@
       document.getElementById("devTower").innerHTML = `<option value="">Tower (If on Tower)</option>` + towerOptions;
       document.getElementById("compTower").innerHTML = `<option value="">Select Tower (Optional)</option>` + towerOptions;
       document.getElementById("smsTargetTower").innerHTML = `<option value="ALL">All Customers</option>` + towerOptions;
+      document.getElementById("transferDestTower").innerHTML = `<option value="">-- Unassigned / No Tower --</option>` + towerOptions;
 
       const custOptions = state.customers.map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.phone)})</option>`).join("");
-      document.getElementById("devCustomer").innerHTML = `<option value="">Customer (If at Customer)</option>` + custOptions;
+      document.getElementById("devCustomer").innerHTML = `<option value="">Customer / Shop (If at Customer)</option>` + custOptions;
+      document.getElementById("transferDestCustomer").innerHTML = `<option value="">-- Select Customer --</option>` + custOptions;
     }
 
     function getTowerName(id) {
       const found = state.towers.find(t => t.id === id);
-      return found ? found.name : "—";
+      return found ? found.name : "Unassigned";
     }
 
     function daysUntil(dateStr) {
@@ -704,22 +872,20 @@
     function renderDashboard() {
       const expired = state.customers.filter(c => daysUntil(c.expiry_date) < 0).length;
       const active = state.customers.length - expired;
-      const expiringSoonList = state.customers.filter(c => {
-        const d = daysUntil(c.expiry_date);
-        return d <= 3;
-      });
+      const expiringSoonList = state.customers.filter(c => daysUntil(c.expiry_date) <= 3);
       const totalDues = state.customers.reduce((sum, c) => sum + Number(c.due_amount || 0), 0);
 
       const totalIncome = state.transactions.filter(x => x.type === "Income").reduce((s, x) => s + Number(x.amount || 0), 0);
       const totalExpense = state.transactions.filter(x => x.type === "Expense").reduce((s, x) => s + Number(x.amount || 0), 0);
       const net = totalIncome - totalExpense;
+      const camCount = state.devices.filter(d => d.device_type === "Camera").length;
 
       document.getElementById("kpiActiveCustomers").textContent = active;
       document.getElementById("kpiExpiredCustomers").textContent = `${expired} Expired`;
       document.getElementById("kpiExpiringSoon").textContent = expiringSoonList.length;
       document.getElementById("kpiTotalDues").textContent = `Pending Dues: ₹${totalDues.toLocaleString()}`;
       document.getElementById("kpiTowers").textContent = `${state.towers.length} Towers`;
-      document.getElementById("kpiDevices").textContent = `${state.devices.length} Devices Logged`;
+      document.getElementById("kpiDevices").textContent = `${state.devices.length} Total (${camCount} Cameras)`;
 
       const netEl = document.getElementById("kpiNetProfit");
       netEl.textContent = `${net < 0 ? "-" : ""}₹${Math.abs(net).toLocaleString()}`;
@@ -795,7 +961,7 @@
     }
 
     // =========================================================================
-    // CUSTOMERS CRUD, RENEW & WHATSAPP REMINDER
+    // CUSTOMERS CRUD, RENEW, WHATSAPP & TOWER TRANSFER
     // =========================================================================
     document.getElementById("customerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -803,6 +969,7 @@
       const paid = Number(document.getElementById("custPaid").value || 0);
       const due = Math.max(0, price - paid);
       const towerVal = document.getElementById("custTower").value || null;
+      const startVal = document.getElementById("custStart").value || new Date().toISOString().slice(0, 10);
 
       const payload = {
         name: document.getElementById("custName").value.trim(),
@@ -813,21 +980,22 @@
         plan_price: price,
         amount_paid: paid,
         due_amount: due,
-        start_date: document.getElementById("custStart").value || new Date().toISOString().slice(0, 10),
+        start_date: startVal,
         expiry_date: document.getElementById("custExpiry").value
       };
 
       const { error } = await supabaseClient.from("customers").insert([payload]);
       if (error) return showToast(error.message);
 
+      // Accounting entry keeps reference generic without personal customer details
       if (paid > 0) {
         await supabaseClient.from("transactions").insert([{
           type: "Income",
           category: "Customer Recharge",
           tower_id: towerVal,
           amount: paid,
-          note: `Recharge from ${payload.name} (${payload.phone})`,
-          date: payload.start_date
+          note: `Plan recharge (${payload.plan_name || "Internet Plan"})`,
+          date: startVal
         }]);
       }
 
@@ -848,7 +1016,8 @@
         if (!q) return true;
         return (c.name || "").toLowerCase().includes(q)
           || (c.phone || "").toLowerCase().includes(q)
-          || (c.address || "").toLowerCase().includes(q);
+          || (c.address || "").toLowerCase().includes(q)
+          || getTowerName(c.tower_id).toLowerCase().includes(q);
       });
 
       const tbody = document.getElementById("customersTableBody");
@@ -867,7 +1036,7 @@
           <tr>
             <td class="py-2.5 px-3">
               <div class="font-semibold">${esc(c.name)}</div>
-              <div class="text-[11px] text-slate-500">${esc(c.address || "—")} • Tower: ${esc(getTowerName(c.tower_id))}</div>
+              <div class="text-[11px] text-slate-500">${esc(c.address || "—")} • <span class="font-semibold text-indigo-700">Tower: ${esc(getTowerName(c.tower_id))}</span></div>
             </td>
             <td class="py-2.5 px-3">${esc(c.phone)}</td>
             <td class="py-2.5 px-3">
@@ -878,10 +1047,11 @@
               <div>${esc(c.expiry_date || "—")}</div>
               <div class="mt-0.5">${statusBadge}</div>
             </td>
-            <td class="py-2.5 px-3 space-y-1">
-              <div class="flex gap-1.5">
+            <td class="py-2.5 px-3 space-y-1.5">
+              <div class="flex flex-wrap gap-1.5">
                 <button onclick='sendWhatsAppReminder(${JSON.stringify(c)})' class="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
                 <button onclick="renewCustomer('${c.id}')" class="px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium cursor-pointer">Renew +30d</button>
+                <button onclick="openTransferModal('CUSTOMER', '${c.id}')" class="px-2 py-1 rounded bg-amber-600 hover:bg-amber-700 text-white font-medium cursor-pointer">⇄ Transfer Tower</button>
               </div>
               <div>
                 <button onclick="deleteRow('customers', '${c.id}')" class="text-[11px] text-rose-600 hover:underline cursor-pointer">Delete</button>
@@ -914,7 +1084,7 @@
           category: "Plan Renewal",
           tower_id: cust.tower_id || null,
           amount: Number(cust.plan_price),
-          note: `30-day renewal: ${cust.name}`,
+          note: `30-day renewal (${cust.plan_name || "Internet Plan"})`,
           date: todayStr
         }]);
       }
@@ -932,10 +1102,13 @@
     }
 
     // =========================================================================
-    // DEVICES CRUD (SERIAL, INSTALL DATE, LOGIN ID/PASS, SSID/WIFI PASS)
+    // DEVICES & CAMERAS CRUD + TOWER TRANSFER
     // =========================================================================
     document.getElementById("deviceForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const towerId = document.getElementById("devTower").value || null;
+      const custId = document.getElementById("devCustomer").value || null;
+
       const payload = {
         device_type: document.getElementById("devType").value,
         model: document.getElementById("devModel").value.trim(),
@@ -946,8 +1119,9 @@
         admin_password: document.getElementById("devPass").value.trim(),
         ssid: document.getElementById("devSsid").value.trim(),
         wifi_password: document.getElementById("devWifiPass").value.trim(),
-        tower_id: document.getElementById("devTower").value || null,
-        customer_id: document.getElementById("devCustomer").value || null,
+        location_type: towerId ? "Tower" : (custId ? "Customer" : "Stock"),
+        tower_id: towerId,
+        customer_id: custId,
         install_date: document.getElementById("devInstallDate").value || new Date().toISOString().slice(0, 10),
         notes: document.getElementById("devNotes").value.trim()
       };
@@ -955,42 +1129,53 @@
       const { error } = await supabaseClient.from("devices").insert([payload]);
       if (error) return showToast(error.message);
       e.target.reset();
-      showToast("Device saved!");
+      showToast("Device / Camera saved!");
       refreshAllData();
     });
 
     function renderDevices() {
       const q = (document.getElementById("deviceSearch").value || "").toLowerCase();
+      const typeFilter = document.getElementById("deviceTypeFilter").value;
+
       const list = state.devices.filter(d => {
+        if (typeFilter !== "ALL" && d.device_type !== typeFilter) return false;
         if (!q) return true;
         return (d.serial_number || "").toLowerCase().includes(q)
+          || (d.device_type || "").toLowerCase().includes(q)
           || (d.model || "").toLowerCase().includes(q)
           || (d.ssid || "").toLowerCase().includes(q)
           || (d.mac_address || "").toLowerCase().includes(q)
+          || (d.notes || "").toLowerCase().includes(q)
           || getTowerName(d.tower_id).toLowerCase().includes(q);
       });
 
       const tbody = document.getElementById("devicesTableBody");
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400">No devices logged yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400">No devices or cameras found.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = list.map((d, idx) => {
         const cust = state.customers.find(c => c.id === d.customer_id);
-        const placedAt = d.tower_id ? `Tower: ${getTowerName(d.tower_id)}` : (cust ? `Customer: ${cust.name}` : "In Stock / Unassigned");
+        const placedAt = d.tower_id
+          ? `Tower: ${getTowerName(d.tower_id)}`
+          : (cust ? `Customer: ${cust.name}` : "In Stock / Office");
+
+        const typeBadge = d.device_type === "Camera"
+          ? `<span class="px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-bold">📷 Camera</span>`
+          : `<span class="px-2 py-0.5 rounded bg-slate-200 text-slate-700 font-semibold">${esc(d.device_type)}</span>`;
 
         return `
           <tr>
             <td class="py-2.5 px-3">
-              <div class="font-semibold">${esc(d.device_type)} — ${esc(d.model)}</div>
-              <div class="text-[11px] font-mono text-slate-600">SN: ${esc(d.serial_number)} ${d.mac_address ? `| MAC: ${esc(d.mac_address)}` : ""}</div>
+              <div class="flex items-center gap-1.5 font-semibold">${typeBadge} <span>${esc(d.model)}</span></div>
+              <div class="text-[11px] font-mono text-slate-600 mt-0.5">SN: ${esc(d.serial_number)} ${d.mac_address ? `| MAC: ${esc(d.mac_address)}` : ""}</div>
               ${d.ip_address ? `<div class="text-[11px] text-indigo-600">IP: ${esc(d.ip_address)}</div>` : ""}
             </td>
             <td class="py-2.5 px-3">
-              <div class="font-medium">${esc(placedAt)}</div>
+              <div class="font-semibold text-indigo-700">${esc(placedAt)}</div>
               <div class="text-[11px] text-slate-500">Installed: ${esc(d.install_date || "—")}</div>
-              ${d.notes ? `<div class="text-[11px] text-slate-400">${esc(d.notes)}</div>` : ""}
+              ${d.notes ? `<div class="text-[11px] text-slate-500 italic">${esc(d.notes)}</div>` : ""}
             </td>
             <td class="py-2.5 px-3">
               <div>User: <span class="font-mono">${esc(d.admin_username || "—")}</span></div>
@@ -1008,13 +1193,136 @@
                 ${d.wifi_password ? `<button onclick="toggleSecret('wifipass-${idx}')" class="text-[11px] text-indigo-600 hover:underline cursor-pointer">Show</button><button onclick="copyText('${esc(d.wifi_password)}')" class="text-[11px] text-slate-500 hover:underline cursor-pointer">Copy</button>` : ""}
               </div>
             </td>
-            <td class="py-2.5 px-3">
-              <button onclick="deleteRow('devices', '${d.id}')" class="text-rose-600 hover:underline cursor-pointer">Delete</button>
+            <td class="py-2.5 px-3 space-y-1.5">
+              <div>
+                <button onclick="openTransferModal('DEVICE', '${d.id}')" class="px-2.5 py-1 rounded bg-amber-600 hover:bg-amber-700 text-white font-medium cursor-pointer">
+                  ⇄ Transfer
+                </button>
+              </div>
+              <div>
+                <button onclick="deleteRow('devices', '${d.id}')" class="text-[11px] text-rose-600 hover:underline cursor-pointer">Delete</button>
+              </div>
             </td>
           </tr>
         `;
       }).join("");
     }
+
+    // =========================================================================
+    // TRANSFER MODAL LOGIC
+    // =========================================================================
+    function openTransferModal(entityType, entityId) {
+      document.getElementById("transferEntityType").value = entityType;
+      document.getElementById("transferEntityId").value = entityId;
+      document.getElementById("transferDate").value = new Date().toISOString().slice(0, 10);
+      document.getElementById("transferNote").value = "";
+
+      if (entityType === "CUSTOMER") {
+        const cust = state.customers.find(c => c.id === entityId);
+        if (!cust) return;
+        document.getElementById("transferModalTitle").textContent = "Transfer Customer to Another Tower";
+        document.getElementById("transferCurrentInfo").innerHTML =
+          `<b>Customer:</b> ${esc(cust.name)} (${esc(cust.phone)})<br/><b>Current Tower:</b> ${esc(getTowerName(cust.tower_id))}`;
+        document.getElementById("transferModeWrap").classList.add("hidden");
+        document.getElementById("transferTowerSelectWrap").classList.remove("hidden");
+        document.getElementById("transferCustomerSelectWrap").classList.add("hidden");
+        document.getElementById("transferDestTower").value = cust.tower_id || "";
+      } else {
+        const dev = state.devices.find(d => d.id === entityId);
+        if (!dev) return;
+        const cust = state.customers.find(c => c.id === dev.customer_id);
+        const currentLoc = dev.tower_id
+          ? `Tower: ${getTowerName(dev.tower_id)}`
+          : (cust ? `Customer: ${cust.name}` : "In Stock / Office");
+
+        document.getElementById("transferModalTitle").textContent = "Transfer Device / Camera Location";
+        document.getElementById("transferCurrentInfo").innerHTML =
+          `<b>Device:</b> ${esc(dev.device_type)} — ${esc(dev.model)} (SN: ${esc(dev.serial_number)})<br/><b>Current Location:</b> ${esc(currentLoc)}`;
+        document.getElementById("transferModeWrap").classList.remove("hidden");
+        document.getElementById("transferDeviceTargetType").value = "TOWER";
+        document.getElementById("transferDestTower").value = dev.tower_id || "";
+        document.getElementById("transferDestCustomer").value = dev.customer_id || "";
+        toggleDeviceTransferInputs();
+      }
+
+      const modal = document.getElementById("transferModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function toggleDeviceTransferInputs() {
+      const mode = document.getElementById("transferDeviceTargetType").value;
+      document.getElementById("transferTowerSelectWrap").classList.toggle("hidden", mode !== "TOWER");
+      document.getElementById("transferCustomerSelectWrap").classList.toggle("hidden", mode !== "CUSTOMER");
+    }
+
+    function closeTransferModal() {
+      const modal = document.getElementById("transferModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    document.getElementById("transferForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const entityType = document.getElementById("transferEntityType").value;
+      const entityId = document.getElementById("transferEntityId").value;
+      const tDate = document.getElementById("transferDate").value || new Date().toISOString().slice(0, 10);
+      const tNote = document.getElementById("transferNote").value.trim();
+
+      if (entityType === "CUSTOMER") {
+        const cust = state.customers.find(c => c.id === entityId);
+        const oldTowerName = getTowerName(cust.tower_id);
+        const newTowerId = document.getElementById("transferDestTower").value || null;
+        const newTowerName = getTowerName(newTowerId);
+
+        const { error } = await supabaseClient.from("customers")
+          .update({ tower_id: newTowerId })
+          .eq("id", entityId);
+
+        if (error) return showToast(error.message);
+        closeTransferModal();
+        showToast(`Customer shifted: ${oldTowerName} → ${newTowerName}`);
+        refreshAllData();
+      } else {
+        const dev = state.devices.find(d => d.id === entityId);
+        const mode = document.getElementById("transferDeviceTargetType").value;
+        const oldLoc = dev.tower_id ? getTowerName(dev.tower_id) : "Previous Location";
+
+        let updateObj = { install_date: tDate };
+        let newLocLabel = "In Stock";
+
+        if (mode === "TOWER") {
+          const newTowerId = document.getElementById("transferDestTower").value || null;
+          updateObj.tower_id = newTowerId;
+          updateObj.customer_id = null;
+          updateObj.location_type = newTowerId ? "Tower" : "Stock";
+          newLocLabel = getTowerName(newTowerId);
+        } else if (mode === "CUSTOMER") {
+          const newCustId = document.getElementById("transferDestCustomer").value || null;
+          const destCust = state.customers.find(c => c.id === newCustId);
+          updateObj.customer_id = newCustId;
+          updateObj.tower_id = null;
+          updateObj.location_type = newCustId ? "Customer" : "Stock";
+          newLocLabel = destCust ? destCust.name : "Customer";
+        } else {
+          updateObj.tower_id = null;
+          updateObj.customer_id = null;
+          updateObj.location_type = "Stock";
+        }
+
+        const historyTag = `[Transferred ${tDate}: ${oldLoc} → ${newLocLabel}${tNote ? " - " + tNote : ""}]`;
+        updateObj.notes = dev.notes ? `${dev.notes} | ${historyTag}` : historyTag;
+
+        const { error } = await supabaseClient.from("devices")
+          .update(updateObj)
+          .eq("id", entityId);
+
+        if (error) return showToast(error.message);
+        closeTransferModal();
+        showToast(`Device transferred: ${oldLoc} → ${newLocLabel}`);
+        refreshAllData();
+      }
+    });
 
     function toggleSecret(id) {
       const el = document.getElementById(id);
@@ -1144,7 +1452,7 @@
     }
 
     // =========================================================================
-    // BULK SMS GATEWAY (SERVER DOWN / OUTAGE BROADCAST)
+    // BULK SMS GATEWAY
     // =========================================================================
     function saveSmsConfig() {
       const cfg = {
@@ -1255,11 +1563,12 @@
       const logs = JSON.parse(localStorage.getItem("isp_sms_logs") || "[]");
       logs.unshift({
         time: new Date().toLocaleString(),
+        date: new Date().toISOString().slice(0, 10),
         target: document.getElementById("smsTargetTower").selectedOptions[0].text,
         summary: `Sent: ${sentCount} | Failed: ${failedCount}`,
         message: msgTemplate
       });
-      localStorage.setItem("isp_sms_logs", JSON.stringify(logs.slice(0, 30)));
+      localStorage.setItem("isp_sms_logs", JSON.stringify(logs.slice(0, 50)));
       renderSmsLogs();
 
       btn.disabled = false;
@@ -1285,7 +1594,287 @@
     }
 
     // =========================================================================
-    // COMMON HELPERS (DELETE & CSV EXPORT)
+    // REPORTS & CA TAX EXCEL EXPORT
+    // =========================================================================
+    function setQuickDateRange(mode) {
+      const now = new Date();
+      const pad = n => String(n).padStart(2, "0");
+      const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+
+      if (mode === "THIS_MONTH") {
+        const start = new Date(now.getFullYear(), now.getMonth(), 1);
+        const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        document.getElementById("repFromDate").value = fmt(start);
+        document.getElementById("repToDate").value = fmt(end);
+      } else if (mode === "LAST_MONTH") {
+        const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const end = new Date(now.getFullYear(), now.getMonth(), 0);
+        document.getElementById("repFromDate").value = fmt(start);
+        document.getElementById("repToDate").value = fmt(end);
+      } else if (mode === "FY_IN") {
+        const fyStartYear = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+        document.getElementById("repFromDate").value = `${fyStartYear}-04-01`;
+        document.getElementById("repToDate").value = `${fyStartYear + 1}-03-31`;
+      } else {
+        document.getElementById("repFromDate").value = "";
+        document.getElementById("repToDate").value = "";
+      }
+      renderReportPreview();
+    }
+
+    function toggleAllReportChecks(checked) {
+      document.querySelectorAll(".rep-chk").forEach(ch => { ch.checked = checked; });
+      renderReportPreview();
+    }
+
+    function inDateRange(dateStr, from, to) {
+      if (!dateStr) return !from && !to;
+      if (from && dateStr < from) return false;
+      if (to && dateStr > to) return false;
+      return true;
+    }
+
+    function getSelectedReportSections() {
+      const from = document.getElementById("repFromDate").value;
+      const to = document.getElementById("repToDate").value;
+      const smsLogs = JSON.parse(localStorage.getItem("isp_sms_logs") || "[]");
+
+      const sections = [];
+
+      // 1. INCOME (Strictly no customer personal data)
+      if (document.getElementById("chkIncome").checked) {
+        const rows = state.transactions
+          .filter(t => t.type === "Income" && inDateRange(t.date, from, to))
+          .map(t => ({
+            Date: t.date || "",
+            Type: "Income",
+            Category: t.category || "General Income",
+            Tower: getTowerName(t.tower_id),
+            Particulars: t.note || "",
+            Amount: Number(t.amount || 0)
+          }));
+        const total = rows.reduce((s, r) => s + r.Amount, 0);
+        sections.push({ key: "Income", title: "Income Ledger (No Customer Personal Data)", headers: ["Date", "Type", "Category", "Tower", "Particulars", "Amount"], rows, totalLabel: "Total Income", totalValue: total });
+      }
+
+      // 2. EXPENSES (Strictly no customer personal data)
+      if (document.getElementById("chkExpenses").checked) {
+        const rows = state.transactions
+          .filter(t => t.type === "Expense" && inDateRange(t.date, from, to))
+          .map(t => ({
+            Date: t.date || "",
+            Type: "Expense",
+            Category: t.category || "General Expense",
+            Tower: getTowerName(t.tower_id),
+            Particulars: t.note || "",
+            Amount: Number(t.amount || 0)
+          }));
+        const total = rows.reduce((s, r) => s + r.Amount, 0);
+        sections.push({ key: "Expenses", title: "Expenses Ledger (No Customer Personal Data)", headers: ["Date", "Type", "Category", "Tower", "Particulars", "Amount"], rows, totalLabel: "Total Expenses", totalValue: total });
+      }
+
+      // 3. CUSTOMER DATA
+      if (document.getElementById("chkCustomers").checked) {
+        const rows = state.customers
+          .filter(c => inDateRange(c.start_date || c.expiry_date, from, to))
+          .map(c => ({
+            Name: c.name || "",
+            Phone: c.phone || "",
+            Address: c.address || "",
+            Tower: getTowerName(c.tower_id),
+            Plan: c.plan_name || "",
+            PlanPrice: Number(c.plan_price || 0),
+            Paid: Number(c.amount_paid || 0),
+            Due: Number(c.due_amount || 0),
+            StartDate: c.start_date || "",
+            ExpiryDate: c.expiry_date || ""
+          }));
+        sections.push({ key: "Customer Data", title: "Customer Data", headers: ["Name", "Phone", "Address", "Tower", "Plan", "PlanPrice", "Paid", "Due", "StartDate", "ExpiryDate"], rows });
+      }
+
+      // 4. TOWER
+      if (document.getElementById("chkTower").checked) {
+        const rows = state.towers
+          .filter(t => inDateRange((t.created_at || "").slice(0, 10), from, to))
+          .map(t => ({
+            TowerName: t.name || "",
+            Location: t.location || "",
+            GPS: t.gps_coords || "",
+            OwnerInfo: t.owner_or_rent_info || "",
+            MonthlyRent: Number(t.monthly_rent || 0),
+            CreatedDate: (t.created_at || "").slice(0, 10)
+          }));
+        sections.push({ key: "Tower", title: "Tower / POP Directory", headers: ["TowerName", "Location", "GPS", "OwnerInfo", "MonthlyRent", "CreatedDate"], rows });
+      }
+
+      // 5. DEVICE
+      if (document.getElementById("chkDevice").checked) {
+        const rows = state.devices
+          .filter(d => inDateRange(d.install_date || (d.created_at || "").slice(0, 10), from, to))
+          .map(d => ({
+            Type: d.device_type || "",
+            Model: d.model || "",
+            SerialNumber: d.serial_number || "",
+            MAC: d.mac_address || "",
+            IP: d.ip_address || "",
+            Location: d.tower_id ? `Tower: ${getTowerName(d.tower_id)}` : (d.location_type || "Stock"),
+            InstallDate: d.install_date || "",
+            SSID: d.ssid || "",
+            Notes: d.notes || ""
+          }));
+        sections.push({ key: "Device", title: "Devices & Cameras Inventory", headers: ["Type", "Model", "SerialNumber", "MAC", "IP", "Location", "InstallDate", "SSID", "Notes"], rows });
+      }
+
+      // 6. OTHER (Complaints & Outage SMS Broadcast Logs)
+      if (document.getElementById("chkOther").checked) {
+        const compRows = state.complaints
+          .filter(c => inDateRange(c.opened_date, from, to))
+          .map(c => ({
+            Category: "Complaint",
+            Date: c.opened_date || "",
+            Tower: getTowerName(c.tower_id),
+            TitleOrTarget: c.title || "",
+            Details: `${c.issue_details || ""} (Status: ${c.status || "Open"})`.trim()
+          }));
+
+        const smsRows = smsLogs
+          .filter(l => inDateRange(l.date || (l.time || "").slice(0, 10), from, to))
+          .map(l => ({
+            Category: "SMS Alert",
+            Date: l.date || l.time || "",
+            Tower: l.target || "All",
+            TitleOrTarget: l.summary || "",
+            Details: l.message || ""
+          }));
+
+        const rows = [...compRows, ...smsRows];
+        sections.push({ key: "Other", title: "Other Records (Complaints & SMS Logs)", headers: ["Category", "Date", "Tower", "TitleOrTarget", "Details"], rows });
+      }
+
+      return { sections, from, to };
+    }
+
+    function renderReportPreview() {
+      const container = document.getElementById("repPreviewContainer");
+      const summaryEl = document.getElementById("repSummaryText");
+      if (!container || !summaryEl) return;
+
+      const { sections, from, to } = getSelectedReportSections();
+      const rangeLabel = (from || to) ? ` (${from || "Start"} to ${to || "End"})` : " (All Dates)";
+
+      if (!sections.length) {
+        summaryEl.textContent = "Selected: None";
+        container.innerHTML = `<p class="text-slate-400">Koi section select nahi hai. Upar se kam se kam ek checkbox select karein.</p>`;
+        return;
+      }
+
+      summaryEl.textContent = `Selected: ${sections.map(s => s.key).join(", ")}${rangeLabel}`;
+
+      container.innerHTML = sections.map(sec => {
+        const headHtml = sec.headers.map(h => `<th class="py-2 px-3 bg-slate-50 border-b text-slate-600">${esc(h)}</th>`).join("");
+        const bodyHtml = sec.rows.length
+          ? sec.rows.slice(0, 15).map(r =>
+              `<tr class="border-b">${sec.headers.map(h => `<td class="py-2 px-3">${esc(r[h])}</td>`).join("")}</tr>`
+            ).join("")
+          : `<tr><td colspan="${sec.headers.length}" class="py-3 px-3 text-center text-slate-400">No records in selected date range.</td></tr>`;
+
+        const totalRowHtml = sec.totalLabel
+          ? `<tr class="bg-slate-50 font-bold"><td colspan="${sec.headers.length - 1}" class="py-2 px-3 text-right">${esc(sec.totalLabel)}</td><td class="py-2 px-3">₹${Number(sec.totalValue || 0).toLocaleString()}</td></tr>`
+          : "";
+
+        return `
+          <div class="border rounded-lg overflow-hidden">
+            <div class="px-3 py-2 bg-slate-100 font-bold text-slate-800 flex justify-between">
+              <span>${esc(sec.title)}</span>
+              <span class="text-[11px] text-slate-500">${sec.rows.length} rows</span>
+            </div>
+            <div class="overflow-x-auto scrollbar-thin">
+              <table class="w-full text-left border-collapse">
+                <thead><tr>${headHtml}</tr></thead>
+                <tbody>${bodyHtml}${totalRowHtml}</tbody>
+              </table>
+            </div>
+          </div>
+        `;
+      }).join("");
+    }
+
+    function downloadExcelReport() {
+      const { sections, from, to } = getSelectedReportSections();
+      if (!sections.length) {
+        return showToast("Please select at least one report section!");
+      }
+
+      const periodStr = `${from || "Beginning"} to ${to || "Present"}`;
+      const worksheetsXml = sections.map(sec => {
+        const sheetName = sec.key.replace(/[\\/?*\[\]:]/g, "").slice(0, 31);
+        const rowsHtml = [];
+
+        rowsHtml.push(`<tr><td colspan="${sec.headers.length}"><b>${esc(sec.title)}</b></td></tr>`);
+        rowsHtml.push(`<tr><td colspan="${sec.headers.length}">Period: ${esc(periodStr)} | Generated: ${esc(new Date().toLocaleString())}</td></tr>`);
+        rowsHtml.push(`<tr></tr>`);
+        rowsHtml.push(`<tr>${sec.headers.map(h => `<th><b>${esc(h)}</b></th>`).join("")}</tr>`);
+
+        sec.rows.forEach(r => {
+          rowsHtml.push(`<tr>${sec.headers.map(h => `<td>${esc(r[h])}</td>`).join("")}</tr>`);
+        });
+
+        if (sec.totalLabel) {
+          rowsHtml.push(`<tr><td colspan="${sec.headers.length - 1}"><b>${esc(sec.totalLabel)}</b></td><td><b>${Number(sec.totalValue || 0)}</b></td></tr>`);
+        }
+
+        return `
+          <x:Worksheet>
+            <x:Name>${esc(sheetName)}</x:Name>
+            <Table>
+              ${rowsHtml.join("\n")}
+            </Table>
+          </x:Worksheet>
+        `;
+      }).join("\n");
+
+      // Build Excel-compatible HTML workbook (.xls) with separate tabs per selected section
+      const htmlTables = sections.map(sec => {
+        const head = `<tr>${sec.headers.map(h => `<th style="background:#e2e8f0;border:1px solid #cbd5e1;padding:6px;">${esc(h)}</th>`).join("")}</tr>`;
+        const body = sec.rows.map(r =>
+          `<tr>${sec.headers.map(h => `<td style="border:1px solid #cbd5e1;padding:5px;">${esc(r[h])}</td>`).join("")}</tr>`
+        ).join("");
+        const foot = sec.totalLabel
+          ? `<tr><td colspan="${sec.headers.length - 1}" style="border:1px solid #cbd5e1;padding:6px;font-weight:bold;text-align:right;">${esc(sec.totalLabel)}</td><td style="border:1px solid #cbd5e1;padding:6px;font-weight:bold;">${Number(sec.totalValue || 0)}</td></tr>`
+          : "";
+
+        return `
+          <h3 style="font-family:Arial,sans-serif;">${esc(sec.title)} (${esc(periodStr)})</h3>
+          <table style="border-collapse:collapse;font-family:Arial,sans-serif;font-size:12px;margin-bottom:24px;">
+            <thead>${head}</thead>
+            <tbody>${body}${foot}</tbody>
+          </table>
+        `;
+      }).join("\n");
+
+      const excelWorkbook = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office"
+              xmlns:x="urn:schemas-microsoft-com:office:excel"
+              xmlns="http://www.w3.org/TR/REC-html40">
+        <head>
+          <meta charset="UTF-8" />
+          <!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets>${worksheetsXml}</x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->
+        </head>
+        <body>${htmlTables}</body>
+        </html>
+      `;
+
+      const blob = new Blob([excelWorkbook], { type: "application/vnd.ms-excel;charset=utf-8;" });
+      const a = document.createElement("a");
+      const filePart = sections.map(s => s.key.toLowerCase().replace(/\s+/g, "-")).join("_");
+      a.href = URL.createObjectURL(blob);
+      a.download = `CA-Report_${filePart}_${from || "all"}_to_${to || "now"}.xls`;
+      a.click();
+      showToast("Excel report downloaded!");
+    }
+
+    // =========================================================================
+    // COMMON HELPERS
     // =========================================================================
     async function deleteRow(table, id) {
       if (!confirm("Are you sure you want to delete this record?")) return;
@@ -1293,21 +1882,6 @@
       if (error) return showToast(error.message);
       showToast("Deleted!");
       refreshAllData();
-    }
-
-    function exportAllCSV() {
-      const rows = [
-        ["Section", "Field1", "Field2", "Field3", "Field4"],
-        ...state.customers.map(c => ["Customer", c.name, c.phone, c.plan_name, c.expiry_date]),
-        ...state.devices.map(d => ["Device", d.device_type, d.model, d.serial_number, d.ssid]),
-        ...state.transactions.map(t => ["Transaction", t.type, t.category, t.amount, t.date])
-      ];
-      const csv = rows.map(r => r.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
-      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = `isp-backup-${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
     }
 
     function esc(str) {

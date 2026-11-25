@@ -1,0 +1,1325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISP Manager Pro — Single Admin Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    [x-cloak] { display: none; }
+    .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 antialiased">
+
+  <!-- ================= LOGIN SCREEN ================= -->
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-7 border border-slate-100">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-11 h-11 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow">
+          ISP
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-slate-900">ISP Manager Pro</h1>
+          <p class="text-xs text-slate-500">Single Admin Secure Login</p>
+        </div>
+      </div>
+
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Admin Email</label>
+          <input id="loginEmail" type="email" required placeholder="admin@yourdomain.com"
+            class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Password</label>
+          <input id="loginPassword" type="password" required placeholder="••••••••"
+            class="w-full px-3.5 py-2.5 rounded-lg border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" />
+        </div>
+        <button type="submit" id="loginBtn"
+          class="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm transition cursor-pointer">
+          Sign In as Admin
+        </button>
+      </form>
+
+      <p id="loginError" class="mt-3 text-xs text-red-600 font-medium hidden"></p>
+
+      <details class="mt-5 text-xs text-slate-500 border-t pt-3">
+        <summary class="cursor-pointer font-semibold text-slate-600">Supabase Config (First Time Setup)</summary>
+        <div class="mt-2 space-y-2">
+          <input id="cfgSupaUrl" type="text" placeholder="https://xxxx.supabase.co"
+            class="w-full px-2.5 py-1.5 rounded border border-slate-300 text-xs" />
+          <input id="cfgSupaKey" type="text" placeholder="Supabase anon public key"
+            class="w-full px-2.5 py-1.5 rounded border border-slate-300 text-xs" />
+          <button type="button" onclick="saveSupabaseConfig()"
+            class="px-3 py-1.5 rounded bg-slate-800 text-white text-xs font-medium cursor-pointer">
+            Save Supabase Config
+          </button>
+        </div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ================= MAIN ADMIN APP ================= -->
+  <div id="appShell" class="min-h-screen flex flex-col lg:flex-row hidden">
+
+    <!-- Mobile Top Bar -->
+    <header class="lg:hidden bg-slate-900 text-white px-4 py-3 flex items-center justify-between sticky top-0 z-30">
+      <div class="flex items-center gap-2.5">
+        <span class="px-2 py-1 rounded bg-indigo-600 text-xs font-bold">ISP</span>
+        <span class="font-semibold text-sm">ISP Manager Pro</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleSidebar()" class="px-3 py-1.5 rounded bg-slate-800 text-xs font-medium">Menu</button>
+        <button onclick="logoutAdmin()" class="px-3 py-1.5 rounded bg-rose-600 text-xs font-medium">Logout</button>
+      </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-64 bg-slate-900 text-slate-200 flex-shrink-0 flex flex-col justify-between fixed lg:static inset-y-0 left-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-200">
+      <div>
+        <div class="p-5 border-b border-slate-800 hidden lg:block">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">ISP</div>
+            <div>
+              <div class="font-bold text-white text-sm">ISP Manager Pro</div>
+              <div id="adminEmailBadge" class="text-[11px] text-slate-400 truncate max-w-[145px]">Admin</div>
+            </div>
+          </div>
+        </div>
+
+        <nav class="p-3 space-y-1 text-sm">
+          <button data-tab="dashboard" onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800 bg-indigo-600 text-white font-medium">
+            <span>📊</span> Dashboard
+          </button>
+          <button data-tab="towers" onclick="switchTab('towers')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
+            <span>📡</span> Towers / POPs
+          </button>
+          <button data-tab="customers" onclick="switchTab('customers')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
+            <span>👥</span> Customers & Expiry
+          </button>
+          <button data-tab="devices" onclick="switchTab('devices')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
+            <span>📶</span> Devices & SSID/Login
+          </button>
+          <button data-tab="complaints" onclick="switchTab('complaints')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
+            <span>🛠️</span> Complaints & Faults
+          </button>
+          <button data-tab="accounts" onclick="switchTab('accounts')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
+            <span>💰</span> Income, Expense & P&L
+          </button>
+          <button data-tab="sms" onclick="switchTab('sms')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-slate-800">
+            <span>📩</span> Bulk SMS Outage Alert
+          </button>
+        </nav>
+      </div>
+
+      <div class="p-3 border-t border-slate-800 space-y-2">
+        <button onclick="exportAllCSV()" class="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-200 cursor-pointer">
+          ⬇️ Export Backup CSV
+        </button>
+        <button onclick="logoutAdmin()" class="hidden lg:block w-full py-2 px-3 rounded-lg bg-rose-600/90 hover:bg-rose-600 text-xs font-semibold text-white cursor-pointer">
+          Logout
+        </button>
+      </div>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="flex-1 p-4 md:p-6 overflow-x-hidden">
+      <div id="toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 text-white text-xs font-medium shadow-lg"></div>
+
+      <!-- ================= TAB 1: DASHBOARD ================= -->
+      <section id="tab-dashboard" class="tab-panel space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Dashboard Overview</h2>
+            <p class="text-xs text-slate-500">Live summary of customers, expiry alerts, towers, devices & profit/loss</p>
+          </div>
+          <button onclick="refreshAllData()" class="px-3.5 py-2 rounded-lg bg-white border border-slate-300 hover:bg-slate-50 text-xs font-semibold shadow-sm cursor-pointer">
+            🔄 Refresh Data
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500 font-medium">Active Customers</div>
+            <div id="kpiActiveCustomers" class="text-2xl font-bold text-emerald-600 mt-1">0</div>
+            <div id="kpiExpiredCustomers" class="text-xs text-rose-500 mt-1">0 Expired</div>
+          </div>
+
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500 font-medium">Expiring in ≤ 3 Days</div>
+            <div id="kpiExpiringSoon" class="text-2xl font-bold text-amber-600 mt-1">0</div>
+            <div id="kpiTotalDues" class="text-xs text-slate-500 mt-1">Pending Dues: ₹0</div>
+          </div>
+
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500 font-medium">Towers & Deployed Devices</div>
+            <div id="kpiTowers" class="text-2xl font-bold text-indigo-600 mt-1">0 Towers</div>
+            <div id="kpiDevices" class="text-xs text-slate-500 mt-1">0 Devices Logged</div>
+          </div>
+
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500 font-medium">Net Profit / Loss</div>
+            <div id="kpiNetProfit" class="text-2xl font-bold text-slate-900 mt-1">₹0</div>
+            <div id="kpiIncExp" class="text-xs text-slate-500 mt-1">In: ₹0 | Out: ₹0</div>
+          </div>
+        </div>
+
+        <!-- Expiring Soon Quick Action Table -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="font-bold text-sm text-slate-800">⚠️ Expiring Soon / Expired Customers (Quick Reminder)</h3>
+            <button onclick="switchTab('customers')" class="text-xs text-indigo-600 font-semibold hover:underline">View All</button>
+          </div>
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b bg-slate-50 text-slate-600">
+                  <th class="py-2.5 px-3">Customer</th>
+                  <th class="py-2.5 px-3">Phone</th>
+                  <th class="py-2.5 px-3">Plan / Due</th>
+                  <th class="py-2.5 px-3">Expiry Date</th>
+                  <th class="py-2.5 px-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dashExpiringBody" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 2: TOWERS ================= -->
+      <section id="tab-towers" class="tab-panel hidden space-y-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Towers / POP Locations</h2>
+            <p class="text-xs text-slate-500">Manage multiple wireless/fiber towers, rents, and locations</p>
+          </div>
+        </div>
+
+        <form id="towerForm" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <input id="towerName" type="text" required placeholder="Tower Name *" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="towerLocation" type="text" placeholder="Area / Village / Address" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="towerGps" type="text" placeholder="GPS (e.g. 26.98, 83.45)" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="towerOwner" type="text" placeholder="Owner / Rooftop Info" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="towerRent" type="number" step="0.01" placeholder="Monthly Rent (₹)" class="px-3 py-2 border rounded-lg text-xs" />
+          <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">
+            + Add Tower
+          </button>
+        </form>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto scrollbar-thin">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b bg-slate-50 text-slate-600">
+                <th class="py-2.5 px-3">Tower Name</th>
+                <th class="py-2.5 px-3">Location</th>
+                <th class="py-2.5 px-3">Owner Info</th>
+                <th class="py-2.5 px-3">Monthly Rent</th>
+                <th class="py-2.5 px-3">Devices / Customers</th>
+                <th class="py-2.5 px-3">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="towersTableBody" class="divide-y"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 3: CUSTOMERS ================= -->
+      <section id="tab-customers" class="tab-panel hidden space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Customers & Plan Expiry</h2>
+            <p class="text-xs text-slate-500">Track plans, expiry dates, dues, renew quickly, and send WhatsApp reminders</p>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <input id="customerSearch" oninput="renderCustomers()" type="text" placeholder="Search name, phone, village..."
+              class="px-3 py-2 bg-white border rounded-lg text-xs w-56" />
+            <select id="customerFilter" onchange="renderCustomers()" class="px-3 py-2 bg-white border rounded-lg text-xs">
+              <option value="ALL">All Customers</option>
+              <option value="EXPIRING">Expiring (≤ 3 days)</option>
+              <option value="EXPIRED">Expired</option>
+              <option value="DUE">Has Pending Due</option>
+            </select>
+          </div>
+        </div>
+
+        <form id="customerForm" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+          <input id="custName" type="text" required placeholder="Customer Name *" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="custPhone" type="text" required placeholder="Phone (e.g. 9876543210) *" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="custAddress" type="text" placeholder="Village / Address" class="px-3 py-2 border rounded-lg text-xs" />
+          <select id="custTower" class="px-3 py-2 border rounded-lg text-xs bg-white">
+            <option value="">Select Tower (Optional)</option>
+          </select>
+          <input id="custPlan" type="text" placeholder="Plan (e.g. 50 Mbps Monthly)" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="custPrice" type="number" step="0.01" placeholder="Plan Price (₹)" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="custPaid" type="number" step="0.01" placeholder="Amount Paid (₹)" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="custStart" type="date" title="Start Date" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="custExpiry" type="date" required title="Expiry Date *" class="px-3 py-2 border rounded-lg text-xs" />
+          <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">
+            + Add Customer
+          </button>
+        </form>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto scrollbar-thin">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b bg-slate-50 text-slate-600">
+                <th class="py-2.5 px-3">Customer & Area</th>
+                <th class="py-2.5 px-3">Phone</th>
+                <th class="py-2.5 px-3">Plan & Billing</th>
+                <th class="py-2.5 px-3">Expiry / Status</th>
+                <th class="py-2.5 px-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="customersTableBody" class="divide-y"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 4: DEVICES ================= -->
+      <section id="tab-devices" class="tab-panel hidden space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Devices, Serials, Login & SSID/PSK</h2>
+            <p class="text-xs text-slate-500">Track serial numbers, install dates, tower/customer placement, admin logins & wireless SSIDs</p>
+          </div>
+          <input id="deviceSearch" oninput="renderDevices()" type="text" placeholder="Search serial, MAC, SSID, tower..."
+            class="px-3 py-2 bg-white border rounded-lg text-xs w-64" />
+        </div>
+
+        <form id="deviceForm" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <select id="devType" class="px-3 py-2 border rounded-lg text-xs bg-white">
+              <option value="Sector">Sector</option>
+              <option value="PtP">PtP Link</option>
+              <option value="Router">Router</option>
+              <option value="ONU">ONU / Fiber</option>
+              <option value="AP">Access Point (AP)</option>
+              <option value="Switch">Switch / PoE</option>
+            </select>
+            <input id="devModel" type="text" required placeholder="Model (e.g. LHG XL 5 ax / RB3011) *" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devSerial" type="text" required placeholder="Serial Number *" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devMac" type="text" placeholder="MAC Address" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devIp" type="text" placeholder="IP Address (Optional)" class="px-3 py-2 border rounded-lg text-xs" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+            <input id="devUser" type="text" placeholder="Device Login ID / User" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devPass" type="text" placeholder="Device Login Password" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devSsid" type="text" placeholder="SSID (for Sector / PtP / AP)" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devWifiPass" type="text" placeholder="Wi-Fi / Wireless Password" class="px-3 py-2 border rounded-lg text-xs" />
+            <select id="devTower" class="px-3 py-2 border rounded-lg text-xs bg-white">
+              <option value="">Tower (If on Tower)</option>
+            </select>
+            <input id="devInstallDate" type="date" title="Install Date" class="px-3 py-2 border rounded-lg text-xs" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <select id="devCustomer" class="px-3 py-2 border rounded-lg text-xs bg-white">
+              <option value="">Customer (If at Customer)</option>
+            </select>
+            <input id="devNotes" type="text" placeholder="Notes (e.g. Facing North, 24V PoE)" class="px-3 py-2 border rounded-lg text-xs" />
+            <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">
+              + Save Device
+            </button>
+          </div>
+        </form>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto scrollbar-thin">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b bg-slate-50 text-slate-600">
+                <th class="py-2.5 px-3">Device & Serial</th>
+                <th class="py-2.5 px-3">Location & Date</th>
+                <th class="py-2.5 px-3">Login ID / Pass</th>
+                <th class="py-2.5 px-3">SSID / Wi-Fi Pass</th>
+                <th class="py-2.5 px-3">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="devicesTableBody" class="divide-y"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 5: COMPLAINTS ================= -->
+      <section id="tab-complaints" class="tab-panel hidden space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Complaints & Fault Log</h2>
+          <p class="text-xs text-slate-500">Track outages, cable cuts, device issues, and resolution status</p>
+        </div>
+
+        <form id="complaintForm" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
+          <input id="compTitle" type="text" required placeholder="Issue Title (e.g. Fiber Cut / Slow Speed) *" class="px-3 py-2 border rounded-lg text-xs" />
+          <select id="compTower" class="px-3 py-2 border rounded-lg text-xs bg-white">
+            <option value="">Select Tower (Optional)</option>
+          </select>
+          <input id="compDetails" type="text" placeholder="Details / Device / Customer info" class="px-3 py-2 border rounded-lg text-xs" />
+          <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">
+            + Log Complaint
+          </button>
+        </form>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto scrollbar-thin">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b bg-slate-50 text-slate-600">
+                <th class="py-2.5 px-3">Issue</th>
+                <th class="py-2.5 px-3">Tower / Details</th>
+                <th class="py-2.5 px-3">Date</th>
+                <th class="py-2.5 px-3">Status</th>
+                <th class="py-2.5 px-3">Action</th>
+              </tr>
+            </thead>
+            <tbody id="complaintsTableBody" class="divide-y"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 6: INCOME, EXPENSE & P&L ================= -->
+      <section id="tab-accounts" class="tab-panel hidden space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">Income, Expense & Profit / Loss</h2>
+            <p class="text-xs text-slate-500">Track monthly/total income, expenses, and net profit or loss</p>
+          </div>
+          <div class="flex gap-2 items-center">
+            <input id="pnlFrom" type="date" onchange="renderAccounts()" class="px-2.5 py-1.5 bg-white border rounded-lg text-xs" />
+            <span class="text-xs text-slate-400">to</span>
+            <input id="pnlTo" type="date" onchange="renderAccounts()" class="px-2.5 py-1.5 bg-white border rounded-lg text-xs" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500">Total Income</div>
+            <div id="pnlIncome" class="text-2xl font-bold text-emerald-600 mt-1">₹0</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500">Total Expense</div>
+            <div id="pnlExpense" class="text-2xl font-bold text-rose-600 mt-1">₹0</div>
+          </div>
+          <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm">
+            <div class="text-xs text-slate-500">Net Profit / Loss</div>
+            <div id="pnlNet" class="text-2xl font-bold text-slate-900 mt-1">₹0</div>
+          </div>
+        </div>
+
+        <form id="txForm" class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+          <select id="txType" class="px-3 py-2 border rounded-lg text-xs bg-white">
+            <option value="Income">Income (+)</option>
+            <option value="Expense">Expense (-)</option>
+          </select>
+          <input id="txCategory" type="text" required placeholder="Category (Recharge / Bandwidth / Rent) *" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="txAmount" type="number" step="0.01" required placeholder="Amount (₹) *" class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="txDate" type="date" required class="px-3 py-2 border rounded-lg text-xs" />
+          <input id="txNote" type="text" placeholder="Note / Details" class="px-3 py-2 border rounded-lg text-xs" />
+          <button type="submit" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold cursor-pointer">
+            + Add Entry
+          </button>
+        </form>
+
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-x-auto scrollbar-thin">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b bg-slate-50 text-slate-600">
+                <th class="py-2.5 px-3">Date</th>
+                <th class="py-2.5 px-3">Type</th>
+                <th class="py-2.5 px-3">Category</th>
+                <th class="py-2.5 px-3">Note</th>
+                <th class="py-2.5 px-3">Amount</th>
+                <th class="py-2.5 px-3">Delete</th>
+              </tr>
+            </thead>
+            <tbody id="txTableBody" class="divide-y"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 7: BULK SMS OUTAGE ALERT ================= -->
+      <section id="tab-sms" class="tab-panel hidden space-y-6">
+        <div>
+          <h2 class="text-xl font-bold text-slate-900">Bulk SMS Outage / Server Down Alert</h2>
+          <p class="text-xs text-slate-500">Configure your SMS gateway API & template once, and broadcast alerts in one click when server/tower is down</p>
+        </div>
+
+        <!-- Gateway Configuration -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <h3 class="font-bold text-sm text-slate-800">1. SMS Gateway API Configuration (Saved in Browser)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <input id="smsEndpoint" type="text" placeholder="API URL (e.g. https://smsapi.com/send)" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="smsApiKey" type="text" placeholder="API Key / Auth Token" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="smsSenderId" type="text" placeholder="Sender ID (6 chars, e.g. SHNWFI)" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="smsTemplateId" type="text" placeholder="DLT Template ID (Optional)" class="px-3 py-2 border rounded-lg text-xs" />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <select id="smsMethod" class="px-3 py-2 border rounded-lg text-xs bg-white">
+              <option value="GET">HTTP GET (Query Params)</option>
+              <option value="POST_JSON">HTTP POST (JSON Body)</option>
+              <option value="POST_FORM">HTTP POST (Form Data)</option>
+            </select>
+            <input id="smsQueryKeys" type="text" placeholder="Keys map: mobileKey=mobiles,msgKey=message,keyParam=api_key" class="px-3 py-2 border rounded-lg text-xs" />
+            <button type="button" onclick="saveSmsConfig()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold cursor-pointer">
+              💾 Save SMS Gateway Settings
+            </button>
+          </div>
+        </div>
+
+        <!-- Broadcast Message Box -->
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm space-y-3">
+          <h3 class="font-bold text-sm text-slate-800">2. Send Outage SMS to All (or Selected Tower) Customers</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <select id="smsTargetTower" onchange="updateSmsRecipientCount()" class="px-3 py-2 border rounded-lg text-xs bg-white">
+              <option value="ALL">All Customers</option>
+            </select>
+            <div id="smsRecipientCount" class="flex items-center px-3 py-2 rounded-lg bg-slate-100 text-xs font-semibold text-slate-700">
+              Recipients: 0 customers
+            </div>
+          </div>
+
+          <textarea id="smsMessageBody" rows="3" placeholder="Dear Customer, our internet server/link is currently under maintenance. Service will be restored shortly. Sorry for the inconvenience."
+            class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
+
+          <div class="flex flex-wrap items-center gap-3">
+            <button type="button" id="sendBulkSmsBtn" onclick="sendBulkOutageSMS()"
+              class="px-5 py-2.5 rounded-lg bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold cursor-pointer">
+              🚨 Send Bulk SMS Now
+            </button>
+            <span class="text-[11px] text-slate-500">Tip: Use {name} in message if your gateway supports per-recipient text, otherwise static approved DLT template text is sent.</span>
+          </div>
+        </div>
+
+        <!-- SMS Dispatch Log -->
+        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+          <h3 class="font-bold text-sm text-slate-800 mb-3">3. Recent Bulk SMS Dispatch Log</h3>
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b bg-slate-50 text-slate-600">
+                  <th class="py-2.5 px-3">Time</th>
+                  <th class="py-2.5 px-3">Target</th>
+                  <th class="py-2.5 px-3">Sent / Failed</th>
+                  <th class="py-2.5 px-3">Message</th>
+                </tr>
+              </thead>
+              <tbody id="smsLogsBody" class="divide-y"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // =========================================================================
+    // CONFIGURATION (Aap yahan ya Login screen ke config box mein apni keys daalein)
+    // =========================================================================
+    const DEFAULT_SUPABASE_URL = "https://YOUR_PROJECT_ID.supabase.co";
+    const DEFAULT_SUPABASE_ANON_KEY = "YOUR_SUPABASE_ANON_PUBLIC_KEY";
+
+    let supabaseClient = null;
+    let state = {
+      towers: [],
+      customers: [],
+      devices: [],
+      complaints: [],
+      transactions: [],
+      smsLogs: []
+    };
+
+    function getSupabaseCredentials() {
+      const savedUrl = localStorage.getItem("isp_supa_url");
+      const savedKey = localStorage.getItem("isp_supa_key");
+      return {
+        url: (savedUrl && !savedUrl.includes("YOUR_PROJECT_ID")) ? savedUrl : DEFAULT_SUPABASE_URL,
+        key: (savedKey && !savedKey.includes("YOUR_SUPABASE_ANON_PUBLIC_KEY")) ? savedKey : DEFAULT_SUPABASE_ANON_KEY
+      };
+    }
+
+    function saveSupabaseConfig() {
+      const url = document.getElementById("cfgSupaUrl").value.trim();
+      const key = document.getElementById("cfgSupaKey").value.trim();
+      if (!url || !key) return showToast("Please enter both Supabase URL and Anon Key");
+      localStorage.setItem("isp_supa_url", url);
+      localStorage.setItem("isp_supa_key", key);
+      initSupabase();
+      showToast("Supabase config saved!");
+    }
+
+    function initSupabase() {
+      const { url, key } = getSupabaseCredentials();
+      document.getElementById("cfgSupaUrl").value = url.includes("YOUR_PROJECT_ID") ? "" : url;
+      document.getElementById("cfgSupaKey").value = key.includes("YOUR_SUPABASE_ANON_PUBLIC_KEY") ? "" : key;
+
+      if (!url || url.includes("YOUR_PROJECT_ID") || !key || key.includes("YOUR_SUPABASE_ANON_PUBLIC_KEY")) {
+        showLoginError("Setup Supabase URL & Anon Key first using 'Supabase Config' below.");
+        return;
+      }
+      supabaseClient = window.supabase.createClient(url, key);
+    }
+
+    // =========================================================================
+    // AUTH & NAVIGATION
+    // =========================================================================
+    async function checkSession() {
+      initSupabase();
+      if (!supabaseClient) return;
+      const { data: { session } } = await supabaseClient.auth.getSession();
+      if (session) {
+        onLoggedIn(session.user);
+      }
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!supabaseClient) initSupabase();
+      if (!supabaseClient) return;
+
+      const email = document.getElementById("loginEmail").value.trim();
+      const password = document.getElementById("loginPassword").value;
+      const btn = document.getElementById("loginBtn");
+      btn.disabled = true;
+      btn.textContent = "Signing in...";
+      hideLoginError();
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      btn.disabled = false;
+      btn.textContent = "Sign In as Admin";
+
+      if (error) {
+        showLoginError(error.message);
+      } else {
+        onLoggedIn(data.user);
+      }
+    });
+
+    function onLoggedIn(user) {
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("appShell").classList.remove("hidden");
+      document.getElementById("adminEmailBadge").textContent = user.email;
+      loadSmsConfigToUI();
+      renderSmsLogs();
+      refreshAllData();
+    }
+
+    async function logoutAdmin() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      location.reload();
+    }
+
+    function showLoginError(msg) {
+      const el = document.getElementById("loginError");
+      el.textContent = msg;
+      el.classList.remove("hidden");
+    }
+
+    function hideLoginError() {
+      document.getElementById("loginError").classList.add("hidden");
+    }
+
+    function switchTab(tabName) {
+      document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
+      document.getElementById("tab-" + tabName).classList.remove("hidden");
+
+      document.querySelectorAll(".nav-btn").forEach(b => {
+        if (b.dataset.tab === tabName) {
+          b.classList.add("bg-indigo-600", "text-white", "font-medium");
+        } else {
+          b.classList.remove("bg-indigo-600", "text-white", "font-medium");
+        }
+      });
+
+      if (window.innerWidth < 1024) {
+        document.getElementById("sidebar").classList.add("-translate-x-full");
+      }
+    }
+
+    function toggleSidebar() {
+      document.getElementById("sidebar").classList.toggle("-translate-x-full");
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.classList.remove("hidden");
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3000);
+    }
+
+    // =========================================================================
+    // DATA FETCHING & RENDERING
+    // =========================================================================
+    async function refreshAllData() {
+      if (!supabaseClient) return;
+      const [tRes, cRes, dRes, compRes, txRes] = await Promise.all([
+        supabaseClient.from("towers").select("*").order("created_at", { ascending: false }),
+        supabaseClient.from("customers").select("*").order("expiry_date", { ascending: true }),
+        supabaseClient.from("devices").select("*").order("created_at", { ascending: false }),
+        supabaseClient.from("complaints").select("*").order("opened_date", { ascending: false }),
+        supabaseClient.from("transactions").select("*").order("date", { ascending: false })
+      ]);
+
+      state.towers = tRes.data || [];
+      state.customers = cRes.data || [];
+      state.devices = dRes.data || [];
+      state.complaints = compRes.data || [];
+      state.transactions = txRes.data || [];
+
+      populateDropdowns();
+      renderDashboard();
+      renderTowers();
+      renderCustomers();
+      renderDevices();
+      renderComplaints();
+      renderAccounts();
+      updateSmsRecipientCount();
+    }
+
+    function populateDropdowns() {
+      const towerOptions = state.towers.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join("");
+      document.getElementById("custTower").innerHTML = `<option value="">Select Tower (Optional)</option>` + towerOptions;
+      document.getElementById("devTower").innerHTML = `<option value="">Tower (If on Tower)</option>` + towerOptions;
+      document.getElementById("compTower").innerHTML = `<option value="">Select Tower (Optional)</option>` + towerOptions;
+      document.getElementById("smsTargetTower").innerHTML = `<option value="ALL">All Customers</option>` + towerOptions;
+
+      const custOptions = state.customers.map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.phone)})</option>`).join("");
+      document.getElementById("devCustomer").innerHTML = `<option value="">Customer (If at Customer)</option>` + custOptions;
+    }
+
+    function getTowerName(id) {
+      const found = state.towers.find(t => t.id === id);
+      return found ? found.name : "—";
+    }
+
+    function daysUntil(dateStr) {
+      if (!dateStr) return 9999;
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const target = new Date(dateStr + "T00:00:00");
+      return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+    }
+
+    function renderDashboard() {
+      const expired = state.customers.filter(c => daysUntil(c.expiry_date) < 0).length;
+      const active = state.customers.length - expired;
+      const expiringSoonList = state.customers.filter(c => {
+        const d = daysUntil(c.expiry_date);
+        return d <= 3;
+      });
+      const totalDues = state.customers.reduce((sum, c) => sum + Number(c.due_amount || 0), 0);
+
+      const totalIncome = state.transactions.filter(x => x.type === "Income").reduce((s, x) => s + Number(x.amount || 0), 0);
+      const totalExpense = state.transactions.filter(x => x.type === "Expense").reduce((s, x) => s + Number(x.amount || 0), 0);
+      const net = totalIncome - totalExpense;
+
+      document.getElementById("kpiActiveCustomers").textContent = active;
+      document.getElementById("kpiExpiredCustomers").textContent = `${expired} Expired`;
+      document.getElementById("kpiExpiringSoon").textContent = expiringSoonList.length;
+      document.getElementById("kpiTotalDues").textContent = `Pending Dues: ₹${totalDues.toLocaleString()}`;
+      document.getElementById("kpiTowers").textContent = `${state.towers.length} Towers`;
+      document.getElementById("kpiDevices").textContent = `${state.devices.length} Devices Logged`;
+
+      const netEl = document.getElementById("kpiNetProfit");
+      netEl.textContent = `${net < 0 ? "-" : ""}₹${Math.abs(net).toLocaleString()}`;
+      netEl.className = `text-2xl font-bold mt-1 ${net >= 0 ? "text-emerald-600" : "text-rose-600"}`;
+      document.getElementById("kpiIncExp").textContent = `In: ₹${totalIncome.toLocaleString()} | Out: ₹${totalExpense.toLocaleString()}`;
+
+      const tbody = document.getElementById("dashExpiringBody");
+      if (!expiringSoonList.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400">No customers expiring soon or expired.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = expiringSoonList.slice(0, 10).map(c => {
+        const d = daysUntil(c.expiry_date);
+        const badge = d < 0
+          ? `<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-700 font-semibold">Expired (${Math.abs(d)}d ago)</span>`
+          : `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-semibold">${d === 0 ? "Today" : d + "d left"}</span>`;
+
+        return `
+          <tr>
+            <td class="py-2.5 px-3 font-medium">${esc(c.name)}</td>
+            <td class="py-2.5 px-3">${esc(c.phone)}</td>
+            <td class="py-2.5 px-3">${esc(c.plan_name || "Plan")} — ₹${Number(c.plan_price || 0)} ${Number(c.due_amount) > 0 ? `<span class="text-rose-600 font-semibold">(Due ₹${c.due_amount})</span>` : ""}</td>
+            <td class="py-2.5 px-3">${esc(c.expiry_date || "—")} ${badge}</td>
+            <td class="py-2.5 px-3 flex gap-1.5">
+              <button onclick='sendWhatsAppReminder(${JSON.stringify(c)})' class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
+              <button onclick="renewCustomer('${c.id}')" class="px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium cursor-pointer">+30d Renew</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    // =========================================================================
+    // TOWERS CRUD
+    // =========================================================================
+    document.getElementById("towerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        name: document.getElementById("towerName").value.trim(),
+        location: document.getElementById("towerLocation").value.trim(),
+        gps_coords: document.getElementById("towerGps").value.trim(),
+        owner_or_rent_info: document.getElementById("towerOwner").value.trim(),
+        monthly_rent: Number(document.getElementById("towerRent").value || 0)
+      };
+      const { error } = await supabaseClient.from("towers").insert([payload]);
+      if (error) return showToast(error.message);
+      e.target.reset();
+      showToast("Tower added!");
+      refreshAllData();
+    });
+
+    function renderTowers() {
+      const tbody = document.getElementById("towersTableBody");
+      if (!state.towers.length) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-400">No towers added yet.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = state.towers.map(t => {
+        const devCount = state.devices.filter(d => d.tower_id === t.id).length;
+        const custCount = state.customers.filter(c => c.tower_id === t.id).length;
+        return `
+          <tr>
+            <td class="py-2.5 px-3 font-semibold">${esc(t.name)}</td>
+            <td class="py-2.5 px-3">${esc(t.location || "—")} ${t.gps_coords ? `<div class="text-[11px] text-slate-400">${esc(t.gps_coords)}</div>` : ""}</td>
+            <td class="py-2.5 px-3">${esc(t.owner_or_rent_info || "—")}</td>
+            <td class="py-2.5 px-3">₹${Number(t.monthly_rent || 0).toLocaleString()}</td>
+            <td class="py-2.5 px-3">${devCount} Devices / ${custCount} Users</td>
+            <td class="py-2.5 px-3"><button onclick="deleteRow('towers', '${t.id}')" class="text-rose-600 hover:underline cursor-pointer">Delete</button></td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    // =========================================================================
+    // CUSTOMERS CRUD, RENEW & WHATSAPP REMINDER
+    // =========================================================================
+    document.getElementById("customerForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const price = Number(document.getElementById("custPrice").value || 0);
+      const paid = Number(document.getElementById("custPaid").value || 0);
+      const due = Math.max(0, price - paid);
+      const towerVal = document.getElementById("custTower").value || null;
+
+      const payload = {
+        name: document.getElementById("custName").value.trim(),
+        phone: document.getElementById("custPhone").value.trim(),
+        address: document.getElementById("custAddress").value.trim(),
+        tower_id: towerVal,
+        plan_name: document.getElementById("custPlan").value.trim(),
+        plan_price: price,
+        amount_paid: paid,
+        due_amount: due,
+        start_date: document.getElementById("custStart").value || new Date().toISOString().slice(0, 10),
+        expiry_date: document.getElementById("custExpiry").value
+      };
+
+      const { error } = await supabaseClient.from("customers").insert([payload]);
+      if (error) return showToast(error.message);
+
+      if (paid > 0) {
+        await supabaseClient.from("transactions").insert([{
+          type: "Income",
+          category: "Customer Recharge",
+          tower_id: towerVal,
+          amount: paid,
+          note: `Recharge from ${payload.name} (${payload.phone})`,
+          date: payload.start_date
+        }]);
+      }
+
+      e.target.reset();
+      showToast("Customer added!");
+      refreshAllData();
+    });
+
+    function renderCustomers() {
+      const q = (document.getElementById("customerSearch").value || "").toLowerCase();
+      const filter = document.getElementById("customerFilter").value;
+
+      const list = state.customers.filter(c => {
+        const d = daysUntil(c.expiry_date);
+        if (filter === "EXPIRING" && !(d >= 0 && d <= 3)) return false;
+        if (filter === "EXPIRED" && !(d < 0)) return false;
+        if (filter === "DUE" && !(Number(c.due_amount) > 0)) return false;
+        if (!q) return true;
+        return (c.name || "").toLowerCase().includes(q)
+          || (c.phone || "").toLowerCase().includes(q)
+          || (c.address || "").toLowerCase().includes(q);
+      });
+
+      const tbody = document.getElementById("customersTableBody");
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400">No matching customers.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(c => {
+        const d = daysUntil(c.expiry_date);
+        let statusBadge = `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold">Active (${d}d)</span>`;
+        if (d < 0) statusBadge = `<span class="px-2 py-0.5 rounded bg-rose-100 text-rose-700 font-semibold">Expired</span>`;
+        else if (d <= 3) statusBadge = `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-semibold">Expiring (${d}d)</span>`;
+
+        return `
+          <tr>
+            <td class="py-2.5 px-3">
+              <div class="font-semibold">${esc(c.name)}</div>
+              <div class="text-[11px] text-slate-500">${esc(c.address || "—")} • Tower: ${esc(getTowerName(c.tower_id))}</div>
+            </td>
+            <td class="py-2.5 px-3">${esc(c.phone)}</td>
+            <td class="py-2.5 px-3">
+              <div>${esc(c.plan_name || "Standard")} — <b>₹${Number(c.plan_price || 0)}</b></div>
+              ${Number(c.due_amount) > 0 ? `<div class="text-[11px] text-rose-600 font-semibold">Due: ₹${Number(c.due_amount)}</div>` : `<div class="text-[11px] text-emerald-600">Paid</div>`}
+            </td>
+            <td class="py-2.5 px-3">
+              <div>${esc(c.expiry_date || "—")}</div>
+              <div class="mt-0.5">${statusBadge}</div>
+            </td>
+            <td class="py-2.5 px-3 space-y-1">
+              <div class="flex gap-1.5">
+                <button onclick='sendWhatsAppReminder(${JSON.stringify(c)})' class="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
+                <button onclick="renewCustomer('${c.id}')" class="px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white font-medium cursor-pointer">Renew +30d</button>
+              </div>
+              <div>
+                <button onclick="deleteRow('customers', '${c.id}')" class="text-[11px] text-rose-600 hover:underline cursor-pointer">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function renewCustomer(id) {
+      const cust = state.customers.find(c => c.id === id);
+      if (!cust) return;
+      const baseDate = daysUntil(cust.expiry_date) >= 0 ? new Date(cust.expiry_date + "T00:00:00") : new Date();
+      baseDate.setDate(baseDate.getDate() + 30);
+      const newExpiry = baseDate.toISOString().slice(0, 10);
+      const todayStr = new Date().toISOString().slice(0, 10);
+
+      const { error } = await supabaseClient.from("customers").update({
+        start_date: todayStr,
+        expiry_date: newExpiry,
+        due_amount: 0
+      }).eq("id", id);
+
+      if (error) return showToast(error.message);
+
+      if (Number(cust.plan_price) > 0) {
+        await supabaseClient.from("transactions").insert([{
+          type: "Income",
+          category: "Plan Renewal",
+          tower_id: cust.tower_id || null,
+          amount: Number(cust.plan_price),
+          note: `30-day renewal: ${cust.name}`,
+          date: todayStr
+        }]);
+      }
+
+      showToast(`Renewed till ${newExpiry}`);
+      refreshAllData();
+    }
+
+    function sendWhatsAppReminder(cust) {
+      let phone = (cust.phone || "").replace(/\D/g, "");
+      if (phone.length === 10) phone = "91" + phone;
+      const dueText = Number(cust.due_amount) > 0 ? ` (Pending Due: Rs.${cust.due_amount})` : "";
+      const msg = `Namaste ${cust.name}, aapka internet plan (${cust.plan_name || "Wi-Fi"}) ${cust.expiry_date} ko expire ho raha hai / hai. Plan Amount: Rs.${cust.plan_price || 0}${dueText}. Kripya samay par recharge karwayein.`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+    }
+
+    // =========================================================================
+    // DEVICES CRUD (SERIAL, INSTALL DATE, LOGIN ID/PASS, SSID/WIFI PASS)
+    // =========================================================================
+    document.getElementById("deviceForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        device_type: document.getElementById("devType").value,
+        model: document.getElementById("devModel").value.trim(),
+        serial_number: document.getElementById("devSerial").value.trim(),
+        mac_address: document.getElementById("devMac").value.trim(),
+        ip_address: document.getElementById("devIp").value.trim(),
+        admin_username: document.getElementById("devUser").value.trim(),
+        admin_password: document.getElementById("devPass").value.trim(),
+        ssid: document.getElementById("devSsid").value.trim(),
+        wifi_password: document.getElementById("devWifiPass").value.trim(),
+        tower_id: document.getElementById("devTower").value || null,
+        customer_id: document.getElementById("devCustomer").value || null,
+        install_date: document.getElementById("devInstallDate").value || new Date().toISOString().slice(0, 10),
+        notes: document.getElementById("devNotes").value.trim()
+      };
+
+      const { error } = await supabaseClient.from("devices").insert([payload]);
+      if (error) return showToast(error.message);
+      e.target.reset();
+      showToast("Device saved!");
+      refreshAllData();
+    });
+
+    function renderDevices() {
+      const q = (document.getElementById("deviceSearch").value || "").toLowerCase();
+      const list = state.devices.filter(d => {
+        if (!q) return true;
+        return (d.serial_number || "").toLowerCase().includes(q)
+          || (d.model || "").toLowerCase().includes(q)
+          || (d.ssid || "").toLowerCase().includes(q)
+          || (d.mac_address || "").toLowerCase().includes(q)
+          || getTowerName(d.tower_id).toLowerCase().includes(q);
+      });
+
+      const tbody = document.getElementById("devicesTableBody");
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400">No devices logged yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map((d, idx) => {
+        const cust = state.customers.find(c => c.id === d.customer_id);
+        const placedAt = d.tower_id ? `Tower: ${getTowerName(d.tower_id)}` : (cust ? `Customer: ${cust.name}` : "In Stock / Unassigned");
+
+        return `
+          <tr>
+            <td class="py-2.5 px-3">
+              <div class="font-semibold">${esc(d.device_type)} — ${esc(d.model)}</div>
+              <div class="text-[11px] font-mono text-slate-600">SN: ${esc(d.serial_number)} ${d.mac_address ? `| MAC: ${esc(d.mac_address)}` : ""}</div>
+              ${d.ip_address ? `<div class="text-[11px] text-indigo-600">IP: ${esc(d.ip_address)}</div>` : ""}
+            </td>
+            <td class="py-2.5 px-3">
+              <div class="font-medium">${esc(placedAt)}</div>
+              <div class="text-[11px] text-slate-500">Installed: ${esc(d.install_date || "—")}</div>
+              ${d.notes ? `<div class="text-[11px] text-slate-400">${esc(d.notes)}</div>` : ""}
+            </td>
+            <td class="py-2.5 px-3">
+              <div>User: <span class="font-mono">${esc(d.admin_username || "—")}</span></div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span>Pass:</span>
+                <span id="devpass-${idx}" data-secret="${esc(d.admin_password || "")}" class="font-mono">${d.admin_password ? "••••••" : "—"}</span>
+                ${d.admin_password ? `<button onclick="toggleSecret('devpass-${idx}')" class="text-[11px] text-indigo-600 hover:underline cursor-pointer">Show</button><button onclick="copyText('${esc(d.admin_password)}')" class="text-[11px] text-slate-500 hover:underline cursor-pointer">Copy</button>` : ""}
+              </div>
+            </td>
+            <td class="py-2.5 px-3">
+              <div>SSID: <span class="font-semibold">${esc(d.ssid || "—")}</span></div>
+              <div class="flex items-center gap-1.5 mt-0.5">
+                <span>PSK:</span>
+                <span id="wifipass-${idx}" data-secret="${esc(d.wifi_password || "")}" class="font-mono">${d.wifi_password ? "••••••" : "—"}</span>
+                ${d.wifi_password ? `<button onclick="toggleSecret('wifipass-${idx}')" class="text-[11px] text-indigo-600 hover:underline cursor-pointer">Show</button><button onclick="copyText('${esc(d.wifi_password)}')" class="text-[11px] text-slate-500 hover:underline cursor-pointer">Copy</button>` : ""}
+              </div>
+            </td>
+            <td class="py-2.5 px-3">
+              <button onclick="deleteRow('devices', '${d.id}')" class="text-rose-600 hover:underline cursor-pointer">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    function toggleSecret(id) {
+      const el = document.getElementById(id);
+      const secret = el.dataset.secret;
+      el.textContent = el.textContent === "••••••" ? secret : "••••••";
+    }
+
+    function copyText(txt) {
+      navigator.clipboard.writeText(txt);
+      showToast("Copied to clipboard!");
+    }
+
+    // =========================================================================
+    // COMPLAINTS CRUD
+    // =========================================================================
+    document.getElementById("complaintForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        title: document.getElementById("compTitle").value.trim(),
+        tower_id: document.getElementById("compTower").value || null,
+        issue_details: document.getElementById("compDetails").value.trim(),
+        status: "Open",
+        opened_date: new Date().toISOString().slice(0, 10)
+      };
+      const { error } = await supabaseClient.from("complaints").insert([payload]);
+      if (error) return showToast(error.message);
+      e.target.reset();
+      showToast("Complaint logged!");
+      refreshAllData();
+    });
+
+    function renderComplaints() {
+      const tbody = document.getElementById("complaintsTableBody");
+      if (!state.complaints.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400">No complaints logged.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = state.complaints.map(c => {
+        const isOpen = c.status === "Open";
+        return `
+          <tr>
+            <td class="py-2.5 px-3 font-semibold">${esc(c.title)}</td>
+            <td class="py-2.5 px-3">Tower: ${esc(getTowerName(c.tower_id))} ${c.issue_details ? `— ${esc(c.issue_details)}` : ""}</td>
+            <td class="py-2.5 px-3">${esc(c.opened_date || "—")}</td>
+            <td class="py-2.5 px-3">
+              <span class="px-2 py-0.5 rounded font-semibold ${isOpen ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}">${esc(c.status)}</span>
+            </td>
+            <td class="py-2.5 px-3 flex gap-2">
+              ${isOpen ? `<button onclick="resolveComplaint('${c.id}')" class="px-2 py-1 rounded bg-emerald-600 text-white cursor-pointer">Mark Resolved</button>` : ""}
+              <button onclick="deleteRow('complaints', '${c.id}')" class="text-rose-600 hover:underline cursor-pointer">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
+    async function resolveComplaint(id) {
+      const { error } = await supabaseClient.from("complaints").update({
+        status: "Resolved",
+        resolved_date: new Date().toISOString().slice(0, 10)
+      }).eq("id", id);
+      if (error) return showToast(error.message);
+      showToast("Complaint marked resolved!");
+      refreshAllData();
+    }
+
+    // =========================================================================
+    // INCOME, EXPENSE & PROFIT / LOSS
+    // =========================================================================
+    document.getElementById("txDate").value = new Date().toISOString().slice(0, 10);
+
+    document.getElementById("txForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const payload = {
+        type: document.getElementById("txType").value,
+        category: document.getElementById("txCategory").value.trim(),
+        amount: Number(document.getElementById("txAmount").value || 0),
+        date: document.getElementById("txDate").value,
+        note: document.getElementById("txNote").value.trim()
+      };
+      const { error } = await supabaseClient.from("transactions").insert([payload]);
+      if (error) return showToast(error.message);
+      e.target.reset();
+      document.getElementById("txDate").value = new Date().toISOString().slice(0, 10);
+      showToast("Entry added!");
+      refreshAllData();
+    });
+
+    function renderAccounts() {
+      const from = document.getElementById("pnlFrom").value;
+      const to = document.getElementById("pnlTo").value;
+
+      const filtered = state.transactions.filter(tx => {
+        if (from && tx.date < from) return false;
+        if (to && tx.date > to) return false;
+        return true;
+      });
+
+      const inc = filtered.filter(x => x.type === "Income").reduce((s, x) => s + Number(x.amount || 0), 0);
+      const exp = filtered.filter(x => x.type === "Expense").reduce((s, x) => s + Number(x.amount || 0), 0);
+      const net = inc - exp;
+
+      document.getElementById("pnlIncome").textContent = `₹${inc.toLocaleString()}`;
+      document.getElementById("pnlExpense").textContent = `₹${exp.toLocaleString()}`;
+      const pnlEl = document.getElementById("pnlNet");
+      pnlEl.textContent = `${net < 0 ? "-" : ""}₹${Math.abs(net).toLocaleString()}`;
+      pnlEl.className = `text-2xl font-bold mt-1 ${net >= 0 ? "text-emerald-600" : "text-rose-600"}`;
+
+      const tbody = document.getElementById("txTableBody");
+      if (!filtered.length) {
+        tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-slate-400">No transactions found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.map(tx => `
+        <tr>
+          <td class="py-2.5 px-3">${esc(tx.date)}</td>
+          <td class="py-2.5 px-3">
+            <span class="px-2 py-0.5 rounded font-semibold ${tx.type === "Income" ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}">${esc(tx.type)}</span>
+          </td>
+          <td class="py-2.5 px-3 font-medium">${esc(tx.category || "—")}</td>
+          <td class="py-2.5 px-3">${esc(tx.note || "—")}</td>
+          <td class="py-2.5 px-3 font-bold ${tx.type === "Income" ? "text-emerald-700" : "text-rose-700"}">₹${Number(tx.amount || 0).toLocaleString()}</td>
+          <td class="py-2.5 px-3"><button onclick="deleteRow('transactions', '${tx.id}')" class="text-rose-600 hover:underline cursor-pointer">Delete</button></td>
+        </tr>
+      `).join("");
+    }
+
+    // =========================================================================
+    // BULK SMS GATEWAY (SERVER DOWN / OUTAGE BROADCAST)
+    // =========================================================================
+    function saveSmsConfig() {
+      const cfg = {
+        endpoint: document.getElementById("smsEndpoint").value.trim(),
+        apiKey: document.getElementById("smsApiKey").value.trim(),
+        senderId: document.getElementById("smsSenderId").value.trim(),
+        templateId: document.getElementById("smsTemplateId").value.trim(),
+        method: document.getElementById("smsMethod").value,
+        queryKeys: document.getElementById("smsQueryKeys").value.trim()
+      };
+      localStorage.setItem("isp_sms_cfg", JSON.stringify(cfg));
+      showToast("SMS Gateway settings saved!");
+    }
+
+    function loadSmsConfigToUI() {
+      const raw = localStorage.getItem("isp_sms_cfg");
+      if (!raw) return;
+      try {
+        const cfg = JSON.parse(raw);
+        document.getElementById("smsEndpoint").value = cfg.endpoint || "";
+        document.getElementById("smsApiKey").value = cfg.apiKey || "";
+        document.getElementById("smsSenderId").value = cfg.senderId || "";
+        document.getElementById("smsTemplateId").value = cfg.templateId || "";
+        document.getElementById("smsMethod").value = cfg.method || "GET";
+        document.getElementById("smsQueryKeys").value = cfg.queryKeys || "";
+      } catch (_) {}
+    }
+
+    function getTargetCustomers() {
+      const target = document.getElementById("smsTargetTower").value;
+      return state.customers.filter(c => {
+        if (!c.phone) return false;
+        if (target === "ALL") return true;
+        return c.tower_id === target;
+      });
+    }
+
+    function updateSmsRecipientCount() {
+      const list = getTargetCustomers();
+      document.getElementById("smsRecipientCount").textContent = `Recipients: ${list.length} customers with phone numbers`;
+    }
+
+    function parseKeysMap(str) {
+      const map = { mobileKey: "mobiles", msgKey: "message", keyParam: "api_key" };
+      if (!str) return map;
+      str.split(",").forEach(part => {
+        const [k, v] = part.split("=").map(s => s && s.trim());
+        if (k && v) map[k] = v;
+      });
+      return map;
+    }
+
+    async function sendBulkOutageSMS() {
+      const cfg = JSON.parse(localStorage.getItem("isp_sms_cfg") || "{}");
+      const msgTemplate = document.getElementById("smsMessageBody").value.trim();
+      const recipients = getTargetCustomers();
+
+      if (!cfg.endpoint) return showToast("Please configure SMS Gateway API URL first!");
+      if (!msgTemplate) return showToast("Please enter the outage SMS message!");
+      if (!recipients.length) return showToast("No recipients found for selected target!");
+
+      const btn = document.getElementById("sendBulkSmsBtn");
+      btn.disabled = true;
+      btn.textContent = `Sending to ${recipients.length}...`;
+
+      const keys = parseKeysMap(cfg.queryKeys);
+      const phones = recipients.map(c => c.phone.replace(/\D/g, "")).filter(Boolean);
+
+      let sentCount = 0;
+      let failedCount = 0;
+
+      try {
+        if (cfg.method === "GET") {
+          const urlObj = new URL(cfg.endpoint);
+          if (cfg.apiKey) urlObj.searchParams.set(keys.keyParam, cfg.apiKey);
+          if (cfg.senderId) urlObj.searchParams.set("sender", cfg.senderId);
+          if (cfg.templateId) urlObj.searchParams.set("template_id", cfg.templateId);
+          urlObj.searchParams.set(keys.mobileKey, phones.join(","));
+          urlObj.searchParams.set(keys.msgKey, msgTemplate);
+
+          const res = await fetch(urlObj.toString(), { method: "GET" });
+          if (res.ok) sentCount = phones.length;
+          else failedCount = phones.length;
+        } else {
+          const bodyObj = {};
+          if (cfg.apiKey) bodyObj[keys.keyParam] = cfg.apiKey;
+          if (cfg.senderId) bodyObj.sender = cfg.senderId;
+          if (cfg.templateId) bodyObj.template_id = cfg.templateId;
+          bodyObj[keys.mobileKey] = phones.join(",");
+          bodyObj[keys.msgKey] = msgTemplate;
+
+          const isJson = cfg.method === "POST_JSON";
+          const res = await fetch(cfg.endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": isJson ? "application/json" : "application/x-www-form-urlencoded"
+            },
+            body: isJson ? JSON.stringify(bodyObj) : new URLSearchParams(bodyObj).toString()
+          });
+          if (res.ok) sentCount = phones.length;
+          else failedCount = phones.length;
+        }
+      } catch (err) {
+        failedCount = phones.length;
+        showToast("Request failed (Check API URL or CORS). Logged below.");
+      }
+
+      const logs = JSON.parse(localStorage.getItem("isp_sms_logs") || "[]");
+      logs.unshift({
+        time: new Date().toLocaleString(),
+        target: document.getElementById("smsTargetTower").selectedOptions[0].text,
+        summary: `Sent: ${sentCount} | Failed: ${failedCount}`,
+        message: msgTemplate
+      });
+      localStorage.setItem("isp_sms_logs", JSON.stringify(logs.slice(0, 30)));
+      renderSmsLogs();
+
+      btn.disabled = false;
+      btn.textContent = "🚨 Send Bulk SMS Now";
+      showToast(`SMS Batch Finished: ${sentCount} sent, ${failedCount} failed`);
+    }
+
+    function renderSmsLogs() {
+      const logs = JSON.parse(localStorage.getItem("isp_sms_logs") || "[]");
+      const tbody = document.getElementById("smsLogsBody");
+      if (!logs.length) {
+        tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-400">No SMS broadcasts yet.</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = logs.map(l => `
+        <tr>
+          <td class="py-2.5 px-3">${esc(l.time)}</td>
+          <td class="py-2.5 px-3 font-medium">${esc(l.target)}</td>
+          <td class="py-2.5 px-3">${esc(l.summary)}</td>
+          <td class="py-2.5 px-3">${esc(l.message)}</td>
+        </tr>
+      `).join("");
+    }
+
+    // =========================================================================
+    // COMMON HELPERS (DELETE & CSV EXPORT)
+    // =========================================================================
+    async function deleteRow(table, id) {
+      if (!confirm("Are you sure you want to delete this record?")) return;
+      const { error } = await supabaseClient.from(table).delete().eq("id", id);
+      if (error) return showToast(error.message);
+      showToast("Deleted!");
+      refreshAllData();
+    }
+
+    function exportAllCSV() {
+      const rows = [
+        ["Section", "Field1", "Field2", "Field3", "Field4"],
+        ...state.customers.map(c => ["Customer", c.name, c.phone, c.plan_name, c.expiry_date]),
+        ...state.devices.map(d => ["Device", d.device_type, d.model, d.serial_number, d.ssid]),
+        ...state.transactions.map(t => ["Transaction", t.type, t.category, t.amount, t.date])
+      ];
+      const csv = rows.map(r => r.map(v => `"${String(v ?? "").replace(/"/g, '""')}"`).join(",")).join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = `isp-backup-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+    }
+
+    function esc(str) {
+      return String(str ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    checkSession();
+  </script>
+</body>
+</html>

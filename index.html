@@ -274,12 +274,12 @@
       <section id="tab-customers" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <h2 class="text-xl font-extrabold text-slate-900">Customers, Profit & GST Billing</h2>
+            <h2 class="text-xl font-extrabold text-slate-900">Customers, KYC & GST Billing</h2>
             <p class="text-xs text-slate-500 mt-0.5">Paid goes to Income, Recharge Amount goes to Expense automatically, and remaining is Profit</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <input id="customerSearch" oninput="renderCustomers()" type="text" placeholder="Search name, PPPoE, phone, tower..."
-              class="px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs w-60" />
+            <input id="customerSearch" oninput="renderCustomers()" type="text" placeholder="Search name, PPPoE, phone, Aadhaar, tower..."
+              class="px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs w-64" />
             <select id="customerFilter" onchange="renderCustomers()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs">
               <option value="ALL">All Customers</option>
               <option value="EXPIRING">Expiring (≤ 3 days)</option>
@@ -296,22 +296,41 @@
               <input id="custName" type="text" required placeholder="Customer Name" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-600 mb-1">PPPoE Username / ID</label>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">PPPoE ID</label>
               <input id="custPppoe" type="text" placeholder="e.g. shan_user01" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Phone *</label>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Mobile Number *</label>
               <input id="custPhone" type="text" required placeholder="9876543210" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Village / Address</label>
-              <input id="custAddress" type="text" placeholder="Village / Area" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Aadhaar Number (Optional)</label>
+              <input id="custAadhaar" type="text" maxlength="14" placeholder="12-digit Aadhaar (Optional)" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Connected Tower</label>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Tower</label>
               <select id="custTower" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white">
                 <option value="">Select Tower (Optional)</option>
               </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Address / Village</label>
+              <input id="custAddress" type="text" placeholder="Village / Street / Area" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">District (Optional)</label>
+              <input id="custDistrict" type="text" placeholder="e.g. Maharajganj" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">PIN No. (Optional)</label>
+              <input id="custPin" type="text" maxlength="6" placeholder="e.g. 273301" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Registration Date (Optional)</label>
+              <input id="custRegDate" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
           </div>
 
@@ -377,7 +396,7 @@
             <thead>
               <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
                 <th class="py-3 px-3">Customer, PPPoE & Tower</th>
-                <th class="py-3 px-3">Phone</th>
+                <th class="py-3 px-3">Phone, Aadhaar & Reg. Date</th>
                 <th class="py-3 px-3">Paid, Recharge & Profit</th>
                 <th class="py-3 px-3">GST Breakdown</th>
                 <th class="py-3 px-3">Expiry / Status</th>
@@ -598,7 +617,7 @@
           <div>
             <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full mb-1">Tax Billing & Branding</span>
             <h2 class="text-xl font-extrabold text-slate-900">GST Tax Invoice, PDF Print & Company Settings</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Configure your logo, address, GSTIN & invoice rules, and generate printable/PDF GST receipts</p>
+            <p class="text-xs text-slate-500 mt-0.5">Configure logo, UPI QR code, signature, stamp & GSTIN, and generate printable/PDF GST receipts</p>
           </div>
           <div class="flex gap-2">
             <button type="button" onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold cursor-pointer">
@@ -610,7 +629,7 @@
         <!-- Company & Invoice Settings Card -->
         <details id="companySettingsDetails" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm no-print">
           <summary class="px-5 py-4 cursor-pointer font-bold text-sm text-slate-900 flex items-center justify-between">
-            <span>🏢 Company Profile, Logo & Invoice Settings</span>
+            <span>🏢 Company Profile, Logo, UPI QR, Signature & Stamp Settings</span>
             <span class="text-[11px] font-medium text-slate-500">Click to open / close</span>
           </summary>
 
@@ -626,15 +645,18 @@
               </div>
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">GSTIN (15-digit)</label>
-                <input id="setGstin" type="text" placeholder="09AAAAA0000A1Z5" class="w-full px-3 py-2 border border-slate-300 rounded-xl uppercase" />
+                <input id="setGstin" type="text" placeholder="09ENXPS9608J1ZQ" class="w-full px-3 py-2 border border-slate-300 rounded-xl uppercase" />
               </div>
               <div>
-                <label class="block font-semibold text-slate-700 mb-1">SAC / HSN Code</label>
-                <input id="setSacCode" type="text" value="998422" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+                <label class="block font-semibold text-slate-700 mb-1">Invoice Prefix & Next #</label>
+                <div class="flex gap-2">
+                  <input id="setInvPrefix" type="text" value="SWF-" class="w-24 px-2.5 py-2 border border-slate-300 rounded-xl" />
+                  <input id="setInvNextNo" type="number" value="1001" class="flex-1 px-2.5 py-2 border border-slate-300 rounded-xl" />
+                </div>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">Contact Phone</label>
                 <input id="setPhone" type="text" placeholder="6391224488" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
@@ -647,16 +669,9 @@
                 <label class="block font-semibold text-slate-700 mb-1">State & State Code</label>
                 <input id="setState" type="text" value="Uttar Pradesh (Code: 09)" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
               </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Invoice Prefix & Next #</label>
-                <div class="flex gap-2">
-                  <input id="setInvPrefix" type="text" value="SWF-" class="w-24 px-2.5 py-2 border border-slate-300 rounded-xl" />
-                  <input id="setInvNextNo" type="number" value="1001" class="flex-1 px-2.5 py-2 border border-slate-300 rounded-xl" />
-                </div>
-              </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-start">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">Company Address *</label>
                 <textarea id="setAddress" rows="2" placeholder="Partawal Bazar, Maharajganj, Uttar Pradesh, India" class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
@@ -665,13 +680,44 @@
                 <label class="block font-semibold text-slate-700 mb-1">Bank / UPI Payment Details</label>
                 <textarea id="setBankDetails" rows="2" placeholder="A/C: ... | IFSC: ... | UPI: shanwifi@upi" class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
               </div>
-              <div>
-                <label class="block font-semibold text-slate-700 mb-1">Company Logo (Upload File)</label>
-                <div class="flex items-center gap-3">
-                  <input id="setLogoFile" type="file" accept="image/*" onchange="handleLogoUpload(event)" class="text-[11px] w-full" />
-                  <img id="setLogoPreview" src="" alt="Logo Preview" class="w-12 h-12 rounded-xl object-contain border border-slate-200 bg-slate-50 hidden" />
+            </div>
+
+            <!-- Uploads: Logo, UPI QR Code, Signature, Stamp -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
+              <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
+                <label class="block font-bold text-slate-700">1. Company Logo</label>
+                <input id="setLogoFile" type="file" accept="image/*" onchange="handleAssetUpload(event, 'logo_data', 'setLogoPreview')" class="text-[11px] w-full" />
+                <div class="flex items-center justify-between">
+                  <img id="setLogoPreview" src="" alt="Logo Preview" class="w-12 h-12 rounded-lg object-contain border border-slate-200 bg-white p-0.5 hidden" />
+                  <button type="button" onclick="clearAsset('logo_data', 'setLogoFile', 'setLogoPreview')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Remove</button>
                 </div>
-                <button type="button" onclick="clearCompanyLogo()" class="mt-1.5 text-[11px] text-red-600 hover:underline cursor-pointer">Remove Logo</button>
+              </div>
+
+              <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
+                <label class="block font-bold text-slate-700">2. UPI Payment QR Code</label>
+                <input id="setQrFile" type="file" accept="image/*" onchange="handleAssetUpload(event, 'qr_code_data', 'setQrPreview')" class="text-[11px] w-full" />
+                <div class="flex items-center justify-between">
+                  <img id="setQrPreview" src="" alt="QR Preview" class="w-12 h-12 rounded-lg object-contain border border-slate-200 bg-white p-0.5 hidden" />
+                  <button type="button" onclick="clearAsset('qr_code_data', 'setQrFile', 'setQrPreview')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Remove</button>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
+                <label class="block font-bold text-slate-700">3. Authorized Signature</label>
+                <input id="setSignFile" type="file" accept="image/*" onchange="handleAssetUpload(event, 'signature_data', 'setSignPreview')" class="text-[11px] w-full" />
+                <div class="flex items-center justify-between">
+                  <img id="setSignPreview" src="" alt="Signature Preview" class="h-10 max-w-[96px] rounded-lg object-contain border border-slate-200 bg-white p-0.5 hidden" />
+                  <button type="button" onclick="clearAsset('signature_data', 'setSignFile', 'setSignPreview')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Remove</button>
+                </div>
+              </div>
+
+              <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
+                <label class="block font-bold text-slate-700">4. Company Stamp / Seal</label>
+                <input id="setStampFile" type="file" accept="image/*" onchange="handleAssetUpload(event, 'stamp_data', 'setStampPreview')" class="text-[11px] w-full" />
+                <div class="flex items-center justify-between">
+                  <img id="setStampPreview" src="" alt="Stamp Preview" class="w-12 h-12 rounded-lg object-contain border border-slate-200 bg-white p-0.5 hidden" />
+                  <button type="button" onclick="clearAsset('stamp_data', 'setStampFile', 'setStampPreview')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Remove</button>
+                </div>
               </div>
             </div>
 
@@ -696,7 +742,7 @@
           </form>
         </details>
 
-        <!-- Invoice Builder Card (No Plan Cost field) -->
+        <!-- Invoice Builder Card -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4 text-xs no-print">
           <div class="flex flex-wrap items-center justify-between gap-2">
             <h3 class="font-bold text-sm text-slate-900">1. Build GST Invoice</h3>
@@ -734,7 +780,7 @@
             </div>
             <div>
               <label class="block font-semibold text-slate-600 mb-1">Invoice Amount (₹)</label>
-              <input id="invAmountPaid" oninput="buildInvoiceFromInputs()" type="number" step="0.01" value="500" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+              <input id="invAmountPaid" oninput="buildInvoiceFromInputs()" type="number" step="0.01" value="599" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
             </div>
             <div>
               <label class="block font-semibold text-slate-600 mb-1">GST Slab %</label>
@@ -772,7 +818,7 @@
           </div>
         </div>
 
-        <!-- Printable A4 GST Tax Invoice Preview (Clean — No Internal Profit Shown) -->
+        <!-- Printable A4 GST Tax Invoice Preview -->
         <div id="invoicePrintable" class="bg-white rounded-2xl border border-slate-300 shadow-sm p-6 md:p-8 max-w-4xl mx-auto space-y-6 text-xs num">
           <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-5">
             <div class="flex items-start gap-3.5">
@@ -785,7 +831,7 @@
                 <p id="printTagline" class="text-[11px] text-slate-500 font-medium">High-Speed Fiber & Wireless Broadband</p>
                 <p id="printAddress" class="text-[11px] text-slate-600 mt-1 max-w-md">Partawal Bazar, Maharajganj, Uttar Pradesh, India</p>
                 <p id="printContactLine" class="text-[11px] text-slate-600 mt-0.5">Phone: 6391224488</p>
-                <p id="printGstLine" class="text-[11px] font-semibold text-slate-800 mt-1">GSTIN: Not Configured • SAC: 998422</p>
+                <p id="printGstLine" class="text-[11px] font-bold text-slate-800 mt-1"></p>
               </div>
             </div>
 
@@ -803,11 +849,11 @@
               <div id="printCustName" class="font-bold text-sm text-slate-900 mt-0.5">Walk-in Customer</div>
               <div id="printCustPhone" class="text-slate-600 mt-0.5">Phone: —</div>
               <div id="printCustAddr" class="text-slate-600">Address: —</div>
-              <div id="printCustGstin" class="text-slate-700 font-medium mt-0.5">GSTIN: Unregistered / N/A</div>
+              <div id="printCustGstin" class="text-slate-700 font-medium mt-0.5">GSTIN: Unregistered / B2C</div>
             </div>
             <div class="sm:text-right">
               <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Payment & Settlement</div>
-              <div id="printBankInfo" class="text-slate-600 mt-1 whitespace-pre-line">Direct Cash / UPI / Online Transfer</div>
+              <div id="printBankInfo" class="text-slate-600 mt-1 whitespace-pre-line">Direct Cash / UPI / Bank Transfer</div>
             </div>
           </div>
 
@@ -816,7 +862,6 @@
               <thead>
                 <tr class="border-y border-slate-300 bg-slate-50 text-slate-700 uppercase text-[11px]">
                   <th class="py-2.5 px-3">Description</th>
-                  <th class="py-2.5 px-3">SAC</th>
                   <th class="py-2.5 px-3 text-right">Taxable (Without GST)</th>
                   <th class="py-2.5 px-3 text-right">GST %</th>
                   <th class="py-2.5 px-3 text-right">GST Tax</th>
@@ -826,7 +871,6 @@
               <tbody>
                 <tr class="border-b border-slate-200">
                   <td id="printDescCell" class="py-3 px-3 font-semibold text-slate-900">Broadband Internet Service (Monthly)</td>
-                  <td id="printSacCell" class="py-3 px-3 text-slate-600">998422</td>
                   <td id="printTaxableCell" class="py-3 px-3 text-right font-medium">₹0.00</td>
                   <td id="printRateCell" class="py-3 px-3 text-right">18%</td>
                   <td id="printGstCell" class="py-3 px-3 text-right">₹0.00</td>
@@ -836,20 +880,42 @@
             </table>
           </div>
 
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 pt-2">
-            <div class="text-[11px] text-slate-500 max-w-md">
-              <div id="printFooterNote">Thank you for choosing Shan WiFi. Timely renewal ensures uninterrupted internet.</div>
+          <!-- Bottom Section: Left = UPI QR & Note | Right = Tax Totals + Signature & Stamp -->
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-5 pt-2 items-end">
+            <div class="md:col-span-6 flex items-end gap-4">
+              <div id="printQrBox" class="p-2 rounded-xl border border-slate-200 bg-slate-50 text-center flex-shrink-0 hidden">
+                <img id="printQrImg" src="" alt="UPI QR Code" class="w-24 h-24 object-contain mx-auto" />
+                <div class="text-[10px] font-bold text-slate-600 mt-1 uppercase tracking-wide">Scan UPI to Pay</div>
+              </div>
+              <div class="text-[11px] text-slate-500">
+                <div id="printFooterNote">Thank you for choosing Shan WiFi. Timely renewal ensures uninterrupted internet.</div>
+              </div>
             </div>
 
-            <div class="w-full sm:w-72 bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-1.5">
-              <div class="flex justify-between text-slate-600">
-                <span>Taxable Value (Without GST):</span>
-                <span id="sumTaxable" class="font-semibold">₹0.00</span>
+            <div class="md:col-span-6 space-y-4">
+              <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-1.5">
+                <div class="flex justify-between text-slate-600">
+                  <span>Taxable Value (Without GST):</span>
+                  <span id="sumTaxable" class="font-semibold">₹0.00</span>
+                </div>
+                <div id="sumTaxSplitRows" class="space-y-1 text-slate-600"></div>
+                <div class="flex justify-between text-sm font-black text-slate-900 border-t border-slate-300 pt-2 mt-1">
+                  <span>Grand Total (With GST):</span>
+                  <span id="sumGrandTotal" class="text-red-600">₹0.00</span>
+                </div>
               </div>
-              <div id="sumTaxSplitRows" class="space-y-1 text-slate-600"></div>
-              <div class="flex justify-between text-sm font-black text-slate-900 border-t border-slate-300 pt-2 mt-1">
-                <span>Grand Total (With GST):</span>
-                <span id="sumGrandTotal" class="text-red-600">₹0.00</span>
+
+              <!-- Signature & Stamp Area -->
+              <div class="flex items-end justify-end gap-5 pt-1 pr-1">
+                <img id="printStampImg" src="" alt="Company Stamp" class="w-20 h-20 object-contain opacity-90 hidden" />
+                <div class="text-center min-w-[140px]">
+                  <div class="h-12 flex items-end justify-center">
+                    <img id="printSignImg" src="" alt="Authorized Signature" class="max-h-12 max-w-[130px] object-contain hidden" />
+                  </div>
+                  <div class="border-t border-slate-400 pt-1 mt-1 text-[11px] font-bold text-slate-700">
+                    Authorized Signatory
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -948,7 +1014,7 @@
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
             <h2 class="text-xl font-extrabold text-slate-900">Reports & CA GST / Tax Excel Export</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Export Without-GST, GST %, GST Amount, With-GST Total & Net Profit columns for CA tax filing</p>
+            <p class="text-xs text-slate-500 mt-0.5">Export GST tax ledgers & Customer Data reports cleanly for CA filing</p>
           </div>
           <div class="flex gap-2">
             <button type="button" onclick="toggleAllReportChecks(true)" class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-300 text-xs font-semibold hover:bg-slate-200 cursor-pointer">
@@ -1012,7 +1078,7 @@
               </label>
             </div>
             <p class="mt-2.5 text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2">
-              Note: <b>Income</b> aur <b>Expenses</b> report mein customer ka personal data include nahi hota—sirf <b>Without_GST</b>, <b>GST_%</b>, <b>GST_Amount</b> aur <b>With_GST_Total</b> aata hai taaki CA tax filing mein koi dikkat na ho.
+              <b>Customer Data</b> report mein sirf <b>Customer Name, PPPoE ID, Mobile Number, Aadhaar Number, Address, Tower, Registration Date</b> aayenge.
             </p>
           </div>
 
@@ -1141,13 +1207,15 @@
         company_name: "Shan WiFi",
         tagline: "High-Speed Fiber & Wireless Broadband",
         logo_data: "",
+        qr_code_data: "",
+        signature_data: "",
+        stamp_data: "",
         phone: "6391224488",
         email: "",
         website: "www.shanwifi.com",
         address: "Partawal Bazar, Maharajganj, Uttar Pradesh, India",
         state_name: "Uttar Pradesh (Code: 09)",
         gstin: "",
-        sac_code: "998422",
         bank_details: "Direct Cash / UPI / Bank Transfer",
         invoice_prefix: "SWF-",
         next_invoice_no: 1001,
@@ -1174,6 +1242,13 @@
       const base = round2((amt * 100) / (100 + r));
       const gst = round2(amt - base);
       return { base, gst, total: round2(amt), rate: r, mode: "INCLUSIVE" };
+    }
+
+    function formatFullCustomerAddress(c) {
+      return [c.address, c.district, c.pin_code ? `PIN: ${c.pin_code}` : ""]
+        .map(v => (v || "").trim())
+        .filter(Boolean)
+        .join(", ");
     }
 
     function updateCustFormCalc() {
@@ -1245,28 +1320,49 @@
       }
     }
 
-    // ================= COMPANY SETTINGS & INVOICE BUILDER =================
-    function handleLogoUpload(event) {
+    // ================= ASSETS UPLOAD (LOGO, QR, SIGNATURE, STAMP) =================
+    function handleAssetUpload(event, fieldKey, previewId) {
       const file = event.target.files?.[0];
       if (!file) return;
       if (file.size > 1024 * 1024) {
-        showToast("Please select a logo under 1 MB.");
+        showToast("Please select an image under 1 MB.");
         return;
       }
       const reader = new FileReader();
       reader.onload = () => {
-        state.company.logo_data = reader.result;
+        state.company[fieldKey] = reader.result;
         syncCompanySettingsUI();
         buildInvoiceFromInputs();
       };
       reader.readAsDataURL(file);
     }
 
-    function clearCompanyLogo() {
-      state.company.logo_data = "";
-      document.getElementById("setLogoFile").value = "";
+    function clearAsset(fieldKey, inputId, previewId) {
+      state.company[fieldKey] = "";
+      const inp = document.getElementById(inputId);
+      if (inp) inp.value = "";
+      const prev = document.getElementById(previewId);
+      if (prev) { prev.src = ""; prev.classList.add("hidden"); }
       syncCompanySettingsUI();
       buildInvoiceFromInputs();
+    }
+
+    function applyPreviewImage(previewId, dataUrl) {
+      const el = document.getElementById(previewId);
+      if (!el) return;
+      if (dataUrl) {
+        el.src = dataUrl;
+        el.classList.remove("hidden");
+      } else {
+        el.src = "";
+        el.classList.add("hidden");
+      }
+    }
+
+    function cleanGstinText(raw) {
+      const val = (raw || "").trim().toUpperCase();
+      if (!val) return "";
+      return val.replace(/^GSTIN\s*[:\-]?\s*/i, "");
     }
 
     function syncCompanySettingsUI() {
@@ -1274,7 +1370,6 @@
       document.getElementById("setCompanyName").value = c.company_name || "Shan WiFi";
       document.getElementById("setTagline").value = c.tagline || "";
       document.getElementById("setGstin").value = c.gstin || "";
-      document.getElementById("setSacCode").value = c.sac_code || "998422";
       document.getElementById("setPhone").value = c.phone || "";
       document.getElementById("setEmail").value = c.email || "";
       document.getElementById("setState").value = c.state_name || "";
@@ -1285,22 +1380,22 @@
       document.getElementById("setTaxSplit").value = c.default_gst_mode || "INTRA";
       document.getElementById("setFooterNote").value = c.footer_note || "";
 
-      const prevImg = document.getElementById("setLogoPreview");
+      applyPreviewImage("setLogoPreview", c.logo_data);
+      applyPreviewImage("setQrPreview", c.qr_code_data);
+      applyPreviewImage("setSignPreview", c.signature_data);
+      applyPreviewImage("setStampPreview", c.stamp_data);
+
       const sideBox = document.getElementById("sidebarLogoBox");
       const printImg = document.getElementById("printLogoImg");
       const printFallback = document.getElementById("printLogoFallback");
-
       document.getElementById("sidebarCompanyName").textContent = c.company_name || "Shan WiFi";
 
       if (c.logo_data) {
-        prevImg.src = c.logo_data;
-        prevImg.classList.remove("hidden");
         sideBox.innerHTML = `<img src="${c.logo_data}" alt="Logo" class="w-full h-full object-contain bg-white p-0.5" />`;
         printImg.src = c.logo_data;
         printImg.classList.remove("hidden");
         printFallback.classList.add("hidden");
       } else {
-        prevImg.classList.add("hidden");
         const initials = (c.company_name || "SW").trim().slice(0, 2).toUpperCase();
         sideBox.textContent = initials;
         printImg.classList.add("hidden");
@@ -1315,8 +1410,7 @@
         ...state.company,
         company_name: document.getElementById("setCompanyName").value.trim() || "Shan WiFi",
         tagline: document.getElementById("setTagline").value.trim(),
-        gstin: document.getElementById("setGstin").value.trim().toUpperCase(),
-        sac_code: document.getElementById("setSacCode").value.trim() || "998422",
+        gstin: cleanGstinText(document.getElementById("setGstin").value),
         phone: document.getElementById("setPhone").value.trim(),
         email: document.getElementById("setEmail").value.trim(),
         state_name: document.getElementById("setState").value.trim(),
@@ -1346,7 +1440,7 @@
 
       document.getElementById("invCustName").value = c.name || "";
       document.getElementById("invCustPhone").value = c.phone || "";
-      document.getElementById("invCustAddr").value = c.address || "";
+      document.getElementById("invCustAddr").value = formatFullCustomerAddress(c);
       document.getElementById("invServiceDesc").value = c.plan_name || "Broadband Internet Service (Monthly)";
       document.getElementById("invAmountPaid").value = Number(c.amount_paid || c.plan_price || 0);
       document.getElementById("invGstRate").value = String(c.gst_rate ?? 18);
@@ -1359,7 +1453,7 @@
       const custName = document.getElementById("invCustName").value.trim() || "Walk-in Customer";
       const custPhone = document.getElementById("invCustPhone").value.trim() || "—";
       const custAddr = document.getElementById("invCustAddr").value.trim() || "—";
-      const custGstin = document.getElementById("invCustGstin").value.trim().toUpperCase();
+      const custGstin = cleanGstinText(document.getElementById("invCustGstin").value);
       const desc = document.getElementById("invServiceDesc").value.trim() || "Internet Service";
       const paid = Number(document.getElementById("invAmountPaid").value || 0);
       const rate = Number(document.getElementById("invGstRate").value ?? 18);
@@ -1369,12 +1463,13 @@
 
       const g = calcGstBreakdown(paid, rate, mode);
       const invNum = `${comp.invoice_prefix || "SWF-"}${comp.next_invoice_no || 1001}`;
+      const gstClean = cleanGstinText(comp.gstin);
 
       document.getElementById("printCompanyName").textContent = comp.company_name || "Shan WiFi";
       document.getElementById("printTagline").textContent = comp.tagline || "";
       document.getElementById("printAddress").textContent = comp.address || "";
       document.getElementById("printContactLine").textContent = [comp.phone ? `Phone: ${comp.phone}` : "", comp.email ? `Email: ${comp.email}` : ""].filter(Boolean).join(" • ");
-      document.getElementById("printGstLine").textContent = `GSTIN: ${comp.gstin || "Unregistered"} • SAC: ${comp.sac_code || "998422"}`;
+      document.getElementById("printGstLine").textContent = gstClean ? `GSTIN: ${gstClean}` : "";
       document.getElementById("printStateLine").textContent = comp.state_name ? `Place of Supply: ${comp.state_name}` : "";
       document.getElementById("printBankInfo").textContent = comp.bank_details || "Cash / UPI / Bank Transfer";
       document.getElementById("printFooterNote").textContent = comp.footer_note || "";
@@ -1388,7 +1483,6 @@
       document.getElementById("printCustGstin").textContent = `GSTIN: ${custGstin || "Unregistered / B2C"}`;
 
       document.getElementById("printDescCell").textContent = desc;
-      document.getElementById("printSacCell").textContent = comp.sac_code || "998422";
       document.getElementById("printTaxableCell").textContent = `₹${g.base.toFixed(2)}`;
       document.getElementById("printRateCell").textContent = `${g.rate}%`;
       document.getElementById("printGstCell").textContent = `₹${g.gst.toFixed(2)}`;
@@ -1409,6 +1503,36 @@
           <div class="flex justify-between"><span>SGST (${halfRate}%):</span><span>₹${halfGst.toFixed(2)}</span></div>
         `;
       }
+
+      // Left QR Box
+      const qrBox = document.getElementById("printQrBox");
+      const qrImg = document.getElementById("printQrImg");
+      if (comp.qr_code_data) {
+        qrImg.src = comp.qr_code_data;
+        qrBox.classList.remove("hidden");
+      } else {
+        qrImg.src = "";
+        qrBox.classList.add("hidden");
+      }
+
+      // Bottom-Right Signature & Stamp
+      const signImg = document.getElementById("printSignImg");
+      if (comp.signature_data) {
+        signImg.src = comp.signature_data;
+        signImg.classList.remove("hidden");
+      } else {
+        signImg.src = "";
+        signImg.classList.add("hidden");
+      }
+
+      const stampImg = document.getElementById("printStampImg");
+      if (comp.stamp_data) {
+        stampImg.src = comp.stamp_data;
+        stampImg.classList.remove("hidden");
+      } else {
+        stampImg.src = "";
+        stampImg.classList.add("hidden");
+      }
     }
 
     async function saveInvoiceToCloud() {
@@ -1417,7 +1541,7 @@
       const custName = document.getElementById("invCustName").value.trim() || "Walk-in Customer";
       const custPhone = document.getElementById("invCustPhone").value.trim();
       const custAddr = document.getElementById("invCustAddr").value.trim();
-      const custGstin = document.getElementById("invCustGstin").value.trim().toUpperCase();
+      const custGstin = cleanGstinText(document.getElementById("invCustGstin").value);
       const desc = document.getElementById("invServiceDesc").value.trim() || "Internet Service";
       const paid = Number(document.getElementById("invAmountPaid").value || 0);
       const rate = Number(document.getElementById("invGstRate").value ?? 18);
@@ -1846,13 +1970,18 @@
       const due = Math.max(0, round2(rechargeAmt - paid));
       const towerVal = document.getElementById("custTower").value || null;
       const startVal = document.getElementById("custStart").value || new Date().toISOString().slice(0, 10);
+      const regVal = document.getElementById("custRegDate").value || null;
       const planLabel = document.getElementById("custPlan").value.trim() || "Internet Plan";
 
       const payload = {
         name: custName,
         pppoe_username: document.getElementById("custPppoe").value.trim(),
         phone: document.getElementById("custPhone").value.trim(),
+        aadhaar_number: document.getElementById("custAadhaar").value.trim(),
         address: document.getElementById("custAddress").value.trim(),
+        district: document.getElementById("custDistrict").value.trim(),
+        pin_code: document.getElementById("custPin").value.trim(),
+        registration_date: regVal,
         tower_id: towerVal,
         plan_name: planLabel,
         plan_price: rechargeAmt,
@@ -1901,7 +2030,8 @@
         return (c.name || "").toLowerCase().includes(q)
           || (c.pppoe_username || "").toLowerCase().includes(q)
           || (c.phone || "").toLowerCase().includes(q)
-          || (c.address || "").toLowerCase().includes(q)
+          || (c.aadhaar_number || "").toLowerCase().includes(q)
+          || formatFullCustomerAddress(c).toLowerCase().includes(q)
           || getTowerName(c.tower_id).toLowerCase().includes(q);
       });
 
@@ -1918,6 +2048,7 @@
         const profit = round2(paid - rechargeAmt);
         const gstRate = Number(c.gst_rate ?? 18);
         const g = calcGstBreakdown(paid, gstRate, c.gst_mode || "INCLUSIVE");
+        const fullAddr = formatFullCustomerAddress(c);
 
         let statusBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">Active (${d}d)</span>`;
         if (d < 0) statusBadge = `<span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">Expired</span>`;
@@ -1928,9 +2059,13 @@
             <td class="py-3 px-3">
               <div class="font-bold text-slate-900">${esc(c.name)}</div>
               ${c.pppoe_username ? `<div class="text-[11px] font-mono text-slate-600">PPPoE: ${esc(c.pppoe_username)}</div>` : ""}
-              <div class="text-[11px] text-slate-500">${esc(c.address || "—")} • <span class="font-semibold text-red-600">Tower: ${esc(getTowerName(c.tower_id))}</span></div>
+              <div class="text-[11px] text-slate-500">${esc(fullAddr || "—")} • <span class="font-semibold text-red-600">Tower: ${esc(getTowerName(c.tower_id))}</span></div>
             </td>
-            <td class="py-3 px-3 font-medium">${esc(c.phone)}</td>
+            <td class="py-3 px-3">
+              <div class="font-medium">${esc(c.phone)}</div>
+              ${c.aadhaar_number ? `<div class="text-[11px] text-slate-600">Aadhaar: ${esc(c.aadhaar_number)}</div>` : ""}
+              ${c.registration_date ? `<div class="text-[11px] text-slate-500">Reg: ${esc(c.registration_date)}</div>` : ""}
+            </td>
             <td class="py-3 px-3">
               <div class="text-[11px] text-slate-500">${esc(c.plan_name || "Plan")}</div>
               <div>Paid: <b>₹${paid}</b> | Recharge: <b>₹${rechargeAmt}</b></div>
@@ -2142,12 +2277,16 @@
       } else if (entity === "customers") {
         const c = state.customers.find(x => x.id === id);
         if (!c) return;
-        document.getElementById("editModalTitle").textContent = "Edit Customer, PPPoE & GST Billing";
+        document.getElementById("editModalTitle").textContent = "Edit Customer, KYC & GST Billing";
         container.innerHTML = `
           <div><label class="block font-semibold mb-1">Customer Name *</label><input name="name" required value="${esc(c.name)}" class="w-full px-3 py-2 border rounded-xl" /></div>
-          <div><label class="block font-semibold mb-1">PPPoE Username / ID</label><input name="pppoe_username" value="${esc(c.pppoe_username || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">PPPoE ID</label><input name="pppoe_username" value="${esc(c.pppoe_username || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
           <div><label class="block font-semibold mb-1">Mobile Number *</label><input name="phone" required value="${esc(c.phone)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Aadhaar Number</label><input name="aadhaar_number" value="${esc(c.aadhaar_number || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
           <div><label class="block font-semibold mb-1">Address / Village</label><input name="address" value="${esc(c.address || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">District</label><input name="district" value="${esc(c.district || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">PIN No.</label><input name="pin_code" value="${esc(c.pin_code || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Registration Date</label><input name="registration_date" type="date" value="${esc(c.registration_date || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
           <div><label class="block font-semibold mb-1">Tower</label><select name="tower_id" id="editCustTower" class="w-full px-3 py-2 border rounded-xl bg-white">${towerOpts}</select></div>
           <div><label class="block font-semibold mb-1">Plan Name</label><input name="plan_name" value="${esc(c.plan_name || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
           <div><label class="block font-semibold mb-1">Recharge Amount (₹)</label><input name="plan_price" oninput="updateEditModalCalc()" type="number" step="0.01" value="${Number(c.plan_price || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
@@ -2278,7 +2417,11 @@
           name: raw.name.trim(),
           pppoe_username: (raw.pppoe_username || "").trim(),
           phone: raw.phone.trim(),
-          address: raw.address.trim(),
+          aadhaar_number: (raw.aadhaar_number || "").trim(),
+          address: (raw.address || "").trim(),
+          district: (raw.district || "").trim(),
+          pin_code: (raw.pin_code || "").trim(),
+          registration_date: raw.registration_date || null,
           tower_id: raw.tower_id || null,
           plan_name: raw.plan_name.trim(),
           plan_price: Number(raw.plan_price || 0),
@@ -2857,32 +3000,20 @@
 
       if (document.getElementById("chkCustomers").checked) {
         const rows = state.customers
-          .filter(c => inDateRange(c.start_date || c.expiry_date, from, to))
-          .map(c => {
-            const paid = Number(c.amount_paid || 0);
-            const rechargeAmt = Number(c.plan_price || 0);
-            const rate = Number(c.gst_rate ?? 18);
-            const g = calcGstBreakdown(paid, rate, c.gst_mode || "INCLUSIVE");
-            return {
-              Name: c.name || "",
-              PPPoE: c.pppoe_username || "",
-              Phone: c.phone || "",
-              Tower: getTowerName(c.tower_id),
-              Plan: c.plan_name || "",
-              Recharge_Amount: rechargeAmt,
-              Customer_Paid: paid,
-              Profit: round2(paid - rechargeAmt),
-              Without_GST: g.base,
-              GST_Percent: `${rate}%`,
-              GST_Amount: g.gst,
-              With_GST_Total: g.total,
-              ExpiryDate: c.expiry_date || ""
-            };
-          });
+          .filter(c => inDateRange(c.registration_date || c.start_date || c.expiry_date, from, to))
+          .map(c => ({
+            Customer_Name: c.name || "",
+            PPPoE_ID: c.pppoe_username || "",
+            Mobile_Number: c.phone || "",
+            Aadhaar_Number: c.aadhaar_number || "",
+            Address: formatFullCustomerAddress(c),
+            Tower: getTowerName(c.tower_id),
+            Registration_Date: c.registration_date || ""
+          }));
         sections.push({
           key: "Customer Data",
-          title: `${state.company.company_name || "Shan WiFi"} — Customer Data, Profit & GST Breakdown`,
-          headers: ["Name", "PPPoE", "Phone", "Tower", "Plan", "Recharge_Amount", "Customer_Paid", "Profit", "Without_GST", "GST_Percent", "GST_Amount", "With_GST_Total", "ExpiryDate"],
+          title: `${state.company.company_name || "Shan WiFi"} — Customer Directory`,
+          headers: ["Customer_Name", "PPPoE_ID", "Mobile_Number", "Aadhaar_Number", "Address", "Tower", "Registration_Date"],
           rows
         });
       }

@@ -3,63 +3,97 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shan WiFi — ISP & Network Admin Portal</title>
+  <title>Shan WiFi — ISP Billing, GST & Network Suite</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --vf-red: #E60000;
-      --vf-red-dark: #B80000;
-      --vf-charcoal: #18181B;
+      --brand-red: #DC2626;
+      --brand-red-dark: #991B1B;
+    }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+    .num {
+      font-variant-numeric: tabular-nums;
     }
     .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+      }
+      #loginScreen,
+      #sidebar,
+      header,
+      #toast,
+      .no-print {
+        display: none !important;
+      }
+      #appShell {
+        display: block !important;
+      }
+      main {
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      #invoicePrintable {
+        box-shadow: none !important;
+        border: 1px solid #d4d4d8 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+      }
+    }
   </style>
 </head>
-<body class="bg-zinc-100 text-zinc-800 antialiased">
+<body class="bg-slate-100 text-slate-800 antialiased">
 
   <!-- ================= LOGIN SCREEN ================= -->
-  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-zinc-950 via-zinc-900 to-[#3b0606]">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-7 border-t-4 border-[#E60000]">
-      <div class="flex items-center gap-3.5 mb-6">
-        <div class="w-12 h-12 rounded-full bg-[#E60000] text-white flex items-center justify-center font-black text-2xl shadow">
-          <span class="w-4 h-4 rounded-full bg-white inline-block"></span>
+  <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-red-950">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-slate-200">
+      <div class="flex items-center gap-3.5 mb-7">
+        <div class="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center font-black text-xl shadow-md">
+          SW
         </div>
         <div>
-          <h1 class="text-xl font-extrabold text-zinc-900 tracking-tight">Shan WiFi</h1>
-          <p class="text-xs text-zinc-500 font-medium">Single Admin Secure Portal</p>
+          <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Shan WiFi Suite</h1>
+          <p class="text-xs text-slate-500 font-medium">ISP Billing, GST Ledger & Tax Invoicing</p>
         </div>
       </div>
 
       <form id="loginForm" class="space-y-4">
         <div>
-          <label class="block text-xs font-semibold text-zinc-700 mb-1">Admin Email</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Admin Email</label>
           <input id="loginEmail" type="email" required placeholder="admin@shanwifi.com"
-            class="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#E60000]" />
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600" />
         </div>
         <div>
-          <label class="block text-xs font-semibold text-zinc-700 mb-1">Password</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1.5">Password</label>
           <input id="loginPassword" type="password" required placeholder="••••••••"
-            class="w-full px-3.5 py-2.5 rounded-lg border border-zinc-300 text-sm focus:outline-none focus:ring-2 focus:ring-[#E60000]" />
+            class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-red-600 focus:border-red-600" />
         </div>
         <button type="submit" id="loginBtn"
-          class="w-full py-2.5 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white font-bold text-sm transition cursor-pointer shadow">
-          Sign In to Shan WiFi
+          class="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-sm transition cursor-pointer shadow-sm">
+          Sign In to Admin Portal
         </button>
       </form>
 
       <p id="loginError" class="mt-3 text-xs text-red-600 font-semibold hidden"></p>
 
-      <details class="mt-5 text-xs text-zinc-500 border-t pt-3">
-        <summary class="cursor-pointer font-semibold text-zinc-700">Supabase Config (First Time Setup)</summary>
-        <div class="mt-2 space-y-2">
+      <details class="mt-6 text-xs text-slate-500 border-t border-slate-200 pt-3.5">
+        <summary class="cursor-pointer font-semibold text-slate-700">Supabase Project Connection</summary>
+        <div class="mt-2.5 space-y-2">
           <input id="cfgSupaUrl" type="text" placeholder="https://xxxx.supabase.co"
-            class="w-full px-2.5 py-1.5 rounded border border-zinc-300 text-xs" />
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs" />
           <input id="cfgSupaKey" type="text" placeholder="Supabase anon public key"
-            class="w-full px-2.5 py-1.5 rounded border border-zinc-300 text-xs" />
+            class="w-full px-3 py-2 rounded-lg border border-slate-300 text-xs" />
           <button type="button" onclick="saveSupabaseConfig()"
-            class="px-3 py-1.5 rounded bg-zinc-900 text-white text-xs font-semibold cursor-pointer">
-            Save Supabase Config
+            class="px-3.5 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer">
+            Save Connection
           </button>
         </div>
       </details>
@@ -70,131 +104,136 @@
   <div id="appShell" class="min-h-screen flex flex-col lg:flex-row hidden">
 
     <!-- Mobile Top Bar -->
-    <header class="lg:hidden bg-zinc-950 text-white px-4 py-3 flex items-center justify-between sticky top-0 z-30 border-b-2 border-[#E60000]">
+    <header class="lg:hidden bg-slate-950 text-white px-4 py-3 flex items-center justify-between sticky top-0 z-30 border-b border-slate-800">
       <div class="flex items-center gap-2.5">
-        <span class="w-6 h-6 rounded-full bg-[#E60000] flex items-center justify-center">
-          <span class="w-2 h-2 rounded-full bg-white"></span>
-        </span>
-        <span class="font-extrabold text-sm tracking-tight">Shan WiFi</span>
+        <span class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center font-black text-xs">SW</span>
+        <span class="font-bold text-sm tracking-tight">Shan WiFi</span>
       </div>
       <div class="flex items-center gap-2">
-        <button onclick="toggleSidebar()" class="px-3 py-1.5 rounded bg-zinc-800 text-xs font-semibold">Menu</button>
-        <button onclick="logoutAdmin()" class="px-3 py-1.5 rounded bg-[#E60000] text-xs font-semibold">Logout</button>
+        <button onclick="toggleSidebar()" class="px-3 py-1.5 rounded-lg bg-slate-800 text-xs font-semibold">Menu</button>
+        <button onclick="logoutAdmin()" class="px-3 py-1.5 rounded-lg bg-red-600 text-xs font-semibold">Logout</button>
       </div>
     </header>
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="w-64 bg-zinc-950 text-zinc-200 flex-shrink-0 flex flex-col justify-between fixed lg:static inset-y-0 left-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 border-r border-zinc-800">
-      <div>
-        <div class="p-5 border-b border-zinc-800 hidden lg:block">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-[#E60000] text-white flex items-center justify-center shadow">
-              <span class="w-3.5 h-3.5 rounded-full bg-white"></span>
-            </div>
-            <div>
-              <div class="font-extrabold text-white text-base tracking-tight">Shan WiFi</div>
-              <div id="adminEmailBadge" class="text-[11px] text-zinc-400 truncate max-w-[145px]">Admin</div>
-            </div>
+    <aside id="sidebar" class="w-64 bg-slate-950 text-slate-300 flex-shrink-0 flex flex-col justify-between fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 border-r border-slate-800/80">
+      <div class="overflow-y-auto scrollbar-thin">
+        <div class="p-4 border-b border-slate-800/80 hidden lg:flex items-center gap-3">
+          <div id="sidebarLogoBox" class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-black text-sm overflow-hidden flex-shrink-0">
+            SW
+          </div>
+          <div class="min-w-0">
+            <div id="sidebarCompanyName" class="font-extrabold text-white text-sm truncate">Shan WiFi</div>
+            <div id="adminEmailBadge" class="text-[11px] text-slate-400 truncate">Admin</div>
           </div>
         </div>
 
-        <nav class="p-3 space-y-1 text-sm">
-          <button data-tab="dashboard" onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-zinc-800 bg-[#E60000] text-white font-semibold">
+        <nav class="p-3 space-y-1 text-[13px]">
+          <button data-tab="dashboard" onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80 bg-red-600 text-white font-semibold">
             <span>📊</span> Dashboard
           </button>
-          <button data-tab="towers" onclick="switchTab('towers')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-zinc-800">
+          <button data-tab="towers" onclick="switchTab('towers')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
             <span>📡</span> Towers / POPs
           </button>
-          <button data-tab="customers" onclick="switchTab('customers')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-zinc-800">
-            <span>👥</span> Customers & Expiry
+          <button data-tab="customers" onclick="switchTab('customers')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
+            <span>👥</span> Customers & GST
           </button>
-          <button data-tab="devices" onclick="switchTab('devices')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-zinc-800">
-            <span>📶</span> Devices, Cameras & SSID
+          <button data-tab="devices" onclick="switchTab('devices')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
+            <span>📶</span> Devices & Cameras
           </button>
-          <button data-tab="complaints" onclick="switchTab('complaints')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-zinc-800">
+          <button data-tab="complaints" onclick="switchTab('complaints')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
             <span>🛠️</span> Complaints & Faults
           </button>
-          <button data-tab="accounts" onclick="switchTab('accounts')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-zinc-800">
+          <button data-tab="accounts" onclick="switchTab('accounts')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
             <span>💰</span> Income, Expense & P&L
           </button>
-          <button data-tab="sms" onclick="switchTab('sms')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-zinc-800">
-            <span>📩</span> Bulk SMS Outage Alert
+          <button data-tab="invoices" onclick="switchTab('invoices')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
+            <span>🧾</span> GST Invoice & Settings
           </button>
-          <button data-tab="reports" onclick="switchTab('reports')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-left hover:bg-zinc-800">
-            <span>📑</span> Reports (CA / Tax Excel)
+          <button data-tab="sms" onclick="switchTab('sms')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
+            <span>📩</span> Bulk SMS Alert
+          </button>
+          <button data-tab="reports" onclick="switchTab('reports')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
+            <span>📑</span> CA GST Excel Report
           </button>
         </nav>
       </div>
 
-      <div class="p-3 border-t border-zinc-800 space-y-2">
-        <button onclick="switchTab('reports')" class="w-full py-2 px-3 rounded-lg bg-emerald-700 hover:bg-emerald-600 text-xs font-semibold text-white cursor-pointer">
-          📊 CA Tax Excel Report
+      <div class="p-3 border-t border-slate-800/80 space-y-2">
+        <button onclick="switchTab('invoices')" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white cursor-pointer">
+          🧾 Create GST Invoice
         </button>
-        <button onclick="logoutAdmin()" class="hidden lg:block w-full py-2 px-3 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-xs font-bold text-white cursor-pointer">
+        <button onclick="logoutAdmin()" class="hidden lg:block w-full py-2 px-3 rounded-xl bg-red-600/90 hover:bg-red-600 text-xs font-bold text-white cursor-pointer">
           Logout
         </button>
       </div>
     </aside>
 
     <!-- Content Area -->
-    <main class="flex-1 p-4 md:p-6 overflow-x-hidden">
-      <div id="toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded-xl bg-zinc-950 border-l-4 border-[#E60000] text-white text-xs font-semibold shadow-lg"></div>
+    <main class="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden max-w-7xl w-full mx-auto">
+      <div id="toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 border-l-4 border-red-500 text-white text-xs font-semibold shadow-xl"></div>
 
       <!-- ================= TAB 1: DASHBOARD ================= -->
       <section id="tab-dashboard" class="tab-panel space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-4 rounded-xl border border-zinc-200 border-l-4 border-l-[#E60000] shadow-sm">
+        <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <h2 class="text-xl font-extrabold text-zinc-900">Shan WiFi — Dashboard Overview</h2>
-            <p class="text-xs text-zinc-500">Live summary of customers, expiry alerts, towers, devices, cameras & profit/loss</p>
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full mb-1">Operations Overview</span>
+            <h2 class="text-xl font-extrabold text-slate-900">Shan WiFi — Executive Dashboard</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Real-time customer status, net profit (Paid − Plan Cost), GST tax summary & network assets</p>
           </div>
-          <button onclick="refreshAllData()" class="px-3.5 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold shadow-sm cursor-pointer">
-            🔄 Refresh Data
-          </button>
+          <div class="flex gap-2">
+            <button onclick="switchTab('invoices')" class="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
+              + New GST Invoice
+            </button>
+            <button onclick="refreshAllData()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer">
+              🔄 Refresh
+            </button>
+          </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
-            <div class="text-xs text-zinc-500 font-semibold">Active Customers</div>
-            <div id="kpiActiveCustomers" class="text-2xl font-extrabold text-emerald-600 mt-1">0</div>
-            <div id="kpiExpiredCustomers" class="text-xs text-[#E60000] font-medium mt-1">0 Expired</div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">Active Subscribers</div>
+            <div id="kpiActiveCustomers" class="text-2xl font-black text-emerald-600 mt-1.5 num">0</div>
+            <div id="kpiExpiredCustomers" class="text-xs text-red-600 font-medium mt-1 num">0 Expired</div>
           </div>
 
-          <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
-            <div class="text-xs text-zinc-500 font-semibold">Expiring in ≤ 3 Days</div>
-            <div id="kpiExpiringSoon" class="text-2xl font-extrabold text-amber-600 mt-1">0</div>
-            <div id="kpiTotalDues" class="text-xs text-zinc-500 mt-1">Pending Dues: ₹0</div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">Expiring in ≤ 3 Days</div>
+            <div id="kpiExpiringSoon" class="text-2xl font-black text-amber-600 mt-1.5 num">0</div>
+            <div id="kpiTotalDues" class="text-xs text-slate-500 mt-1 num">Pending Dues: ₹0</div>
           </div>
 
-          <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
-            <div class="text-xs text-zinc-500 font-semibold">Towers & Deployed Hardware</div>
-            <div id="kpiTowers" class="text-2xl font-extrabold text-[#E60000] mt-1">0 Towers</div>
-            <div id="kpiDevices" class="text-xs text-zinc-500 mt-1">0 Devices & Cameras</div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">Towers & Hardware</div>
+            <div id="kpiTowers" class="text-2xl font-black text-slate-900 mt-1.5 num">0 Towers</div>
+            <div id="kpiDevices" class="text-xs text-slate-500 mt-1 num">0 Devices & Cameras</div>
           </div>
 
-          <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
-            <div class="text-xs text-zinc-500 font-semibold">Net Profit / Loss</div>
-            <div id="kpiNetProfit" class="text-2xl font-extrabold text-zinc-900 mt-1">₹0</div>
-            <div id="kpiIncExp" class="text-xs text-zinc-500 mt-1">In: ₹0 | Out: ₹0</div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">Net Profit (Paid − Plan Cost)</div>
+            <div id="kpiNetProfit" class="text-2xl font-black text-slate-900 mt-1.5 num">₹0</div>
+            <div id="kpiIncExp" class="text-xs text-slate-500 mt-1 num">Collected: ₹0 | Cost/Exp: ₹0</div>
           </div>
         </div>
 
-        <div class="bg-white rounded-xl border border-zinc-200 shadow-sm p-4">
-          <div class="flex items-center justify-between mb-3">
-            <h3 class="font-bold text-sm text-zinc-900">⚠️ Expiring Soon / Expired Customers (Quick Reminder)</h3>
-            <button onclick="switchTab('customers')" class="text-xs text-[#E60000] font-bold hover:underline cursor-pointer">View All</button>
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="font-bold text-sm text-slate-900">Expiring Soon / Expired Customers</h3>
+            <button onclick="switchTab('customers')" class="text-xs text-red-600 font-bold hover:underline cursor-pointer">View All Customers →</button>
           </div>
           <div class="overflow-x-auto scrollbar-thin">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
-                <tr class="border-b bg-zinc-50 text-zinc-600">
-                  <th class="py-2.5 px-3">Customer & PPPoE</th>
-                  <th class="py-2.5 px-3">Phone</th>
-                  <th class="py-2.5 px-3">Plan / Due</th>
-                  <th class="py-2.5 px-3">Expiry Date</th>
-                  <th class="py-2.5 px-3">Actions</th>
+                <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
+                  <th class="py-3 px-3">Customer & PPPoE</th>
+                  <th class="py-3 px-3">Phone</th>
+                  <th class="py-3 px-3">Paid / Cost / Profit</th>
+                  <th class="py-3 px-3">Expiry Status</th>
+                  <th class="py-3 px-3">Actions</th>
                 </tr>
               </thead>
-              <tbody id="dashExpiringBody" class="divide-y"></tbody>
+              <tbody id="dashExpiringBody" class="divide-y divide-slate-100 num"></tbody>
             </table>
           </div>
         </div>
@@ -202,52 +241,50 @@
 
       <!-- ================= TAB 2: TOWERS ================= -->
       <section id="tab-towers" class="tab-panel hidden space-y-6">
-        <div class="flex items-center justify-between">
-          <div>
-            <h2 class="text-xl font-extrabold text-zinc-900">Towers / POP Locations</h2>
-            <p class="text-xs text-zinc-500">Manage multiple wireless/fiber towers, rents, and locations</p>
-          </div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <h2 class="text-xl font-extrabold text-slate-900">Towers / POP Locations</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Manage wireless & fiber towers, rooftop rents, and GPS coordinates</p>
         </div>
 
-        <form id="towerForm" class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
-          <input id="towerName" type="text" required placeholder="Tower Name *" class="px-3 py-2 border rounded-lg text-xs" />
-          <input id="towerLocation" type="text" placeholder="Area / Village / Address" class="px-3 py-2 border rounded-lg text-xs" />
-          <input id="towerGps" type="text" placeholder="GPS (e.g. 26.98, 83.45)" class="px-3 py-2 border rounded-lg text-xs" />
-          <input id="towerOwner" type="text" placeholder="Owner / Rooftop Info" class="px-3 py-2 border rounded-lg text-xs" />
-          <input id="towerRent" type="number" step="0.01" placeholder="Monthly Rent (₹)" class="px-3 py-2 border rounded-lg text-xs" />
-          <button type="submit" class="px-4 py-2 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white text-xs font-bold cursor-pointer">
+        <form id="towerForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <input id="towerName" type="text" required placeholder="Tower Name *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+          <input id="towerLocation" type="text" placeholder="Area / Village / Address" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+          <input id="towerGps" type="text" placeholder="GPS (e.g. 26.98, 83.45)" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+          <input id="towerOwner" type="text" placeholder="Owner / Rooftop Info" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+          <input id="towerRent" type="number" step="0.01" placeholder="Monthly Rent (₹)" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+          <button type="submit" class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
             + Add Tower
           </button>
         </form>
 
-        <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-x-auto scrollbar-thin">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
-              <tr class="border-b bg-zinc-50 text-zinc-600">
-                <th class="py-2.5 px-3">Tower Name</th>
-                <th class="py-2.5 px-3">Location</th>
-                <th class="py-2.5 px-3">Owner Info</th>
-                <th class="py-2.5 px-3">Monthly Rent</th>
-                <th class="py-2.5 px-3">Devices / Customers</th>
-                <th class="py-2.5 px-3">Edit / Delete</th>
+              <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
+                <th class="py-3 px-3">Tower Name</th>
+                <th class="py-3 px-3">Location</th>
+                <th class="py-3 px-3">Owner Info</th>
+                <th class="py-3 px-3">Monthly Rent</th>
+                <th class="py-3 px-3">Devices / Users</th>
+                <th class="py-3 px-3">Actions</th>
               </tr>
             </thead>
-            <tbody id="towersTableBody" class="divide-y"></tbody>
+            <tbody id="towersTableBody" class="divide-y divide-slate-100 num"></tbody>
           </table>
         </div>
       </section>
 
       <!-- ================= TAB 3: CUSTOMERS ================= -->
       <section id="tab-customers" class="tab-panel hidden space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <h2 class="text-xl font-extrabold text-zinc-900">Customers, PPPoE, Plan Expiry & Tower Transfer</h2>
-            <p class="text-xs text-zinc-500">Edit customer info & PPPoE, track plans & dues, transfer towers, and send WhatsApp reminders</p>
+            <h2 class="text-xl font-extrabold text-slate-900">Customers, Profit & GST Billing</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Plan Cost (e.g. ₹260) vs Customer Paid (e.g. ₹500) = ₹240 Profit, with full Indian GST breakdown</p>
           </div>
           <div class="flex flex-wrap gap-2">
             <input id="customerSearch" oninput="renderCustomers()" type="text" placeholder="Search name, PPPoE, phone, tower..."
-              class="px-3 py-2 bg-white border rounded-lg text-xs w-60" />
-            <select id="customerFilter" onchange="renderCustomers()" class="px-3 py-2 bg-white border rounded-lg text-xs">
+              class="px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs w-60" />
+            <select id="customerFilter" onchange="renderCustomers()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs">
               <option value="ALL">All Customers</option>
               <option value="EXPIRING">Expiring (≤ 3 days)</option>
               <option value="EXPIRED">Expired</option>
@@ -256,55 +293,116 @@
           </div>
         </div>
 
-        <form id="customerForm" class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm space-y-3">
+        <form id="customerForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3.5">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            <input id="custName" type="text" required placeholder="Customer Name *" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="custPppoe" type="text" placeholder="PPPoE Username / ID" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="custPhone" type="text" required placeholder="Phone (e.g. 9876543210) *" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="custAddress" type="text" placeholder="Village / Address" class="px-3 py-2 border rounded-lg text-xs" />
-            <select id="custTower" class="px-3 py-2 border rounded-lg text-xs bg-white">
-              <option value="">Select Tower (Optional)</option>
-            </select>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Customer Name *</label>
+              <input id="custName" type="text" required placeholder="Customer Name" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">PPPoE Username / ID</label>
+              <input id="custPppoe" type="text" placeholder="e.g. shan_user01" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Phone *</label>
+              <input id="custPhone" type="text" required placeholder="9876543210" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Village / Address</label>
+              <input id="custAddress" type="text" placeholder="Village / Area" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Connected Tower</label>
+              <select id="custTower" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white">
+                <option value="">Select Tower (Optional)</option>
+              </select>
+            </div>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-            <input id="custPlan" type="text" placeholder="Plan (e.g. 50 Mbps Monthly)" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="custPrice" type="number" step="0.01" placeholder="Plan Price (₹)" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="custPaid" type="number" step="0.01" placeholder="Amount Paid (₹)" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="custStart" type="date" title="Start Date" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="custExpiry" type="date" required title="Expiry Date *" class="px-3 py-2 border rounded-lg text-xs" />
-            <button type="submit" class="px-4 py-2 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white text-xs font-bold cursor-pointer">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Plan Name</label>
+              <input id="custPlan" type="text" placeholder="50 Mbps Monthly" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Plan Cost (₹)</label>
+              <input id="custPrice" oninput="updateCustFormCalc()" type="number" step="0.01" placeholder="260" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Amount Paid (₹)</label>
+              <input id="custPaid" oninput="updateCustFormCalc()" type="number" step="0.01" placeholder="500" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">India GST %</label>
+              <select id="custGstRate" onchange="updateCustFormCalc()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white font-semibold">
+                <option value="18" selected>18% GST (Telecom / ISP)</option>
+                <option value="0">0% GST (Exempt / Nil)</option>
+                <option value="0.25">0.25% GST</option>
+                <option value="3">3% GST</option>
+                <option value="5">5% GST</option>
+                <option value="12">12% GST</option>
+                <option value="28">28% GST</option>
+                <option value="40">40% GST</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">GST Mode</label>
+              <select id="custGstMode" onchange="updateCustFormCalc()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white">
+                <option value="INCLUSIVE" selected>With GST (Included)</option>
+                <option value="EXCLUSIVE">Without GST (+GST Extra)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Start Date</label>
+              <input id="custStart" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Expiry Date *</label>
+              <input id="custExpiry" type="date" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs num">
+            <div id="custLiveBreakdown" class="flex flex-wrap gap-x-5 gap-y-1 text-slate-700">
+              <span>Without GST: <b>₹0.00</b></span>
+              <span>GST (18%): <b>₹0.00</b></span>
+              <span>With GST Total: <b>₹0.00</b></span>
+              <span class="text-emerald-700">Net Profit (Paid − Cost): <b>₹0.00</b></span>
+            </div>
+            <button type="submit" class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
               + Add Customer
             </button>
           </div>
         </form>
 
-        <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-x-auto scrollbar-thin">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
-              <tr class="border-b bg-zinc-50 text-zinc-600">
-                <th class="py-2.5 px-3">Customer, PPPoE & Tower</th>
-                <th class="py-2.5 px-3">Phone</th>
-                <th class="py-2.5 px-3">Plan & Billing</th>
-                <th class="py-2.5 px-3">Expiry / Status</th>
-                <th class="py-2.5 px-3">Actions, Edit & Transfer</th>
+              <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
+                <th class="py-3 px-3">Customer, PPPoE & Tower</th>
+                <th class="py-3 px-3">Phone</th>
+                <th class="py-3 px-3">Plan Cost, Paid & Profit</th>
+                <th class="py-3 px-3">GST Breakdown</th>
+                <th class="py-3 px-3">Expiry / Status</th>
+                <th class="py-3 px-3">Actions</th>
               </tr>
             </thead>
-            <tbody id="customersTableBody" class="divide-y"></tbody>
+            <tbody id="customersTableBody" class="divide-y divide-slate-100 num"></tbody>
           </table>
         </div>
       </section>
 
       <!-- ================= TAB 4: DEVICES & CAMERAS ================= -->
       <section id="tab-devices" class="tab-panel hidden space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <h2 class="text-xl font-extrabold text-zinc-900">Devices, Cameras, Serials, Login & SSID/PSK</h2>
-            <p class="text-xs text-zinc-500">Add, edit, or transfer Sectors, PtP, Routers, ONUs & CCTV Cameras</p>
+            <h2 class="text-xl font-extrabold text-slate-900">Devices, Cameras, Serials, Login & SSID/PSK</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Track and transfer Sectors, PtP, Routers, ONUs & CCTV Cameras</p>
           </div>
           <div class="flex flex-wrap gap-2">
-            <input id="deviceSearch" oninput="renderDevices()" type="text" placeholder="Search serial, camera, MAC, SSID, tower..."
-              class="px-3 py-2 bg-white border rounded-lg text-xs w-64" />
-            <select id="deviceTypeFilter" onchange="renderDevices()" class="px-3 py-2 bg-white border rounded-lg text-xs">
+            <input id="deviceSearch" oninput="renderDevices()" type="text" placeholder="Search serial, camera, MAC, SSID..."
+              class="px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs w-60" />
+            <select id="deviceTypeFilter" onchange="renderDevices()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs">
               <option value="ALL">All Device Types</option>
               <option value="Camera">Cameras Only</option>
               <option value="Sector">Sectors</option>
@@ -317,9 +415,9 @@
           </div>
         </div>
 
-        <form id="deviceForm" class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm space-y-3">
+        <form id="deviceForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-            <select id="devType" class="px-3 py-2 border rounded-lg text-xs bg-white font-semibold">
+            <select id="devType" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white font-semibold">
               <option value="Sector">Sector</option>
               <option value="PtP">PtP Link</option>
               <option value="Camera">Camera (CCTV / IP)</option>
@@ -328,320 +426,643 @@
               <option value="AP">Access Point (AP)</option>
               <option value="Switch">Switch / NVR / PoE</option>
             </select>
-            <input id="devModel" type="text" required placeholder="Model (e.g. Imou Bullet 2E / LHG XL 5 ax) *" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="devSerial" type="text" required placeholder="Serial Number *" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="devMac" type="text" placeholder="MAC Address" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="devIp" type="text" placeholder="IP Address (Optional)" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devModel" type="text" required placeholder="Model (e.g. Imou Bullet 2E / LHG XL 5 ax) *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="devSerial" type="text" required placeholder="Serial Number *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="devMac" type="text" placeholder="MAC Address" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="devIp" type="text" placeholder="IP Address (Optional)" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-            <input id="devUser" type="text" placeholder="Login ID / Username" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="devPass" type="text" placeholder="Login / Safety Code Password" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="devSsid" type="text" placeholder="SSID (Sector / PtP / Camera Wi-Fi)" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="devWifiPass" type="text" placeholder="Wi-Fi / Wireless Password" class="px-3 py-2 border rounded-lg text-xs" />
-            <select id="devTower" class="px-3 py-2 border rounded-lg text-xs bg-white">
+            <input id="devUser" type="text" placeholder="Login ID / Username" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="devPass" type="text" placeholder="Login / Safety Code Password" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="devSsid" type="text" placeholder="SSID (Sector / PtP / Camera Wi-Fi)" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="devWifiPass" type="text" placeholder="Wi-Fi / Wireless Password" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <select id="devTower" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white">
               <option value="">Tower (If on Tower)</option>
             </select>
-            <input id="devInstallDate" type="date" title="Install Date" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="devInstallDate" type="date" title="Install Date" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <select id="devCustomer" class="px-3 py-2 border rounded-lg text-xs bg-white">
+            <select id="devCustomer" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white">
               <option value="">Customer / Shop (If at Customer)</option>
             </select>
-            <input id="devNotes" type="text" placeholder="Notes (e.g. Gate View, North Sector, 12V DC)" class="px-3 py-2 border rounded-lg text-xs" />
-            <button type="submit" class="px-4 py-2 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white text-xs font-bold cursor-pointer">
+            <input id="devNotes" type="text" placeholder="Notes (e.g. Gate View, North Sector, 12V DC)" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <button type="submit" class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
               + Save Device / Camera
             </button>
           </div>
         </form>
 
-        <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-x-auto scrollbar-thin">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
-              <tr class="border-b bg-zinc-50 text-zinc-600">
-                <th class="py-2.5 px-3">Device / Camera & Serial</th>
-                <th class="py-2.5 px-3">Current Location & Date</th>
-                <th class="py-2.5 px-3">Login ID / Pass</th>
-                <th class="py-2.5 px-3">SSID / Wi-Fi Pass</th>
-                <th class="py-2.5 px-3">Edit, Transfer & Delete</th>
+              <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
+                <th class="py-3 px-3">Device / Camera & Serial</th>
+                <th class="py-3 px-3">Location & Date</th>
+                <th class="py-3 px-3">Login ID / Pass</th>
+                <th class="py-3 px-3">SSID / Wi-Fi Pass</th>
+                <th class="py-3 px-3">Actions</th>
               </tr>
             </thead>
-            <tbody id="devicesTableBody" class="divide-y"></tbody>
+            <tbody id="devicesTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </section>
 
       <!-- ================= TAB 5: COMPLAINTS ================= -->
       <section id="tab-complaints" class="tab-panel hidden space-y-6">
-        <div>
-          <h2 class="text-xl font-extrabold text-zinc-900">Complaints & Fault Log</h2>
-          <p class="text-xs text-zinc-500">Track, edit, and resolve outages, cable cuts, and camera/device faults</p>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <h2 class="text-xl font-extrabold text-slate-900">Complaints & Fault Log</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Track, edit, and resolve outages, cable cuts, and camera/device faults</p>
         </div>
 
-        <form id="complaintForm" class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
-          <input id="compTitle" type="text" required placeholder="Issue Title (e.g. Fiber Cut / Camera Offline) *" class="px-3 py-2 border rounded-lg text-xs" />
-          <select id="compTower" class="px-3 py-2 border rounded-lg text-xs bg-white">
+        <form id="complaintForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
+          <input id="compTitle" type="text" required placeholder="Issue Title (e.g. Fiber Cut / Camera Offline) *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+          <select id="compTower" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white">
             <option value="">Select Tower (Optional)</option>
           </select>
-          <input id="compDetails" type="text" placeholder="Details / Device / Customer info" class="px-3 py-2 border rounded-lg text-xs" />
-          <button type="submit" class="px-4 py-2 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white text-xs font-bold cursor-pointer">
+          <input id="compDetails" type="text" placeholder="Details / Device / Customer info" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+          <button type="submit" class="px-4 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
             + Log Complaint
           </button>
         </form>
 
-        <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-x-auto scrollbar-thin">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
-              <tr class="border-b bg-zinc-50 text-zinc-600">
-                <th class="py-2.5 px-3">Issue</th>
-                <th class="py-2.5 px-3">Tower / Details</th>
-                <th class="py-2.5 px-3">Date</th>
-                <th class="py-2.5 px-3">Status</th>
-                <th class="py-2.5 px-3">Action / Edit</th>
+              <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
+                <th class="py-3 px-3">Issue</th>
+                <th class="py-3 px-3">Tower / Details</th>
+                <th class="py-3 px-3">Date</th>
+                <th class="py-3 px-3">Status</th>
+                <th class="py-3 px-3">Actions</th>
               </tr>
             </thead>
-            <tbody id="complaintsTableBody" class="divide-y"></tbody>
+            <tbody id="complaintsTableBody" class="divide-y divide-slate-100"></tbody>
           </table>
         </div>
       </section>
 
       <!-- ================= TAB 6: INCOME, EXPENSE & P&L ================= -->
       <section id="tab-accounts" class="tab-panel hidden space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <h2 class="text-xl font-extrabold text-zinc-900">Income, Expense & Profit / Loss</h2>
-            <p class="text-xs text-zinc-500">Add, edit, or filter income & expenses and calculate net profit or loss</p>
+            <h2 class="text-xl font-extrabold text-slate-900">Income, Expense, GST & Profit / Loss</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Track Income, Plan Cost/Expenses, GST (With & Without GST), and Net Profit</p>
           </div>
           <div class="flex gap-2 items-center">
-            <input id="pnlFrom" type="date" onchange="renderAccounts()" class="px-2.5 py-1.5 bg-white border rounded-lg text-xs" />
-            <span class="text-xs text-zinc-400">to</span>
-            <input id="pnlTo" type="date" onchange="renderAccounts()" class="px-2.5 py-1.5 bg-white border rounded-lg text-xs" />
+            <input id="pnlFrom" type="date" onchange="renderAccounts()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs" />
+            <span class="text-xs text-slate-400">to</span>
+            <input id="pnlTo" type="date" onchange="renderAccounts()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs" />
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
-            <div class="text-xs text-zinc-500">Total Income</div>
-            <div id="pnlIncome" class="text-2xl font-extrabold text-emerald-600 mt-1">₹0</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 num">
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">Total Income (With GST)</div>
+            <div id="pnlIncome" class="text-2xl font-black text-emerald-600 mt-1.5">₹0</div>
+            <div id="pnlIncomeBase" class="text-[11px] text-slate-500 mt-1">Without GST: ₹0 | GST: ₹0</div>
           </div>
-          <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
-            <div class="text-xs text-zinc-500">Total Expense</div>
-            <div id="pnlExpense" class="text-2xl font-extrabold text-[#E60000] mt-1">₹0</div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">Total Expense & Plan Cost</div>
+            <div id="pnlExpense" class="text-2xl font-black text-red-600 mt-1.5">₹0</div>
+            <div id="pnlExpenseBase" class="text-[11px] text-slate-500 mt-1">Without GST: ₹0 | Input GST: ₹0</div>
           </div>
-          <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm">
-            <div class="text-xs text-zinc-500">Net Profit / Loss</div>
-            <div id="pnlNet" class="text-2xl font-extrabold text-zinc-900 mt-1">₹0</div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">Net Profit (Income − Expense)</div>
+            <div id="pnlNet" class="text-2xl font-black text-slate-900 mt-1.5">₹0</div>
+            <div class="text-[11px] text-slate-500 mt-1">e.g. ₹500 Paid − ₹260 Cost = ₹240</div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-slate-500">Net GST Liability</div>
+            <div id="pnlNetGst" class="text-2xl font-black text-blue-700 mt-1.5">₹0</div>
+            <div class="text-[11px] text-slate-500 mt-1">Output GST − Input GST</div>
           </div>
         </div>
 
-        <form id="txForm" class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
-          <select id="txType" class="px-3 py-2 border rounded-lg text-xs bg-white">
-            <option value="Income">Income (+)</option>
-            <option value="Expense">Expense (-)</option>
-          </select>
-          <input id="txCategory" type="text" required placeholder="Category (Recharge / Bandwidth / Rent) *" class="px-3 py-2 border rounded-lg text-xs" />
-          <input id="txAmount" type="number" step="0.01" required placeholder="Amount (₹) *" class="px-3 py-2 border rounded-lg text-xs" />
-          <input id="txDate" type="date" required class="px-3 py-2 border rounded-lg text-xs" />
-          <input id="txNote" type="text" placeholder="Note / Details" class="px-3 py-2 border rounded-lg text-xs" />
-          <button type="submit" class="px-4 py-2 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white text-xs font-bold cursor-pointer">
-            + Add Entry
-          </button>
+        <form id="txForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
+            <select id="txType" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white font-semibold">
+              <option value="Income">Income (+)</option>
+              <option value="Expense">Expense (-)</option>
+            </select>
+            <input id="txCategory" type="text" required placeholder="Category (Recharge / Plan Cost / Rent) *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="txAmount" oninput="updateTxFormCalc()" type="number" step="0.01" required placeholder="Amount (₹) *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <select id="txGstRate" onchange="updateTxFormCalc()" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white font-semibold">
+              <option value="18" selected>18% GST</option>
+              <option value="0">0% GST (Exempt)</option>
+              <option value="0.25">0.25% GST</option>
+              <option value="3">3% GST</option>
+              <option value="5">5% GST</option>
+              <option value="12">12% GST</option>
+              <option value="28">28% GST</option>
+              <option value="40">40% GST</option>
+            </select>
+            <select id="txGstMode" onchange="updateTxFormCalc()" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white">
+              <option value="INCLUSIVE" selected>With GST (Included)</option>
+              <option value="EXCLUSIVE">Without GST (+GST Extra)</option>
+            </select>
+            <input id="txDate" type="date" required class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="txNote" type="text" placeholder="Note / Invoice No." class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs num">
+            <div id="txLiveBreakdown" class="text-slate-700">
+              Without GST: <b>₹0.00</b> • GST (18%): <b>₹0.00</b> • With GST Total: <b>₹0.00</b>
+            </div>
+            <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
+              + Add Entry
+            </button>
+          </div>
         </form>
 
-        <div class="bg-white rounded-xl border border-zinc-200 shadow-sm overflow-x-auto scrollbar-thin">
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
-              <tr class="border-b bg-zinc-50 text-zinc-600">
-                <th class="py-2.5 px-3">Date</th>
-                <th class="py-2.5 px-3">Type</th>
-                <th class="py-2.5 px-3">Category</th>
-                <th class="py-2.5 px-3">Note</th>
-                <th class="py-2.5 px-3">Amount</th>
-                <th class="py-2.5 px-3">Edit / Delete</th>
+              <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
+                <th class="py-3 px-3">Date</th>
+                <th class="py-3 px-3">Type</th>
+                <th class="py-3 px-3">Category & Note</th>
+                <th class="py-3 px-3">Without GST</th>
+                <th class="py-3 px-3">GST % & Tax</th>
+                <th class="py-3 px-3">With GST Total</th>
+                <th class="py-3 px-3">Actions</th>
               </tr>
             </thead>
-            <tbody id="txTableBody" class="divide-y"></tbody>
+            <tbody id="txTableBody" class="divide-y divide-slate-100 num"></tbody>
           </table>
         </div>
       </section>
 
-      <!-- ================= TAB 7: BULK SMS OUTAGE ALERT ================= -->
-      <section id="tab-sms" class="tab-panel hidden space-y-6">
-        <div>
-          <h2 class="text-xl font-extrabold text-zinc-900">Bulk SMS Outage / Server Down Alert</h2>
-          <p class="text-xs text-zinc-500">Configure your SMS gateway API & template once, and broadcast alerts in one click when server/tower is down</p>
+      <!-- ================= TAB 7: GST INVOICE & COMPANY SETTINGS ================= -->
+      <section id="tab-invoices" class="tab-panel hidden space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm no-print">
+          <div>
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full mb-1">Tax Billing & Branding</span>
+            <h2 class="text-xl font-extrabold text-slate-900">GST Tax Invoice, PDF Print & Company Settings</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Configure your logo, address, GSTIN & invoice rules, and generate printable/PDF GST receipts</p>
+          </div>
+          <div class="flex gap-2">
+            <button type="button" onclick="window.print()" class="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold cursor-pointer">
+              🖨️ Print / Save PDF
+            </button>
+          </div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-sm text-zinc-900">1. SMS Gateway API Configuration (Saved in Browser)</h3>
+        <!-- Company & Invoice Settings Card -->
+        <details id="companySettingsDetails" open class="bg-white rounded-2xl border border-slate-200/80 shadow-sm no-print">
+          <summary class="px-5 py-4 cursor-pointer font-bold text-sm text-slate-900 flex items-center justify-between">
+            <span>🏢 Company Profile, Logo & Invoice Settings</span>
+            <span class="text-[11px] font-medium text-slate-500">Click to expand / collapse</span>
+          </summary>
+
+          <form id="companySettingsForm" class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 text-xs">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Company / Brand Name *</label>
+                <input id="setCompanyName" type="text" required value="Shan WiFi" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Tagline / Subtitle</label>
+                <input id="setTagline" type="text" placeholder="High-Speed Fiber & Wireless Broadband" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">GSTIN (15-digit)</label>
+                <input id="setGstin" type="text" placeholder="09AAAAA0000A1Z5" class="w-full px-3 py-2 border border-slate-300 rounded-xl uppercase" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">SAC / HSN Code</label>
+                <input id="setSacCode" type="text" value="998422" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Contact Phone</label>
+                <input id="setPhone" type="text" placeholder="6391224488" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Email Address</label>
+                <input id="setEmail" type="email" placeholder="billing@shanwifi.com" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">State & State Code</label>
+                <input id="setState" type="text" value="Uttar Pradesh (Code: 09)" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Invoice Prefix & Next #</label>
+                <div class="flex gap-2">
+                  <input id="setInvPrefix" type="text" value="SWF-" class="w-24 px-2.5 py-2 border border-slate-300 rounded-xl" />
+                  <input id="setInvNextNo" type="number" value="1001" class="flex-1 px-2.5 py-2 border border-slate-300 rounded-xl" />
+                </div>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-start">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Company Address *</label>
+                <textarea id="setAddress" rows="2" placeholder="Partawal Bazar, Maharajganj, Uttar Pradesh, India" class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Bank / UPI Payment Details</label>
+                <textarea id="setBankDetails" rows="2" placeholder="A/C: ... | IFSC: ... | UPI: shanwifi@upi" class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Company Logo (Upload File)</label>
+                <div class="flex items-center gap-3">
+                  <input id="setLogoFile" type="file" accept="image/*" onchange="handleLogoUpload(event)" class="text-[11px] w-full" />
+                  <img id="setLogoPreview" src="" alt="Logo Preview" class="w-12 h-12 rounded-xl object-contain border border-slate-200 bg-slate-50 hidden" />
+                </div>
+                <button type="button" onclick="clearCompanyLogo()" class="mt-1.5 text-[11px] text-red-600 hover:underline cursor-pointer">Remove Logo</button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-end">
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Default Tax Split Type</label>
+                <select id="setTaxSplit" onchange="buildInvoiceFromInputs()" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white">
+                  <option value="INTRA" selected>CGST + SGST (Intra-State)</option>
+                  <option value="IGST">IGST (Inter-State)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold text-slate-700 mb-1">Invoice Footer Note</label>
+                <input id="setFooterNote" type="text" value="Thank you for choosing Shan WiFi. Timely renewal ensures uninterrupted internet." class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+              </div>
+              <div class="flex justify-end">
+                <button type="submit" class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer">
+                  💾 Save Company & Invoice Settings
+                </button>
+              </div>
+            </div>
+          </form>
+        </details>
+
+        <!-- Invoice Builder Card -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4 text-xs no-print">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <h3 class="font-bold text-sm text-slate-900">1. Build GST Invoice</h3>
+            <div class="flex items-center gap-2">
+              <label class="font-semibold text-slate-600">Select Customer:</label>
+              <select id="invCustomerSelect" onchange="autofillInvoiceFromCustomer()" class="px-3 py-1.5 border border-slate-300 rounded-xl bg-white min-w-[220px]">
+                <option value="">-- Custom / Walk-in Billing --</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Billed To Name *</label>
+              <input id="invCustName" oninput="buildInvoiceFromInputs()" type="text" placeholder="Customer Name" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Customer Phone</label>
+              <input id="invCustPhone" oninput="buildInvoiceFromInputs()" type="text" placeholder="Phone Number" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Customer Address</label>
+              <input id="invCustAddr" oninput="buildInvoiceFromInputs()" type="text" placeholder="Village / City / Address" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Customer GSTIN (Optional)</label>
+              <input id="invCustGstin" oninput="buildInvoiceFromInputs()" type="text" placeholder="Optional GSTIN" class="w-full px-3 py-2 border border-slate-300 rounded-xl uppercase" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Service / Plan Description</label>
+              <input id="invServiceDesc" oninput="buildInvoiceFromInputs()" type="text" value="Broadband Internet Service (Monthly)" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Plan Cost (₹)</label>
+              <input id="invPlanCost" oninput="buildInvoiceFromInputs()" type="number" step="0.01" value="260" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Customer Paid (₹)</label>
+              <input id="invAmountPaid" oninput="buildInvoiceFromInputs()" type="number" step="0.01" value="500" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">GST Slab %</label>
+              <select id="invGstRate" onchange="buildInvoiceFromInputs()" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-semibold">
+                <option value="18" selected>18% GST</option>
+                <option value="0">0% GST (Exempt)</option>
+                <option value="0.25">0.25% GST</option>
+                <option value="3">3% GST</option>
+                <option value="5">5% GST</option>
+                <option value="12">12% GST</option>
+                <option value="28">28% GST</option>
+                <option value="40">40% GST</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">GST Mode</label>
+              <select id="invGstMode" onchange="buildInvoiceFromInputs()" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white">
+                <option value="INCLUSIVE" selected>With GST (Included)</option>
+                <option value="EXCLUSIVE">Without GST (+GST Extra)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-600 mb-1">Invoice Date</label>
+              <input id="invDate" onchange="buildInvoiceFromInputs()" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+            </div>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-2">
+            <div id="invProfitPill" class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl num">
+              Net Profit (₹500 − ₹260): ₹240.00
+            </div>
+            <div class="flex flex-wrap gap-2">
+              <button type="button" onclick="saveInvoiceToCloud()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer">
+                💾 Save & Issue Invoice
+              </button>
+              <button type="button" onclick="window.print()" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer">
+                🖨️ Print / Save PDF
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Printable A4 GST Tax Invoice Preview -->
+        <div id="invoicePrintable" class="bg-white rounded-2xl border border-slate-300 shadow-sm p-6 md:p-8 max-w-4xl mx-auto space-y-6 text-xs num">
+          <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-5">
+            <div class="flex items-start gap-3.5">
+              <img id="printLogoImg" src="" alt="Company Logo" class="w-14 h-14 rounded-xl object-contain border border-slate-200 p-1 hidden" />
+              <div id="printLogoFallback" class="w-14 h-14 rounded-xl bg-red-600 text-white flex items-center justify-center font-black text-xl">
+                SW
+              </div>
+              <div>
+                <h3 id="printCompanyName" class="text-xl font-black text-slate-900 tracking-tight">Shan WiFi</h3>
+                <p id="printTagline" class="text-[11px] text-slate-500 font-medium">High-Speed Fiber & Wireless Broadband</p>
+                <p id="printAddress" class="text-[11px] text-slate-600 mt-1 max-w-md">Partawal Bazar, Maharajganj, Uttar Pradesh, India</p>
+                <p id="printContactLine" class="text-[11px] text-slate-600 mt-0.5">Phone: 6391224488</p>
+                <p id="printGstLine" class="text-[11px] font-semibold text-slate-800 mt-1">GSTIN: Not Configured • SAC: 998422</p>
+              </div>
+            </div>
+
+            <div class="text-right">
+              <span class="inline-block px-3 py-1 rounded-full bg-red-50 text-red-700 font-extrabold text-[11px] uppercase tracking-wider">GST Tax Invoice</span>
+              <div id="printInvNumber" class="text-base font-extrabold text-slate-900 mt-2">Invoice #: SWF-1001</div>
+              <div id="printInvDate" class="text-slate-500 mt-0.5">Date: —</div>
+              <div id="printStateLine" class="text-[11px] text-slate-500 mt-0.5">Place of Supply: Uttar Pradesh (Code: 09)</div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/70">
+            <div>
+              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Billed To</div>
+              <div id="printCustName" class="font-bold text-sm text-slate-900 mt-0.5">Walk-in Customer</div>
+              <div id="printCustPhone" class="text-slate-600 mt-0.5">Phone: —</div>
+              <div id="printCustAddr" class="text-slate-600">Address: —</div>
+              <div id="printCustGstin" class="text-slate-700 font-medium mt-0.5">GSTIN: Unregistered / N/A</div>
+            </div>
+            <div class="sm:text-right">
+              <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Payment & Settlement</div>
+              <div id="printBankInfo" class="text-slate-600 mt-1 whitespace-pre-line">Direct Cash / UPI / Online Transfer</div>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-y border-slate-300 bg-slate-50 text-slate-700 uppercase text-[11px]">
+                  <th class="py-2.5 px-3">Description</th>
+                  <th class="py-2.5 px-3">SAC</th>
+                  <th class="py-2.5 px-3 text-right">Taxable (Without GST)</th>
+                  <th class="py-2.5 px-3 text-right">GST %</th>
+                  <th class="py-2.5 px-3 text-right">GST Tax</th>
+                  <th class="py-2.5 px-3 text-right">Total (With GST)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr class="border-b border-slate-200">
+                  <td id="printDescCell" class="py-3 px-3 font-semibold text-slate-900">Broadband Internet Service (Monthly)</td>
+                  <td id="printSacCell" class="py-3 px-3 text-slate-600">998422</td>
+                  <td id="printTaxableCell" class="py-3 px-3 text-right font-medium">₹0.00</td>
+                  <td id="printRateCell" class="py-3 px-3 text-right">18%</td>
+                  <td id="printGstCell" class="py-3 px-3 text-right">₹0.00</td>
+                  <td id="printTotalCell" class="py-3 px-3 text-right font-bold text-slate-900">₹0.00</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 pt-2">
+            <div class="text-[11px] text-slate-500 max-w-md space-y-1">
+              <div id="printProfitNote" class="text-emerald-700 font-semibold">Internal Profit Record: Paid ₹500.00 − Cost ₹260.00 = ₹240.00</div>
+              <div id="printFooterNote">Thank you for choosing Shan WiFi. Timely renewal ensures uninterrupted internet.</div>
+            </div>
+
+            <div class="w-full sm:w-72 bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-1.5">
+              <div class="flex justify-between text-slate-600">
+                <span>Taxable Value (Without GST):</span>
+                <span id="sumTaxable" class="font-semibold">₹0.00</span>
+              </div>
+              <div id="sumTaxSplitRows" class="space-y-1 text-slate-600"></div>
+              <div class="flex justify-between text-sm font-black text-slate-900 border-t border-slate-300 pt-2 mt-1">
+                <span>Grand Total (With GST):</span>
+                <span id="sumGrandTotal" class="text-red-600">₹0.00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Saved Invoices History -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm no-print">
+          <h3 class="font-bold text-sm text-slate-900 mb-3">2. Saved GST Invoices</h3>
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
+                  <th class="py-2.5 px-3">Invoice #</th>
+                  <th class="py-2.5 px-3">Date</th>
+                  <th class="py-2.5 px-3">Customer</th>
+                  <th class="py-2.5 px-3">Without GST</th>
+                  <th class="py-2.5 px-3">GST</th>
+                  <th class="py-2.5 px-3">With GST</th>
+                  <th class="py-2.5 px-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="savedInvoicesBody" class="divide-y divide-slate-100 num"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= TAB 8: BULK SMS OUTAGE ALERT ================= -->
+      <section id="tab-sms" class="tab-panel hidden space-y-6">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <h2 class="text-xl font-extrabold text-slate-900">Bulk SMS Outage / Server Down Alert</h2>
+          <p class="text-xs text-slate-500 mt-0.5">Configure your SMS gateway API & broadcast maintenance alerts to customers</p>
+        </div>
+
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+          <h3 class="font-bold text-sm text-slate-900">1. SMS Gateway API Configuration</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            <input id="smsEndpoint" type="text" placeholder="API URL (e.g. https://smsapi.com/send)" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="smsApiKey" type="text" placeholder="API Key / Auth Token" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="smsSenderId" type="text" placeholder="Sender ID (6 chars, e.g. SHNWFI)" class="px-3 py-2 border rounded-lg text-xs" />
-            <input id="smsTemplateId" type="text" placeholder="DLT Template ID (Optional)" class="px-3 py-2 border rounded-lg text-xs" />
+            <input id="smsEndpoint" type="text" placeholder="API URL (e.g. https://smsapi.com/send)" class="px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            <input id="smsApiKey" type="text" placeholder="API Key / Auth Token" class="px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            <input id="smsSenderId" type="text" placeholder="Sender ID (6 chars, e.g. SHNWFI)" class="px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            <input id="smsTemplateId" type="text" placeholder="DLT Template ID (Optional)" class="px-3 py-2 border border-slate-300 rounded-xl text-xs" />
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <select id="smsMethod" class="px-3 py-2 border rounded-lg text-xs bg-white">
+            <select id="smsMethod" class="px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white">
               <option value="GET">HTTP GET (Query Params)</option>
               <option value="POST_JSON">HTTP POST (JSON Body)</option>
               <option value="POST_FORM">HTTP POST (Form Data)</option>
             </select>
-            <input id="smsQueryKeys" type="text" placeholder="Keys map: mobileKey=mobiles,msgKey=message,keyParam=api_key" class="px-3 py-2 border rounded-lg text-xs" />
-            <button type="button" onclick="saveSmsConfig()" class="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold cursor-pointer">
+            <input id="smsQueryKeys" type="text" placeholder="Keys map: mobileKey=mobiles,msgKey=message,keyParam=api_key" class="px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+            <button type="button" onclick="saveSmsConfig()" class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer">
               💾 Save SMS Gateway Settings
             </button>
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm space-y-3">
-          <h3 class="font-bold text-sm text-zinc-900">2. Send Outage SMS to All (or Selected Tower) Customers</h3>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+          <h3 class="font-bold text-sm text-slate-900">2. Broadcast Outage SMS</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-            <select id="smsTargetTower" onchange="updateSmsRecipientCount()" class="px-3 py-2 border rounded-lg text-xs bg-white">
+            <select id="smsTargetTower" onchange="updateSmsRecipientCount()" class="px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white">
               <option value="ALL">All Customers</option>
             </select>
-            <div id="smsRecipientCount" class="flex items-center px-3 py-2 rounded-lg bg-zinc-100 text-xs font-semibold text-zinc-700">
+            <div id="smsRecipientCount" class="flex items-center px-3 py-2 rounded-xl bg-slate-100 text-xs font-semibold text-slate-700">
               Recipients: 0 customers
             </div>
           </div>
 
-          <textarea id="smsMessageBody" rows="3" placeholder="Dear Customer, Shan WiFi network/server is currently under maintenance. Service will be restored shortly. Sorry for the inconvenience."
-            class="w-full px-3 py-2 border rounded-lg text-xs"></textarea>
+          <textarea id="smsMessageBody" rows="3" placeholder="Dear Customer, Shan WiFi network/server is currently under maintenance. Service will be restored shortly."
+            class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs"></textarea>
 
-          <div class="flex flex-wrap items-center gap-3">
-            <button type="button" id="sendBulkSmsBtn" onclick="sendBulkOutageSMS()"
-              class="px-5 py-2.5 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white text-xs font-bold cursor-pointer">
-              🚨 Send Bulk SMS Now
-            </button>
-          </div>
+          <button type="button" id="sendBulkSmsBtn" onclick="sendBulkOutageSMS()"
+            class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
+            🚨 Send Bulk SMS Now
+          </button>
         </div>
 
-        <div class="bg-white rounded-xl border border-zinc-200 shadow-sm p-4">
-          <h3 class="font-bold text-sm text-zinc-900 mb-3">3. Recent Bulk SMS Dispatch Log</h3>
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
+          <h3 class="font-bold text-sm text-slate-900 mb-3">3. Recent Bulk SMS Dispatch Log</h3>
           <div class="overflow-x-auto scrollbar-thin">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
-                <tr class="border-b bg-zinc-50 text-zinc-600">
+                <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
                   <th class="py-2.5 px-3">Time</th>
                   <th class="py-2.5 px-3">Target</th>
                   <th class="py-2.5 px-3">Sent / Failed</th>
                   <th class="py-2.5 px-3">Message</th>
                 </tr>
               </thead>
-              <tbody id="smsLogsBody" class="divide-y"></tbody>
+              <tbody id="smsLogsBody" class="divide-y divide-slate-100"></tbody>
             </table>
           </div>
         </div>
       </section>
 
-      <!-- ================= TAB 8: REPORTS (CA / TAX EXCEL) ================= -->
+      <!-- ================= TAB 9: REPORTS (CA / GST EXCEL) ================= -->
       <section id="tab-reports" class="tab-panel hidden space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <h2 class="text-xl font-extrabold text-zinc-900">Reports & CA Tax Excel Export</h2>
-            <p class="text-xs text-zinc-500">Select sections & calendar date range to export an Excel (.xls) workbook for tax filing</p>
+            <h2 class="text-xl font-extrabold text-slate-900">Reports & CA GST / Tax Excel Export</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Export Without-GST, GST %, GST Amount, With-GST Total & Net Profit columns for CA tax filing</p>
           </div>
           <div class="flex gap-2">
-            <button type="button" onclick="toggleAllReportChecks(true)" class="px-3 py-1.5 rounded-lg bg-white border text-xs font-semibold hover:bg-zinc-50 cursor-pointer">
+            <button type="button" onclick="toggleAllReportChecks(true)" class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-300 text-xs font-semibold hover:bg-slate-200 cursor-pointer">
               Select All
             </button>
-            <button type="button" onclick="toggleAllReportChecks(false)" class="px-3 py-1.5 rounded-lg bg-white border text-xs font-semibold hover:bg-zinc-50 cursor-pointer">
+            <button type="button" onclick="toggleAllReportChecks(false)" class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-300 text-xs font-semibold hover:bg-slate-200 cursor-pointer">
               Clear All
             </button>
           </div>
         </div>
 
-        <div class="bg-white p-5 rounded-xl border border-zinc-200 shadow-sm space-y-5">
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <div>
-              <label class="block text-xs font-semibold text-zinc-700 mb-1">From Date (Calendar)</label>
-              <input id="repFromDate" type="date" onchange="renderReportPreview()" class="w-full px-3 py-2 border rounded-lg text-xs" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">From Date</label>
+              <input id="repFromDate" type="date" onchange="renderReportPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-zinc-700 mb-1">To Date (Calendar)</label>
-              <input id="repToDate" type="date" onchange="renderReportPreview()" class="w-full px-3 py-2 border rounded-lg text-xs" />
+              <label class="block text-xs font-semibold text-slate-700 mb-1">To Date</label>
+              <input id="repToDate" type="date" onchange="renderReportPreview()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
             <div class="lg:col-span-2 flex flex-wrap gap-2">
-              <button type="button" onclick="setQuickDateRange('THIS_MONTH')" class="px-3 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-xs font-medium cursor-pointer">This Month</button>
-              <button type="button" onclick="setQuickDateRange('LAST_MONTH')" class="px-3 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-xs font-medium cursor-pointer">Last Month</button>
-              <button type="button" onclick="setQuickDateRange('FY_IN')" class="px-3 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-xs font-medium cursor-pointer">Indian FY (Apr–Mar)</button>
-              <button type="button" onclick="setQuickDateRange('ALL')" class="px-3 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-xs font-medium cursor-pointer">All Dates</button>
+              <button type="button" onclick="setQuickDateRange('THIS_MONTH')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-medium cursor-pointer">This Month</button>
+              <button type="button" onclick="setQuickDateRange('LAST_MONTH')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-medium cursor-pointer">Last Month</button>
+              <button type="button" onclick="setQuickDateRange('FY_IN')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-medium cursor-pointer">Indian FY (Apr–Mar)</button>
+              <button type="button" onclick="setQuickDateRange('ALL')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-medium cursor-pointer">All Dates</button>
             </div>
           </div>
 
           <div>
-            <div class="text-xs font-semibold text-zinc-700 mb-2">Select Report Sections:</div>
+            <div class="text-xs font-semibold text-slate-700 mb-2">Select Report Sections:</div>
             <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
-              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkIncome" checked onchange="renderReportPreview()" class="rep-chk rounded" />
-                <span class="font-semibold text-emerald-700">Income</span>
+                <span class="font-semibold text-emerald-700">Income (GST)</span>
               </label>
 
-              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkExpenses" checked onchange="renderReportPreview()" class="rep-chk rounded" />
-                <span class="font-semibold text-[#E60000]">Expenses</span>
+                <span class="font-semibold text-red-600">Expenses (GST)</span>
               </label>
 
-              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkCustomers" onchange="renderReportPreview()" class="rep-chk rounded" />
-                <span class="font-semibold text-zinc-800">Customer Data</span>
+                <span class="font-semibold text-slate-800">Customer Data</span>
               </label>
 
-              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkTower" onchange="renderReportPreview()" class="rep-chk rounded" />
-                <span class="font-semibold text-zinc-800">Tower</span>
+                <span class="font-semibold text-slate-800">Tower</span>
               </label>
 
-              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkDevice" onchange="renderReportPreview()" class="rep-chk rounded" />
-                <span class="font-semibold text-zinc-800">Device</span>
+                <span class="font-semibold text-slate-800">Device</span>
               </label>
 
-              <label class="flex items-center gap-2 p-2.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 cursor-pointer">
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkOther" onchange="renderReportPreview()" class="rep-chk rounded" />
-                <span class="font-semibold text-zinc-800">Other</span>
+                <span class="font-semibold text-slate-800">Other</span>
               </label>
             </div>
-            <p class="mt-2 text-[11px] text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-1.5">
-              Note: <b>Income</b> aur <b>Expenses</b> report mein customer ka personal data (name, phone, address) include nahi kiya jata—taaki aap CA / tax filing ke liye clean accounting sheet share kar sakein.
+            <p class="mt-2.5 text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2">
+              Note: <b>Income</b> aur <b>Expenses</b> report mein customer ka personal data include nahi hota—sirf <b>Without_GST</b>, <b>GST_%</b>, <b>GST_Amount</b> aur <b>With_GST_Total</b> aata hai taaki CA tax filing mein koi dikkat na ho.
             </p>
           </div>
 
-          <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t">
-            <div id="repSummaryText" class="text-xs font-semibold text-zinc-700">
-              Selected: Income, Expenses
-            </div>
+          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
+            <div id="repSummaryText" class="text-xs font-semibold text-slate-700">Selected: Income, Expenses</div>
             <button type="button" onclick="downloadExcelReport()"
-              class="px-5 py-2.5 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white text-xs font-bold shadow cursor-pointer">
-              📥 Download Excel Report (.xls)
+              class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm cursor-pointer">
+              📥 Download CA GST Excel Report (.xls)
             </button>
           </div>
         </div>
 
-        <div class="bg-white p-4 rounded-xl border border-zinc-200 shadow-sm space-y-4">
-          <h3 class="font-bold text-sm text-zinc-900">Live Report Preview (Date Filtered)</h3>
-          <div id="repPreviewContainer" class="space-y-5 text-xs"></div>
+        <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
+          <h3 class="font-bold text-sm text-slate-900">Live Report Preview</h3>
+          <div id="repPreviewContainer" class="space-y-5 text-xs num"></div>
         </div>
       </section>
     </main>
   </div>
 
   <!-- ================= UNIVERSAL EDIT MODAL ================= -->
-  <div id="editModal" class="fixed inset-0 bg-zinc-950/65 z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-lg w-full p-5 shadow-2xl border-t-4 border-[#E60000] space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b pb-2.5">
-        <h3 id="editModalTitle" class="font-extrabold text-sm text-zinc-900">Edit Record</h3>
-        <button onclick="closeEditModal()" class="text-zinc-400 hover:text-zinc-800 text-sm font-bold cursor-pointer">✕</button>
+  <div id="editModal" class="fixed inset-0 bg-slate-950/65 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 id="editModalTitle" class="font-extrabold text-sm text-slate-900">Edit Record</h3>
+        <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-800 text-sm font-bold cursor-pointer">✕</button>
       </div>
 
       <form id="editModalForm" class="space-y-3 text-xs">
         <input type="hidden" id="editEntity" />
         <input type="hidden" id="editId" />
         <div id="editFieldsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+        <div id="editLiveCalcBox" class="hidden p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs num"></div>
 
-        <div class="flex justify-end gap-2 pt-3 border-t">
-          <button type="button" onclick="closeEditModal()" class="px-3.5 py-2 rounded-lg border text-xs font-semibold cursor-pointer">Cancel</button>
-          <button type="submit" class="px-4 py-2 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white text-xs font-bold cursor-pointer">
+        <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
+          <button type="button" onclick="closeEditModal()" class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold cursor-pointer">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
             Save Changes
           </button>
         </div>
@@ -649,23 +1070,23 @@
     </div>
   </div>
 
-  <!-- ================= TRANSFER MODAL (CUSTOMER & DEVICE) ================= -->
-  <div id="transferModal" class="fixed inset-0 bg-zinc-950/65 z-50 hidden items-center justify-center p-4">
-    <div class="bg-white rounded-2xl max-w-md w-full p-5 shadow-2xl border-t-4 border-[#E60000] space-y-4">
-      <div class="flex items-center justify-between border-b pb-2.5">
-        <h3 id="transferModalTitle" class="font-extrabold text-sm text-zinc-900">Transfer</h3>
-        <button onclick="closeTransferModal()" class="text-zinc-400 hover:text-zinc-800 text-sm font-bold cursor-pointer">✕</button>
+  <!-- ================= TRANSFER MODAL ================= -->
+  <div id="transferModal" class="fixed inset-0 bg-slate-950/65 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 id="transferModalTitle" class="font-extrabold text-sm text-slate-900">Transfer</h3>
+        <button onclick="closeTransferModal()" class="text-slate-400 hover:text-slate-800 text-sm font-bold cursor-pointer">✕</button>
       </div>
 
-      <div id="transferCurrentInfo" class="p-3 rounded-lg bg-zinc-50 border border-zinc-200 text-xs text-zinc-700"></div>
+      <div id="transferCurrentInfo" class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700"></div>
 
-      <form id="transferForm" class="space-y-3">
+      <form id="transferForm" class="space-y-3 text-xs">
         <input type="hidden" id="transferEntityType" />
         <input type="hidden" id="transferEntityId" />
 
         <div id="transferModeWrap" class="hidden">
-          <label class="block text-xs font-semibold text-zinc-600 mb-1">Move Device To:</label>
-          <select id="transferDeviceTargetType" onchange="toggleDeviceTransferInputs()" class="w-full px-3 py-2 border rounded-lg text-xs bg-white">
+          <label class="block font-semibold text-slate-600 mb-1">Move Device To:</label>
+          <select id="transferDeviceTargetType" onchange="toggleDeviceTransferInputs()" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white">
             <option value="TOWER">Another Tower (Tower → Tower)</option>
             <option value="CUSTOMER">Customer / Shop Location</option>
             <option value="STOCK">In Stock / Office (Unassigned)</option>
@@ -673,32 +1094,32 @@
         </div>
 
         <div id="transferTowerSelectWrap">
-          <label class="block text-xs font-semibold text-zinc-600 mb-1">Select Destination Tower:</label>
-          <select id="transferDestTower" class="w-full px-3 py-2 border rounded-lg text-xs bg-white">
+          <label class="block font-semibold text-slate-600 mb-1">Select Destination Tower:</label>
+          <select id="transferDestTower" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white">
             <option value="">-- Unassigned / No Tower --</option>
           </select>
         </div>
 
         <div id="transferCustomerSelectWrap" class="hidden">
-          <label class="block text-xs font-semibold text-zinc-600 mb-1">Select Destination Customer / Shop:</label>
-          <select id="transferDestCustomer" class="w-full px-3 py-2 border rounded-lg text-xs bg-white">
+          <label class="block font-semibold text-slate-600 mb-1">Select Destination Customer / Shop:</label>
+          <select id="transferDestCustomer" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white">
             <option value="">-- Select Customer --</option>
           </select>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-zinc-600 mb-1">Transfer Date:</label>
-          <input id="transferDate" type="date" class="w-full px-3 py-2 border rounded-lg text-xs" />
+          <label class="block font-semibold text-slate-600 mb-1">Transfer Date:</label>
+          <input id="transferDate" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-zinc-600 mb-1">Transfer Reason / Note (Optional):</label>
-          <input id="transferNote" type="text" placeholder="e.g. Shifted from Tower A to Tower C for better signal" class="w-full px-3 py-2 border rounded-lg text-xs" />
+          <label class="block font-semibold text-slate-600 mb-1">Transfer Note (Optional):</label>
+          <input id="transferNote" type="text" placeholder="e.g. Shifted to Tower B" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeTransferModal()" class="px-3.5 py-2 rounded-lg border text-xs font-medium cursor-pointer">Cancel</button>
-          <button type="submit" class="px-4 py-2 rounded-lg bg-[#E60000] hover:bg-[#B80000] text-white text-xs font-bold cursor-pointer">
+          <button type="button" onclick="closeTransferModal()" class="px-3.5 py-2 rounded-xl border border-slate-300 font-medium cursor-pointer">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer">
             Confirm Transfer
           </button>
         </div>
@@ -710,15 +1131,402 @@
     const DEFAULT_SUPABASE_URL = "https://zobrjfquplgqiegrtnof.supabase.co";
     const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvYnJqZnF1cGxncWllZ3J0bm9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MTkwNDIsImV4cCI6MjExMTE5NTA0Mn0.7tSegwPfpB9P8TGeNsVhb9l46J_b__B0gLiWdZXy830";
 
+    const INDIA_GST_SLABS = [
+      { value: 18, label: "18% GST (Telecom / ISP)" },
+      { value: 0, label: "0% GST (Exempt / Nil)" },
+      { value: 0.25, label: "0.25% GST" },
+      { value: 3, label: "3% GST" },
+      { value: 5, label: "5% GST" },
+      { value: 12, label: "12% GST" },
+      { value: 28, label: "28% GST" },
+      { value: 40, label: "40% GST" }
+    ];
+
     let supabaseClient = null;
     let state = {
       towers: [],
       customers: [],
       devices: [],
       complaints: [],
-      transactions: []
+      transactions: [],
+      invoices: [],
+      company: {
+        company_name: "Shan WiFi",
+        tagline: "High-Speed Fiber & Wireless Broadband",
+        logo_data: "",
+        phone: "6391224488",
+        email: "",
+        website: "www.shanwifi.com",
+        address: "Partawal Bazar, Maharajganj, Uttar Pradesh, India",
+        state_name: "Uttar Pradesh (Code: 09)",
+        gstin: "",
+        sac_code: "998422",
+        bank_details: "Direct Cash / UPI / Bank Transfer",
+        invoice_prefix: "SWF-",
+        next_invoice_no: 1001,
+        default_gst_mode: "INTRA",
+        footer_note: "Thank you for choosing Shan WiFi. Timely renewal ensures uninterrupted internet."
+      }
     };
 
+    // ================= GST & PROFIT CALCULATOR =================
+    function round2(n) {
+      return Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
+    }
+
+    function calcGstBreakdown(amount, rate, mode) {
+      const amt = Number(amount || 0);
+      const r = Number(rate ?? 18);
+      if (r <= 0 || amt <= 0) {
+        return { base: round2(amt), gst: 0, total: round2(amt), rate: r, mode };
+      }
+      if (mode === "EXCLUSIVE") {
+        const gst = round2((amt * r) / 100);
+        return { base: round2(amt), gst, total: round2(amt + gst), rate: r, mode };
+      }
+      const base = round2((amt * 100) / (100 + r));
+      const gst = round2(amt - base);
+      return { base, gst, total: round2(amt), rate: r, mode: "INCLUSIVE" };
+    }
+
+    function updateCustFormCalc() {
+      const cost = Number(document.getElementById("custPrice").value || 0);
+      const paid = Number(document.getElementById("custPaid").value || 0);
+      const rate = Number(document.getElementById("custGstRate").value || 0);
+      const mode = document.getElementById("custGstMode").value;
+      const g = calcGstBreakdown(paid, rate, mode);
+      const profit = round2(paid - cost);
+
+      document.getElementById("custLiveBreakdown").innerHTML = `
+        <span>Without GST: <b>₹${g.base.toFixed(2)}</b></span>
+        <span>GST (${g.rate}%): <b>₹${g.gst.toFixed(2)}</b></span>
+        <span>With GST Total: <b>₹${g.total.toFixed(2)}</b></span>
+        <span class="${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Profit (Paid ₹${paid} − Cost ₹${cost}): <b>₹${profit.toFixed(2)}</b></span>
+      `;
+    }
+
+    function updateTxFormCalc() {
+      const amt = Number(document.getElementById("txAmount").value || 0);
+      const rate = Number(document.getElementById("txGstRate").value || 0);
+      const mode = document.getElementById("txGstMode").value;
+      const g = calcGstBreakdown(amt, rate, mode);
+
+      document.getElementById("txLiveBreakdown").innerHTML = `
+        Without GST: <b>₹${g.base.toFixed(2)}</b> • GST (${g.rate}%): <b>₹${g.gst.toFixed(2)}</b> • With GST Total: <b>₹${g.total.toFixed(2)}</b>
+      `;
+    }
+
+    function updateEditModalCalc() {
+      const entity = document.getElementById("editEntity").value;
+      const box = document.getElementById("editLiveCalcBox");
+      const form = document.getElementById("editModalForm");
+
+      if (entity === "customers") {
+        const cost = Number(form.querySelector('[name="plan_price"]')?.value || 0);
+        const paid = Number(form.querySelector('[name="amount_paid"]')?.value || 0);
+        const rate = Number(form.querySelector('[name="gst_rate"]')?.value || 0);
+        const mode = form.querySelector('[name="gst_mode"]')?.value || "INCLUSIVE";
+        const g = calcGstBreakdown(paid, rate, mode);
+        const profit = round2(paid - cost);
+
+        box.classList.remove("hidden");
+        box.innerHTML = `
+          <div class="flex flex-wrap gap-x-4 gap-y-1 text-slate-700">
+            <span>Without GST: <b>₹${g.base.toFixed(2)}</b></span>
+            <span>GST (${g.rate}%): <b>₹${g.gst.toFixed(2)}</b></span>
+            <span>With GST Total: <b>₹${g.total.toFixed(2)}</b></span>
+            <span class="${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Profit (${paid} − ${cost}): <b>₹${profit.toFixed(2)}</b></span>
+          </div>
+        `;
+      } else if (entity === "transactions") {
+        const amt = Number(form.querySelector('[name="amount"]')?.value || 0);
+        const rate = Number(form.querySelector('[name="gst_rate"]')?.value || 0);
+        const mode = form.querySelector('[name="gst_mode"]')?.value || "INCLUSIVE";
+        const g = calcGstBreakdown(amt, rate, mode);
+
+        box.classList.remove("hidden");
+        box.innerHTML = `
+          <div class="flex flex-wrap gap-x-4 gap-y-1 text-slate-700">
+            <span>Without GST: <b>₹${g.base.toFixed(2)}</b></span>
+            <span>GST (${g.rate}%): <b>₹${g.gst.toFixed(2)}</b></span>
+            <span>With GST Total: <b>₹${g.total.toFixed(2)}</b></span>
+          </div>
+        `;
+      } else {
+        box.classList.add("hidden");
+      }
+    }
+
+    // ================= COMPANY SETTINGS & INVOICE BUILDER =================
+    function handleLogoUpload(event) {
+      const file = event.target.files?.[0];
+      if (!file) return;
+      if (file.size > 1024 * 1024) {
+        showToast("Please select a logo under 1 MB.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        state.company.logo_data = reader.result;
+        syncCompanySettingsUI();
+        buildInvoiceFromInputs();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearCompanyLogo() {
+      state.company.logo_data = "";
+      document.getElementById("setLogoFile").value = "";
+      syncCompanySettingsUI();
+      buildInvoiceFromInputs();
+    }
+
+    function syncCompanySettingsUI() {
+      const c = state.company;
+      document.getElementById("setCompanyName").value = c.company_name || "Shan WiFi";
+      document.getElementById("setTagline").value = c.tagline || "";
+      document.getElementById("setGstin").value = c.gstin || "";
+      document.getElementById("setSacCode").value = c.sac_code || "998422";
+      document.getElementById("setPhone").value = c.phone || "";
+      document.getElementById("setEmail").value = c.email || "";
+      document.getElementById("setState").value = c.state_name || "";
+      document.getElementById("setInvPrefix").value = c.invoice_prefix || "SWF-";
+      document.getElementById("setInvNextNo").value = c.next_invoice_no || 1001;
+      document.getElementById("setAddress").value = c.address || "";
+      document.getElementById("setBankDetails").value = c.bank_details || "";
+      document.getElementById("setTaxSplit").value = c.default_gst_mode || "INTRA";
+      document.getElementById("setFooterNote").value = c.footer_note || "";
+
+      const prevImg = document.getElementById("setLogoPreview");
+      const sideBox = document.getElementById("sidebarLogoBox");
+      const printImg = document.getElementById("printLogoImg");
+      const printFallback = document.getElementById("printLogoFallback");
+
+      document.getElementById("sidebarCompanyName").textContent = c.company_name || "Shan WiFi";
+
+      if (c.logo_data) {
+        prevImg.src = c.logo_data;
+        prevImg.classList.remove("hidden");
+        sideBox.innerHTML = `<img src="${c.logo_data}" alt="Logo" class="w-full h-full object-contain bg-white p-0.5" />`;
+        printImg.src = c.logo_data;
+        printImg.classList.remove("hidden");
+        printFallback.classList.add("hidden");
+      } else {
+        prevImg.classList.add("hidden");
+        const initials = (c.company_name || "SW").trim().slice(0, 2).toUpperCase();
+        sideBox.textContent = initials;
+        printImg.classList.add("hidden");
+        printFallback.textContent = initials;
+        printFallback.classList.remove("hidden");
+      }
+    }
+
+    document.getElementById("companySettingsForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      state.company = {
+        ...state.company,
+        company_name: document.getElementById("setCompanyName").value.trim() || "Shan WiFi",
+        tagline: document.getElementById("setTagline").value.trim(),
+        gstin: document.getElementById("setGstin").value.trim().toUpperCase(),
+        sac_code: document.getElementById("setSacCode").value.trim() || "998422",
+        phone: document.getElementById("setPhone").value.trim(),
+        email: document.getElementById("setEmail").value.trim(),
+        state_name: document.getElementById("setState").value.trim(),
+        invoice_prefix: document.getElementById("setInvPrefix").value.trim() || "SWF-",
+        next_invoice_no: Number(document.getElementById("setInvNextNo").value || 1001),
+        address: document.getElementById("setAddress").value.trim(),
+        bank_details: document.getElementById("setBankDetails").value.trim(),
+        default_gst_mode: document.getElementById("setTaxSplit").value || "INTRA",
+        footer_note: document.getElementById("setFooterNote").value.trim()
+      };
+
+      localStorage.setItem("isp_company_settings", JSON.stringify(state.company));
+      if (supabaseClient) {
+        await supabaseClient.from("company_settings").upsert([{ id: "default", ...state.company }]);
+      }
+
+      syncCompanySettingsUI();
+      buildInvoiceFromInputs();
+      showToast("Company & Invoice settings saved!");
+    });
+
+    function autofillInvoiceFromCustomer() {
+      const custId = document.getElementById("invCustomerSelect").value;
+      if (!custId) return;
+      const c = state.customers.find(x => x.id === custId);
+      if (!c) return;
+
+      document.getElementById("invCustName").value = c.name || "";
+      document.getElementById("invCustPhone").value = c.phone || "";
+      document.getElementById("invCustAddr").value = c.address || "";
+      document.getElementById("invServiceDesc").value = c.plan_name || "Broadband Internet Service (Monthly)";
+      document.getElementById("invPlanCost").value = Number(c.plan_price || 0);
+      document.getElementById("invAmountPaid").value = Number(c.amount_paid || c.plan_price || 0);
+      document.getElementById("invGstRate").value = String(c.gst_rate ?? 18);
+      document.getElementById("invGstMode").value = c.gst_mode || "INCLUSIVE";
+      buildInvoiceFromInputs();
+    }
+
+    function buildInvoiceFromInputs() {
+      const comp = state.company;
+      const custName = document.getElementById("invCustName").value.trim() || "Walk-in Customer";
+      const custPhone = document.getElementById("invCustPhone").value.trim() || "—";
+      const custAddr = document.getElementById("invCustAddr").value.trim() || "—";
+      const custGstin = document.getElementById("invCustGstin").value.trim().toUpperCase();
+      const desc = document.getElementById("invServiceDesc").value.trim() || "Internet Service";
+      const planCost = Number(document.getElementById("invPlanCost").value || 0);
+      const paid = Number(document.getElementById("invAmountPaid").value || 0);
+      const rate = Number(document.getElementById("invGstRate").value ?? 18);
+      const mode = document.getElementById("invGstMode").value || "INCLUSIVE";
+      const invDate = document.getElementById("invDate").value || new Date().toISOString().slice(0, 10);
+      const taxSplit = document.getElementById("setTaxSplit")?.value || comp.default_gst_mode || "INTRA";
+
+      const g = calcGstBreakdown(paid, rate, mode);
+      const profit = round2(paid - planCost);
+      const invNum = `${comp.invoice_prefix || "SWF-"}${comp.next_invoice_no || 1001}`;
+
+      document.getElementById("invProfitPill").textContent = `Net Profit (₹${paid} − ₹${planCost}): ₹${profit.toFixed(2)}`;
+      document.getElementById("invProfitPill").className = `text-xs font-bold px-3 py-1.5 rounded-xl num border ${profit >= 0 ? "text-emerald-700 bg-emerald-50 border-emerald-200" : "text-red-700 bg-red-50 border-red-200"}`;
+
+      document.getElementById("printCompanyName").textContent = comp.company_name || "Shan WiFi";
+      document.getElementById("printTagline").textContent = comp.tagline || "";
+      document.getElementById("printAddress").textContent = comp.address || "";
+      document.getElementById("printContactLine").textContent = [comp.phone ? `Phone: ${comp.phone}` : "", comp.email ? `Email: ${comp.email}` : ""].filter(Boolean).join(" • ");
+      document.getElementById("printGstLine").textContent = `GSTIN: ${comp.gstin || "Unregistered"} • SAC: ${comp.sac_code || "998422"}`;
+      document.getElementById("printStateLine").textContent = comp.state_name ? `Place of Supply: ${comp.state_name}` : "";
+      document.getElementById("printBankInfo").textContent = comp.bank_details || "Cash / UPI / Bank Transfer";
+      document.getElementById("printFooterNote").textContent = comp.footer_note || "";
+      document.getElementById("printProfitNote").textContent = `Internal Profit Record: Paid ₹${paid.toFixed(2)} − Plan Cost ₹${planCost.toFixed(2)} = ₹${profit.toFixed(2)}`;
+
+      document.getElementById("printInvNumber").textContent = `Invoice #: ${invNum}`;
+      document.getElementById("printInvDate").textContent = `Date: ${invDate}`;
+
+      document.getElementById("printCustName").textContent = custName;
+      document.getElementById("printCustPhone").textContent = `Phone: ${custPhone}`;
+      document.getElementById("printCustAddr").textContent = `Address: ${custAddr}`;
+      document.getElementById("printCustGstin").textContent = `GSTIN: ${custGstin || "Unregistered / B2C"}`;
+
+      document.getElementById("printDescCell").textContent = desc;
+      document.getElementById("printSacCell").textContent = comp.sac_code || "998422";
+      document.getElementById("printTaxableCell").textContent = `₹${g.base.toFixed(2)}`;
+      document.getElementById("printRateCell").textContent = `${g.rate}%`;
+      document.getElementById("printGstCell").textContent = `₹${g.gst.toFixed(2)}`;
+      document.getElementById("printTotalCell").textContent = `₹${g.total.toFixed(2)}`;
+
+      document.getElementById("sumTaxable").textContent = `₹${g.base.toFixed(2)}`;
+      document.getElementById("sumGrandTotal").textContent = `₹${g.total.toFixed(2)}`;
+
+      const halfGst = round2(g.gst / 2);
+      const halfRate = round2(g.rate / 2);
+      if (taxSplit === "IGST") {
+        document.getElementById("sumTaxSplitRows").innerHTML = `
+          <div class="flex justify-between"><span>IGST (${g.rate}%):</span><span>₹${g.gst.toFixed(2)}</span></div>
+        `;
+      } else {
+        document.getElementById("sumTaxSplitRows").innerHTML = `
+          <div class="flex justify-between"><span>CGST (${halfRate}%):</span><span>₹${halfGst.toFixed(2)}</span></div>
+          <div class="flex justify-between"><span>SGST (${halfRate}%):</span><span>₹${halfGst.toFixed(2)}</span></div>
+        `;
+      }
+    }
+
+    async function saveInvoiceToCloud() {
+      const comp = state.company;
+      const custId = document.getElementById("invCustomerSelect").value || null;
+      const custName = document.getElementById("invCustName").value.trim() || "Walk-in Customer";
+      const custPhone = document.getElementById("invCustPhone").value.trim();
+      const custAddr = document.getElementById("invCustAddr").value.trim();
+      const custGstin = document.getElementById("invCustGstin").value.trim().toUpperCase();
+      const desc = document.getElementById("invServiceDesc").value.trim() || "Internet Service";
+      const planCost = Number(document.getElementById("invPlanCost").value || 0);
+      const paid = Number(document.getElementById("invAmountPaid").value || 0);
+      const rate = Number(document.getElementById("invGstRate").value ?? 18);
+      const mode = document.getElementById("invGstMode").value || "INCLUSIVE";
+      const invDate = document.getElementById("invDate").value || new Date().toISOString().slice(0, 10);
+      const taxSplit = document.getElementById("setTaxSplit")?.value || comp.default_gst_mode || "INTRA";
+
+      const g = calcGstBreakdown(paid, rate, mode);
+      const profit = round2(paid - planCost);
+      const invNum = `${comp.invoice_prefix || "SWF-"}${comp.next_invoice_no || 1001}`;
+      const halfGst = round2(g.gst / 2);
+
+      const record = {
+        invoice_number: invNum,
+        customer_id: custId,
+        customer_name: custName,
+        customer_phone: custPhone,
+        customer_address: custAddr,
+        customer_gstin: custGstin,
+        plan_name: desc,
+        plan_cost: planCost,
+        amount_paid: paid,
+        profit_amount: profit,
+        taxable_amount: g.base,
+        gst_rate: rate,
+        cgst_amount: taxSplit === "IGST" ? 0 : halfGst,
+        sgst_amount: taxSplit === "IGST" ? 0 : halfGst,
+        igst_amount: taxSplit === "IGST" ? g.gst : 0,
+        total_with_gst: g.total,
+        invoice_date: invDate
+      };
+
+      if (supabaseClient) {
+        const { error } = await supabaseClient.from("invoices").insert([record]);
+        if (error) return showToast(error.message);
+        comp.next_invoice_no = Number(comp.next_invoice_no || 1001) + 1;
+        await supabaseClient.from("company_settings").upsert([{ id: "default", ...comp }]);
+      } else {
+        state.invoices.unshift(record);
+        comp.next_invoice_no = Number(comp.next_invoice_no || 1001) + 1;
+      }
+
+      localStorage.setItem("isp_company_settings", JSON.stringify(comp));
+      syncCompanySettingsUI();
+      buildInvoiceFromInputs();
+      renderSavedInvoices();
+      showToast(`Invoice ${invNum} saved!`);
+    }
+
+    function renderSavedInvoices() {
+      const tbody = document.getElementById("savedInvoicesBody");
+      if (!state.invoices.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-400">No invoices saved yet.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = state.invoices.map(inv => `
+        <tr>
+          <td class="py-2.5 px-3 font-bold text-slate-900">${esc(inv.invoice_number)}</td>
+          <td class="py-2.5 px-3">${esc(inv.invoice_date || "—")}</td>
+          <td class="py-2.5 px-3">${esc(inv.customer_name)}</td>
+          <td class="py-2.5 px-3">₹${Number(inv.taxable_amount || 0).toFixed(2)}</td>
+          <td class="py-2.5 px-3 text-blue-700">${Number(inv.gst_rate || 0)}% (₹${Number((inv.igst_amount || 0) || ((inv.cgst_amount || 0) + (inv.sgst_amount || 0))).toFixed(2)})</td>
+          <td class="py-2.5 px-3 font-bold text-slate-900">₹${Number(inv.total_with_gst || 0).toFixed(2)}</td>
+          <td class="py-2.5 px-3">
+            <button onclick='loadInvoiceToPreview(${JSON.stringify(inv)})' class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium cursor-pointer">
+              Load & Print
+            </button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function loadInvoiceToPreview(inv) {
+      document.getElementById("invCustName").value = inv.customer_name || "";
+      document.getElementById("invCustPhone").value = inv.customer_phone || "";
+      document.getElementById("invCustAddr").value = inv.customer_address || "";
+      document.getElementById("invCustGstin").value = inv.customer_gstin || "";
+      document.getElementById("invServiceDesc").value = inv.plan_name || "";
+      document.getElementById("invPlanCost").value = Number(inv.plan_cost || 0);
+      document.getElementById("invAmountPaid").value = Number(inv.amount_paid || inv.total_with_gst || 0);
+      document.getElementById("invGstRate").value = String(inv.gst_rate ?? 18);
+      document.getElementById("invDate").value = inv.invoice_date || new Date().toISOString().slice(0, 10);
+      buildInvoiceFromInputs();
+      document.getElementById("printInvNumber").textContent = `Invoice #: ${inv.invoice_number}`;
+      document.getElementById("invoicePrintable").scrollIntoView({ behavior: "smooth" });
+    }
+
+    // ================= SUPABASE INIT & AUTH =================
     function getSupabaseCredentials() {
       const savedUrl = localStorage.getItem("isp_supa_url");
       const savedKey = localStorage.getItem("isp_supa_key");
@@ -744,13 +1552,21 @@
       document.getElementById("cfgSupaKey").value = key.includes("YOUR_SUPABASE_ANON_PUBLIC_KEY") ? "" : key;
 
       if (!url || url.includes("YOUR_PROJECT_ID") || !key || key.includes("YOUR_SUPABASE_ANON_PUBLIC_KEY")) {
-        showLoginError("Setup Supabase URL & Anon Key first using 'Supabase Config' below.");
+        showLoginError("Setup Supabase URL & Anon Key first using 'Supabase Project Connection' below.");
         return;
       }
       supabaseClient = window.supabase.createClient(url, key);
     }
 
     async function checkSession() {
+      const localComp = localStorage.getItem("isp_company_settings");
+      if (localComp) {
+        try { state.company = { ...state.company, ...JSON.parse(localComp) }; } catch (_) {}
+      }
+      document.getElementById("invDate").value = new Date().toISOString().slice(0, 10);
+      syncCompanySettingsUI();
+      buildInvoiceFromInputs();
+
       initSupabase();
       if (!supabaseClient) return;
       const { data: { session } } = await supabaseClient.auth.getSession();
@@ -771,7 +1587,7 @@
 
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
       btn.disabled = false;
-      btn.textContent = "Sign In to Shan WiFi";
+      btn.textContent = "Sign In to Admin Portal";
 
       if (error) showLoginError(error.message);
       else onLoggedIn(data.user);
@@ -808,13 +1624,14 @@
 
       document.querySelectorAll(".nav-btn").forEach(b => {
         if (b.dataset.tab === tabName) {
-          b.classList.add("bg-[#E60000]", "text-white", "font-semibold");
+          b.classList.add("bg-red-600", "text-white", "font-semibold");
         } else {
-          b.classList.remove("bg-[#E60000]", "text-white", "font-semibold");
+          b.classList.remove("bg-red-600", "text-white", "font-semibold");
         }
       });
 
       if (tabName === "reports") renderReportPreview();
+      if (tabName === "invoices") buildInvoiceFromInputs();
       if (window.innerWidth < 1024) document.getElementById("sidebar").classList.add("-translate-x-full");
     }
 
@@ -827,17 +1644,19 @@
       t.textContent = msg;
       t.classList.remove("hidden");
       clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3200);
+      window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3400);
     }
 
     async function refreshAllData() {
       if (!supabaseClient) return;
-      const [tRes, cRes, dRes, compRes, txRes] = await Promise.all([
+      const [tRes, cRes, dRes, compRes, txRes, invRes, setRes] = await Promise.all([
         supabaseClient.from("towers").select("*").order("created_at", { ascending: false }),
         supabaseClient.from("customers").select("*").order("expiry_date", { ascending: true }),
         supabaseClient.from("devices").select("*").order("created_at", { ascending: false }),
         supabaseClient.from("complaints").select("*").order("opened_date", { ascending: false }),
-        supabaseClient.from("transactions").select("*").order("date", { ascending: false })
+        supabaseClient.from("transactions").select("*").order("date", { ascending: false }),
+        supabaseClient.from("invoices").select("*").order("created_at", { ascending: false }),
+        supabaseClient.from("company_settings").select("*").eq("id", "default").maybeSingle()
       ]);
 
       state.towers = tRes.data || [];
@@ -845,7 +1664,14 @@
       state.devices = dRes.data || [];
       state.complaints = compRes.data || [];
       state.transactions = txRes.data || [];
+      state.invoices = invRes.data || [];
 
+      if (setRes.data) {
+        state.company = { ...state.company, ...setRes.data };
+        localStorage.setItem("isp_company_settings", JSON.stringify(state.company));
+      }
+
+      syncCompanySettingsUI();
       populateDropdowns();
       renderDashboard();
       renderTowers();
@@ -853,6 +1679,8 @@
       renderDevices();
       renderComplaints();
       renderAccounts();
+      renderSavedInvoices();
+      buildInvoiceFromInputs();
       updateSmsRecipientCount();
       renderReportPreview();
     }
@@ -868,6 +1696,7 @@
       const custOptions = state.customers.map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.phone)})</option>`).join("");
       document.getElementById("devCustomer").innerHTML = `<option value="">Customer / Shop (If at Customer)</option>` + custOptions;
       document.getElementById("transferDestCustomer").innerHTML = `<option value="">-- Select Customer --</option>` + custOptions;
+      document.getElementById("invCustomerSelect").innerHTML = `<option value="">-- Custom / Walk-in Billing --</option>` + custOptions;
     }
 
     function getTowerName(id) {
@@ -892,7 +1721,7 @@
 
       const totalIncome = state.transactions.filter(x => x.type === "Income").reduce((s, x) => s + Number(x.amount || 0), 0);
       const totalExpense = state.transactions.filter(x => x.type === "Expense").reduce((s, x) => s + Number(x.amount || 0), 0);
-      const net = totalIncome - totalExpense;
+      const net = round2(totalIncome - totalExpense);
       const camCount = state.devices.filter(d => d.device_type === "Camera").length;
 
       document.getElementById("kpiActiveCustomers").textContent = active;
@@ -904,34 +1733,38 @@
 
       const netEl = document.getElementById("kpiNetProfit");
       netEl.textContent = `${net < 0 ? "-" : ""}₹${Math.abs(net).toLocaleString()}`;
-      netEl.className = `text-2xl font-extrabold mt-1 ${net >= 0 ? "text-emerald-600" : "text-[#E60000]"}`;
-      document.getElementById("kpiIncExp").textContent = `In: ₹${totalIncome.toLocaleString()} | Out: ₹${totalExpense.toLocaleString()}`;
+      netEl.className = `text-2xl font-black mt-1.5 num ${net >= 0 ? "text-emerald-600" : "text-red-600"}`;
+      document.getElementById("kpiIncExp").textContent = `Collected: ₹${totalIncome.toLocaleString()} | Cost/Exp: ₹${totalExpense.toLocaleString()}`;
 
       const tbody = document.getElementById("dashExpiringBody");
       if (!expiringSoonList.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-zinc-400">No customers expiring soon or expired.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="py-5 text-center text-slate-400">No customers expiring soon or expired.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = expiringSoonList.slice(0, 10).map(c => {
         const d = daysUntil(c.expiry_date);
+        const profit = round2(Number(c.amount_paid || 0) - Number(c.plan_price || 0));
         const badge = d < 0
-          ? `<span class="px-2 py-0.5 rounded bg-red-100 text-[#E60000] font-semibold">Expired (${Math.abs(d)}d ago)</span>`
-          : `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-semibold">${d === 0 ? "Today" : d + "d left"}</span>`;
+          ? `<span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">Expired (${Math.abs(d)}d)</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-semibold">${d === 0 ? "Today" : d + "d left"}</span>`;
 
         return `
           <tr>
-            <td class="py-2.5 px-3">
-              <div class="font-semibold">${esc(c.name)}</div>
-              ${c.pppoe_username ? `<div class="text-[11px] font-mono text-zinc-500">PPPoE: ${esc(c.pppoe_username)}</div>` : ""}
+            <td class="py-3 px-3">
+              <div class="font-bold text-slate-900">${esc(c.name)}</div>
+              ${c.pppoe_username ? `<div class="text-[11px] font-mono text-slate-500">PPPoE: ${esc(c.pppoe_username)}</div>` : ""}
             </td>
-            <td class="py-2.5 px-3">${esc(c.phone)}</td>
-            <td class="py-2.5 px-3">${esc(c.plan_name || "Plan")} — ₹${Number(c.plan_price || 0)} ${Number(c.due_amount) > 0 ? `<span class="text-[#E60000] font-semibold">(Due ₹${c.due_amount})</span>` : ""}</td>
-            <td class="py-2.5 px-3">${esc(c.expiry_date || "—")} ${badge}</td>
-            <td class="py-2.5 px-3 flex flex-wrap gap-1.5">
-              <button onclick='sendWhatsAppReminder(${JSON.stringify(c)})' class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
-              <button onclick="renewCustomer('${c.id}')" class="px-2.5 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-white font-medium cursor-pointer">+30d Renew</button>
-              <button onclick="openEditModal('customers', '${c.id}')" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
+            <td class="py-3 px-3">${esc(c.phone)}</td>
+            <td class="py-3 px-3">
+              Paid: <b>₹${Number(c.amount_paid || 0)}</b> | Cost: ₹${Number(c.plan_price || 0)}
+              <span class="ml-1 font-bold ${profit >= 0 ? "text-emerald-700" : "text-red-600"}">(Profit: ₹${profit})</span>
+            </td>
+            <td class="py-3 px-3">${esc(c.expiry_date || "—")} ${badge}</td>
+            <td class="py-3 px-3 flex flex-wrap gap-1.5">
+              <button onclick='sendWhatsAppReminder(${JSON.stringify(c)})' class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
+              <button onclick="renewCustomer('${c.id}')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium cursor-pointer">+30d</button>
+              <button onclick="openEditModal('customers', '${c.id}')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
             </td>
           </tr>
         `;
@@ -958,7 +1791,7 @@
     function renderTowers() {
       const tbody = document.getElementById("towersTableBody");
       if (!state.towers.length) {
-        tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-zinc-400">No towers added yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="py-5 text-center text-slate-400">No towers added yet.</td></tr>`;
         return;
       }
       tbody.innerHTML = state.towers.map(t => {
@@ -966,14 +1799,14 @@
         const custCount = state.customers.filter(c => c.tower_id === t.id).length;
         return `
           <tr>
-            <td class="py-2.5 px-3 font-bold text-zinc-900">${esc(t.name)}</td>
-            <td class="py-2.5 px-3">${esc(t.location || "—")} ${t.gps_coords ? `<div class="text-[11px] text-zinc-400">${esc(t.gps_coords)}</div>` : ""}</td>
-            <td class="py-2.5 px-3">${esc(t.owner_or_rent_info || "—")}</td>
-            <td class="py-2.5 px-3 font-semibold">₹${Number(t.monthly_rent || 0).toLocaleString()}</td>
-            <td class="py-2.5 px-3">${devCount} Devices / ${custCount} Users</td>
-            <td class="py-2.5 px-3 flex gap-2 items-center">
-              <button onclick="openEditModal('towers', '${t.id}')" class="px-2.5 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-semibold cursor-pointer">Edit</button>
-              <button onclick="deleteRow('towers', '${t.id}')" class="text-[#E60000] hover:underline font-medium cursor-pointer">Delete</button>
+            <td class="py-3 px-3 font-bold text-slate-900">${esc(t.name)}</td>
+            <td class="py-3 px-3">${esc(t.location || "—")} ${t.gps_coords ? `<div class="text-[11px] text-slate-400">${esc(t.gps_coords)}</div>` : ""}</td>
+            <td class="py-3 px-3">${esc(t.owner_or_rent_info || "—")}</td>
+            <td class="py-3 px-3 font-semibold">₹${Number(t.monthly_rent || 0).toLocaleString()}</td>
+            <td class="py-3 px-3">${devCount} Devices / ${custCount} Users</td>
+            <td class="py-3 px-3 flex gap-2 items-center">
+              <button onclick="openEditModal('towers', '${t.id}')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-semibold cursor-pointer">Edit</button>
+              <button onclick="deleteRow('towers', '${t.id}')" class="text-red-600 hover:underline font-medium cursor-pointer">Delete</button>
             </td>
           </tr>
         `;
@@ -983,11 +1816,15 @@
     // ================= CUSTOMERS =================
     document.getElementById("customerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
-      const price = Number(document.getElementById("custPrice").value || 0);
+      const planCost = Number(document.getElementById("custPrice").value || 0);
       const paid = Number(document.getElementById("custPaid").value || 0);
-      const due = Math.max(0, price - paid);
+      const gstRate = Number(document.getElementById("custGstRate").value || 0);
+      const gstMode = document.getElementById("custGstMode").value;
+      const g = calcGstBreakdown(paid, gstRate, gstMode);
+      const due = Math.max(0, round2(planCost - paid));
       const towerVal = document.getElementById("custTower").value || null;
       const startVal = document.getElementById("custStart").value || new Date().toISOString().slice(0, 10);
+      const planLabel = document.getElementById("custPlan").value.trim() || "Internet Plan";
 
       const payload = {
         name: document.getElementById("custName").value.trim(),
@@ -995,10 +1832,15 @@
         phone: document.getElementById("custPhone").value.trim(),
         address: document.getElementById("custAddress").value.trim(),
         tower_id: towerVal,
-        plan_name: document.getElementById("custPlan").value.trim(),
-        plan_price: price,
+        plan_name: planLabel,
+        plan_price: planCost,
         amount_paid: paid,
         due_amount: due,
+        gst_rate: gstRate,
+        gst_mode: gstMode,
+        base_amount: g.base,
+        gst_amount: g.gst,
+        total_with_gst: g.total,
         start_date: startVal,
         expiry_date: document.getElementById("custExpiry").value
       };
@@ -1006,19 +1848,41 @@
       const { error } = await supabaseClient.from("customers").insert([payload]);
       if (error) return showToast(error.message);
 
+      const txEntries = [];
       if (paid > 0) {
-        await supabaseClient.from("transactions").insert([{
+        txEntries.push({
           type: "Income",
           category: "Customer Recharge",
           tower_id: towerVal,
-          amount: paid,
-          note: `Plan recharge (${payload.plan_name || "Internet Plan"})`,
+          amount: g.total,
+          gst_rate: gstRate,
+          gst_mode: gstMode,
+          base_amount: g.base,
+          gst_amount: g.gst,
+          note: `Recharge (${planLabel}) | Without GST: ₹${g.base} + GST: ₹${g.gst}`,
           date: startVal
-        }]);
+        });
       }
+      if (planCost > 0) {
+        const costGst = calcGstBreakdown(planCost, gstRate, "INCLUSIVE");
+        txEntries.push({
+          type: "Expense",
+          category: "Plan Wholesale Cost",
+          tower_id: towerVal,
+          amount: planCost,
+          gst_rate: gstRate,
+          gst_mode: "INCLUSIVE",
+          base_amount: costGst.base,
+          gst_amount: costGst.gst,
+          note: `Plan Cost (${planLabel})`,
+          date: startVal
+        });
+      }
+      if (txEntries.length) await supabaseClient.from("transactions").insert(txEntries);
 
       e.target.reset();
-      showToast("Customer added!");
+      updateCustFormCalc();
+      showToast(`Customer added! Net Profit: ₹${round2(paid - planCost)}`);
       refreshAllData();
     });
 
@@ -1041,41 +1905,53 @@
 
       const tbody = document.getElementById("customersTableBody");
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-zinc-400">No matching customers.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="6" class="py-5 text-center text-slate-400">No matching customers.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = list.map(c => {
         const d = daysUntil(c.expiry_date);
-        let statusBadge = `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-700 font-semibold">Active (${d}d)</span>`;
-        if (d < 0) statusBadge = `<span class="px-2 py-0.5 rounded bg-red-100 text-[#E60000] font-semibold">Expired</span>`;
-        else if (d <= 3) statusBadge = `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-700 font-semibold">Expiring (${d}d)</span>`;
+        const paid = Number(c.amount_paid || 0);
+        const cost = Number(c.plan_price || 0);
+        const profit = round2(paid - cost);
+        const gstRate = Number(c.gst_rate ?? 18);
+        const g = calcGstBreakdown(paid, gstRate, c.gst_mode || "INCLUSIVE");
+
+        let statusBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">Active (${d}d)</span>`;
+        if (d < 0) statusBadge = `<span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">Expired</span>`;
+        else if (d <= 3) statusBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-semibold">Expiring (${d}d)</span>`;
 
         return `
           <tr>
-            <td class="py-2.5 px-3">
-              <div class="font-bold text-zinc-900">${esc(c.name)}</div>
-              ${c.pppoe_username ? `<div class="text-[11px] font-mono text-zinc-700">PPPoE: ${esc(c.pppoe_username)}</div>` : ""}
-              <div class="text-[11px] text-zinc-500">${esc(c.address || "—")} • <span class="font-semibold text-[#E60000]">Tower: ${esc(getTowerName(c.tower_id))}</span></div>
+            <td class="py-3 px-3">
+              <div class="font-bold text-slate-900">${esc(c.name)}</div>
+              ${c.pppoe_username ? `<div class="text-[11px] font-mono text-slate-600">PPPoE: ${esc(c.pppoe_username)}</div>` : ""}
+              <div class="text-[11px] text-slate-500">${esc(c.address || "—")} • <span class="font-semibold text-red-600">Tower: ${esc(getTowerName(c.tower_id))}</span></div>
             </td>
-            <td class="py-2.5 px-3 font-medium">${esc(c.phone)}</td>
-            <td class="py-2.5 px-3">
-              <div>${esc(c.plan_name || "Standard")} — <b>₹${Number(c.plan_price || 0)}</b></div>
-              ${Number(c.due_amount) > 0 ? `<div class="text-[11px] text-[#E60000] font-semibold">Due: ₹${Number(c.due_amount)}</div>` : `<div class="text-[11px] text-emerald-600">Paid</div>`}
+            <td class="py-3 px-3 font-medium">${esc(c.phone)}</td>
+            <td class="py-3 px-3">
+              <div class="text-[11px] text-slate-500">${esc(c.plan_name || "Plan")}</div>
+              <div>Paid: <b>₹${paid}</b> | Cost: <b>₹${cost}</b></div>
+              <div class="text-[11px] font-bold ${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Profit: ₹${profit}</div>
             </td>
-            <td class="py-2.5 px-3">
+            <td class="py-3 px-3">
+              <div class="text-[11px] text-slate-600">Without GST: <b>₹${g.base.toFixed(2)}</b></div>
+              <div class="text-[11px] text-blue-700">GST (${g.rate}%): <b>₹${g.gst.toFixed(2)}</b></div>
+              <div class="text-[11px] font-bold text-slate-900">With GST: ₹${g.total.toFixed(2)}</div>
+            </td>
+            <td class="py-3 px-3">
               <div>${esc(c.expiry_date || "—")}</div>
               <div class="mt-0.5">${statusBadge}</div>
             </td>
-            <td class="py-2.5 px-3 space-y-1.5">
+            <td class="py-3 px-3 space-y-1.5">
               <div class="flex flex-wrap gap-1.5">
-                <button onclick='sendWhatsAppReminder(${JSON.stringify(c)})' class="px-2 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
-                <button onclick="renewCustomer('${c.id}')" class="px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-white font-medium cursor-pointer">Renew +30d</button>
-                <button onclick="openEditModal('customers', '${c.id}')" class="px-2 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
-                <button onclick="openTransferModal('CUSTOMER', '${c.id}')" class="px-2 py-1 rounded bg-amber-600 hover:bg-amber-700 text-white font-medium cursor-pointer">⇄ Transfer</button>
+                <button onclick='sendWhatsAppReminder(${JSON.stringify(c)})' class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
+                <button onclick="renewCustomer('${c.id}')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium cursor-pointer">+30d</button>
+                <button onclick="openEditModal('customers', '${c.id}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
+                <button onclick="openTransferModal('CUSTOMER', '${c.id}')" class="px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-medium cursor-pointer">⇄</button>
               </div>
               <div>
-                <button onclick="deleteRow('customers', '${c.id}')" class="text-[11px] text-[#E60000] hover:underline cursor-pointer">Delete</button>
+                <button onclick="deleteRow('customers', '${c.id}')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Delete</button>
               </div>
             </td>
           </tr>
@@ -1091,6 +1967,11 @@
       const newExpiry = baseDate.toISOString().slice(0, 10);
       const todayStr = new Date().toISOString().slice(0, 10);
 
+      const paid = Number(cust.amount_paid || cust.plan_price || 0);
+      const cost = Number(cust.plan_price || 0);
+      const gstRate = Number(cust.gst_rate ?? 18);
+      const g = calcGstBreakdown(paid, gstRate, cust.gst_mode || "INCLUSIVE");
+
       const { error } = await supabaseClient.from("customers").update({
         start_date: todayStr,
         expiry_date: newExpiry,
@@ -1099,27 +1980,51 @@
 
       if (error) return showToast(error.message);
 
-      if (Number(cust.plan_price) > 0) {
-        await supabaseClient.from("transactions").insert([{
+      const txList = [];
+      if (paid > 0) {
+        txList.push({
           type: "Income",
           category: "Plan Renewal",
           tower_id: cust.tower_id || null,
-          amount: Number(cust.plan_price),
+          amount: g.total,
+          gst_rate: gstRate,
+          gst_mode: cust.gst_mode || "INCLUSIVE",
+          base_amount: g.base,
+          gst_amount: g.gst,
           note: `30-day renewal (${cust.plan_name || "Internet Plan"})`,
           date: todayStr
-        }]);
+        });
       }
+      if (cost > 0) {
+        const cg = calcGstBreakdown(cost, gstRate, "INCLUSIVE");
+        txList.push({
+          type: "Expense",
+          category: "Plan Wholesale Cost",
+          tower_id: cust.tower_id || null,
+          amount: cost,
+          gst_rate: gstRate,
+          gst_mode: "INCLUSIVE",
+          base_amount: cg.base,
+          gst_amount: cg.gst,
+          note: `Renewal Plan Cost (${cust.plan_name || "Internet Plan"})`,
+          date: todayStr
+        });
+      }
+      if (txList.length) await supabaseClient.from("transactions").insert(txList);
 
-      showToast(`Renewed till ${newExpiry}`);
+      showToast(`Renewed till ${newExpiry} | Profit: ₹${round2(paid - cost)}`);
       refreshAllData();
     }
 
     function sendWhatsAppReminder(cust) {
       let phone = (cust.phone || "").replace(/\D/g, "");
       if (phone.length === 10) phone = "91" + phone;
+      const paid = Number(cust.amount_paid || cust.plan_price || 0);
+      const gstRate = Number(cust.gst_rate ?? 18);
+      const g = calcGstBreakdown(paid, gstRate, cust.gst_mode || "INCLUSIVE");
       const dueText = Number(cust.due_amount) > 0 ? ` (Pending Due: Rs.${cust.due_amount})` : "";
       const pppoeText = cust.pppoe_username ? ` [PPPoE: ${cust.pppoe_username}]` : "";
-      const msg = `Namaste ${cust.name}${pppoeText}, Shan WiFi par aapka internet plan (${cust.plan_name || "Wi-Fi"}) ${cust.expiry_date} ko expire ho raha hai / hai. Plan Amount: Rs.${cust.plan_price || 0}${dueText}. Kripya samay par recharge karwayein.`;
+      const msg = `Namaste ${cust.name}${pppoeText}, ${state.company.company_name || "Shan WiFi"} par aapka plan (${cust.plan_name || "Wi-Fi"}) ${cust.expiry_date} ko expire ho raha hai / hai. Amount: Rs.${g.total.toFixed(2)} (Base Rs.${g.base.toFixed(2)} + ${g.rate}% GST Rs.${g.gst.toFixed(2)})${dueText}. Kripya samay par recharge karwayein.`;
       window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
     }
 
@@ -1171,7 +2076,7 @@
 
       const tbody = document.getElementById("devicesTableBody");
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-zinc-400">No devices or cameras found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="py-5 text-center text-slate-400">No devices or cameras found.</td></tr>`;
         return;
       }
 
@@ -1182,44 +2087,44 @@
           : (cust ? `Customer: ${cust.name}` : "In Stock / Office");
 
         const typeBadge = d.device_type === "Camera"
-          ? `<span class="px-2 py-0.5 rounded bg-red-100 text-[#E60000] font-bold">📷 Camera</span>`
-          : `<span class="px-2 py-0.5 rounded bg-zinc-200 text-zinc-800 font-semibold">${esc(d.device_type)}</span>`;
+          ? `<span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-bold">📷 Camera</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 font-semibold">${esc(d.device_type)}</span>`;
 
         return `
           <tr>
-            <td class="py-2.5 px-3">
-              <div class="flex items-center gap-1.5 font-bold text-zinc-900">${typeBadge} <span>${esc(d.model)}</span></div>
-              <div class="text-[11px] font-mono text-zinc-600 mt-0.5">SN: ${esc(d.serial_number)} ${d.mac_address ? `| MAC: ${esc(d.mac_address)}` : ""}</div>
-              ${d.ip_address ? `<div class="text-[11px] text-[#E60000] font-medium">IP: ${esc(d.ip_address)}</div>` : ""}
+            <td class="py-3 px-3">
+              <div class="flex items-center gap-1.5 font-bold text-slate-900">${typeBadge} <span>${esc(d.model)}</span></div>
+              <div class="text-[11px] font-mono text-slate-600 mt-0.5">SN: ${esc(d.serial_number)} ${d.mac_address ? `| MAC: ${esc(d.mac_address)}` : ""}</div>
+              ${d.ip_address ? `<div class="text-[11px] text-red-600 font-medium">IP: ${esc(d.ip_address)}</div>` : ""}
             </td>
-            <td class="py-2.5 px-3">
-              <div class="font-semibold text-zinc-900">${esc(placedAt)}</div>
-              <div class="text-[11px] text-zinc-500">Installed: ${esc(d.install_date || "—")}</div>
-              ${d.notes ? `<div class="text-[11px] text-zinc-500 italic">${esc(d.notes)}</div>` : ""}
+            <td class="py-3 px-3">
+              <div class="font-semibold text-slate-900">${esc(placedAt)}</div>
+              <div class="text-[11px] text-slate-500">Installed: ${esc(d.install_date || "—")}</div>
+              ${d.notes ? `<div class="text-[11px] text-slate-500 italic">${esc(d.notes)}</div>` : ""}
             </td>
-            <td class="py-2.5 px-3">
+            <td class="py-3 px-3">
               <div>User: <span class="font-mono">${esc(d.admin_username || "—")}</span></div>
               <div class="flex items-center gap-1.5 mt-0.5">
                 <span>Pass:</span>
                 <span id="devpass-${idx}" data-secret="${esc(d.admin_password || "")}" class="font-mono">${d.admin_password ? "••••••" : "—"}</span>
-                ${d.admin_password ? `<button onclick="toggleSecret('devpass-${idx}')" class="text-[11px] text-[#E60000] hover:underline cursor-pointer">Show</button><button onclick="copyText('${esc(d.admin_password)}')" class="text-[11px] text-zinc-500 hover:underline cursor-pointer">Copy</button>` : ""}
+                ${d.admin_password ? `<button onclick="toggleSecret('devpass-${idx}')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Show</button><button onclick="copyText('${esc(d.admin_password)}')" class="text-[11px] text-slate-500 hover:underline cursor-pointer">Copy</button>` : ""}
               </div>
             </td>
-            <td class="py-2.5 px-3">
+            <td class="py-3 px-3">
               <div>SSID: <span class="font-semibold">${esc(d.ssid || "—")}</span></div>
               <div class="flex items-center gap-1.5 mt-0.5">
                 <span>PSK:</span>
                 <span id="wifipass-${idx}" data-secret="${esc(d.wifi_password || "")}" class="font-mono">${d.wifi_password ? "••••••" : "—"}</span>
-                ${d.wifi_password ? `<button onclick="toggleSecret('wifipass-${idx}')" class="text-[11px] text-[#E60000] hover:underline cursor-pointer">Show</button><button onclick="copyText('${esc(d.wifi_password)}')" class="text-[11px] text-zinc-500 hover:underline cursor-pointer">Copy</button>` : ""}
+                ${d.wifi_password ? `<button onclick="toggleSecret('wifipass-${idx}')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Show</button><button onclick="copyText('${esc(d.wifi_password)}')" class="text-[11px] text-slate-500 hover:underline cursor-pointer">Copy</button>` : ""}
               </div>
             </td>
-            <td class="py-2.5 px-3 space-y-1.5">
+            <td class="py-3 px-3 space-y-1.5">
               <div class="flex flex-wrap gap-1.5">
-                <button onclick="openEditModal('devices', '${d.id}')" class="px-2 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
-                <button onclick="openTransferModal('DEVICE', '${d.id}')" class="px-2 py-1 rounded bg-amber-600 hover:bg-amber-700 text-white font-medium cursor-pointer">⇄ Transfer</button>
+                <button onclick="openEditModal('devices', '${d.id}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
+                <button onclick="openTransferModal('DEVICE', '${d.id}')" class="px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-medium cursor-pointer">⇄</button>
               </div>
               <div>
-                <button onclick="deleteRow('devices', '${d.id}')" class="text-[11px] text-[#E60000] hover:underline cursor-pointer">Delete</button>
+                <button onclick="deleteRow('devices', '${d.id}')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Delete</button>
               </div>
             </td>
           </tr>
@@ -1228,6 +2133,12 @@
     }
 
     // ================= UNIVERSAL EDIT MODAL =================
+    function buildGstSelectHtml(selectedVal) {
+      return INDIA_GST_SLABS.map(s =>
+        `<option value="${s.value}" ${Number(selectedVal) === s.value ? "selected" : ""}>${s.label}</option>`
+      ).join("");
+    }
+
     function openEditModal(entity, id) {
       document.getElementById("editEntity").value = entity;
       document.getElementById("editId").value = id;
@@ -1240,37 +2151,45 @@
         if (!t) return;
         document.getElementById("editModalTitle").textContent = "Edit Tower / POP Details";
         container.innerHTML = `
-          <div><label class="block font-semibold mb-1">Tower Name *</label><input name="name" required value="${esc(t.name)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Location / Area</label><input name="location" value="${esc(t.location || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">GPS Coords</label><input name="gps_coords" value="${esc(t.gps_coords || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Owner / Rent Info</label><input name="owner_or_rent_info" value="${esc(t.owner_or_rent_info || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div class="sm:col-span-2"><label class="block font-semibold mb-1">Monthly Rent (₹)</label><input name="monthly_rent" type="number" step="0.01" value="${Number(t.monthly_rent || 0)}" class="w-full px-3 py-2 border rounded-lg" /></div>
+          <div><label class="block font-semibold mb-1">Tower Name *</label><input name="name" required value="${esc(t.name)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Location / Area</label><input name="location" value="${esc(t.location || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">GPS Coords</label><input name="gps_coords" value="${esc(t.gps_coords || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Owner / Rent Info</label><input name="owner_or_rent_info" value="${esc(t.owner_or_rent_info || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div class="sm:col-span-2"><label class="block font-semibold mb-1">Monthly Rent (₹)</label><input name="monthly_rent" type="number" step="0.01" value="${Number(t.monthly_rent || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
         `;
       } else if (entity === "customers") {
         const c = state.customers.find(x => x.id === id);
         if (!c) return;
-        document.getElementById("editModalTitle").textContent = "Edit Customer, PPPoE & Plan";
+        document.getElementById("editModalTitle").textContent = "Edit Customer, PPPoE & GST Billing";
         container.innerHTML = `
-          <div><label class="block font-semibold mb-1">Customer Name *</label><input name="name" required value="${esc(c.name)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">PPPoE Username / ID</label><input name="pppoe_username" value="${esc(c.pppoe_username || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Mobile Number *</label><input name="phone" required value="${esc(c.phone)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Address / Village</label><input name="address" value="${esc(c.address || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Tower</label><select name="tower_id" id="editCustTower" class="w-full px-3 py-2 border rounded-lg bg-white">${towerOpts}</select></div>
-          <div><label class="block font-semibold mb-1">Plan Name</label><input name="plan_name" value="${esc(c.plan_name || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Plan Price (₹)</label><input name="plan_price" type="number" step="0.01" value="${Number(c.plan_price || 0)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Amount Paid (₹)</label><input name="amount_paid" type="number" step="0.01" value="${Number(c.amount_paid || 0)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Pending Due (₹)</label><input name="due_amount" type="number" step="0.01" value="${Number(c.due_amount || 0)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Start Date</label><input name="start_date" type="date" value="${esc(c.start_date || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div class="sm:col-span-2"><label class="block font-semibold mb-1">Expiry Date *</label><input name="expiry_date" type="date" required value="${esc(c.expiry_date || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
+          <div><label class="block font-semibold mb-1">Customer Name *</label><input name="name" required value="${esc(c.name)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">PPPoE Username / ID</label><input name="pppoe_username" value="${esc(c.pppoe_username || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Mobile Number *</label><input name="phone" required value="${esc(c.phone)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Address / Village</label><input name="address" value="${esc(c.address || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Tower</label><select name="tower_id" id="editCustTower" class="w-full px-3 py-2 border rounded-xl bg-white">${towerOpts}</select></div>
+          <div><label class="block font-semibold mb-1">Plan Name</label><input name="plan_name" value="${esc(c.plan_name || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Plan Price / Cost (₹)</label><input name="plan_price" oninput="updateEditModalCalc()" type="number" step="0.01" value="${Number(c.plan_price || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Amount Paid (₹)</label><input name="amount_paid" oninput="updateEditModalCalc()" type="number" step="0.01" value="${Number(c.amount_paid || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">India GST %</label><select name="gst_rate" onchange="updateEditModalCalc()" class="w-full px-3 py-2 border rounded-xl bg-white font-semibold">${buildGstSelectHtml(c.gst_rate ?? 18)}</select></div>
+          <div><label class="block font-semibold mb-1">GST Mode</label>
+            <select name="gst_mode" id="editCustGstMode" onchange="updateEditModalCalc()" class="w-full px-3 py-2 border rounded-xl bg-white">
+              <option value="INCLUSIVE">With GST (Included)</option>
+              <option value="EXCLUSIVE">Without GST (+GST Extra)</option>
+            </select>
+          </div>
+          <div><label class="block font-semibold mb-1">Pending Due (₹)</label><input name="due_amount" type="number" step="0.01" value="${Number(c.due_amount || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Start Date</label><input name="start_date" type="date" value="${esc(c.start_date || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div class="sm:col-span-2"><label class="block font-semibold mb-1">Expiry Date *</label><input name="expiry_date" type="date" required value="${esc(c.expiry_date || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
         `;
         document.getElementById("editCustTower").value = c.tower_id || "";
+        document.getElementById("editCustGstMode").value = c.gst_mode || "INCLUSIVE";
       } else if (entity === "devices") {
         const d = state.devices.find(x => x.id === id);
         if (!d) return;
         document.getElementById("editModalTitle").textContent = "Edit Device / Camera & Credentials";
         container.innerHTML = `
           <div><label class="block font-semibold mb-1">Device Type</label>
-            <select name="device_type" id="editDevType" class="w-full px-3 py-2 border rounded-lg bg-white">
+            <select name="device_type" id="editDevType" class="w-full px-3 py-2 border rounded-xl bg-white">
               <option value="Sector">Sector</option>
               <option value="PtP">PtP Link</option>
               <option value="Camera">Camera (CCTV / IP)</option>
@@ -1280,18 +2199,18 @@
               <option value="Switch">Switch / NVR / PoE</option>
             </select>
           </div>
-          <div><label class="block font-semibold mb-1">Model *</label><input name="model" required value="${esc(d.model)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Serial Number *</label><input name="serial_number" required value="${esc(d.serial_number)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">MAC Address</label><input name="mac_address" value="${esc(d.mac_address || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">IP Address</label><input name="ip_address" value="${esc(d.ip_address || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Install Date</label><input name="install_date" type="date" value="${esc(d.install_date || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Login ID / Username</label><input name="admin_username" value="${esc(d.admin_username || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Login Password</label><input name="admin_password" value="${esc(d.admin_password || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">SSID</label><input name="ssid" value="${esc(d.ssid || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Wi-Fi / Wireless Password</label><input name="wifi_password" value="${esc(d.wifi_password || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Tower</label><select name="tower_id" id="editDevTower" class="w-full px-3 py-2 border rounded-lg bg-white">${towerOpts}</select></div>
-          <div><label class="block font-semibold mb-1">Customer</label><select name="customer_id" id="editDevCust" class="w-full px-3 py-2 border rounded-lg bg-white">${custOpts}</select></div>
-          <div class="sm:col-span-2"><label class="block font-semibold mb-1">Notes</label><input name="notes" value="${esc(d.notes || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
+          <div><label class="block font-semibold mb-1">Model *</label><input name="model" required value="${esc(d.model)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Serial Number *</label><input name="serial_number" required value="${esc(d.serial_number)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">MAC Address</label><input name="mac_address" value="${esc(d.mac_address || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">IP Address</label><input name="ip_address" value="${esc(d.ip_address || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Install Date</label><input name="install_date" type="date" value="${esc(d.install_date || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Login ID / Username</label><input name="admin_username" value="${esc(d.admin_username || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Login Password</label><input name="admin_password" value="${esc(d.admin_password || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">SSID</label><input name="ssid" value="${esc(d.ssid || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Wi-Fi / Wireless Password</label><input name="wifi_password" value="${esc(d.wifi_password || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Tower</label><select name="tower_id" id="editDevTower" class="w-full px-3 py-2 border rounded-xl bg-white">${towerOpts}</select></div>
+          <div><label class="block font-semibold mb-1">Customer</label><select name="customer_id" id="editDevCust" class="w-full px-3 py-2 border rounded-xl bg-white">${custOpts}</select></div>
+          <div class="sm:col-span-2"><label class="block font-semibold mb-1">Notes</label><input name="notes" value="${esc(d.notes || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
         `;
         document.getElementById("editDevType").value = d.device_type || "Sector";
         document.getElementById("editDevTower").value = d.tower_id || "";
@@ -1301,37 +2220,46 @@
         if (!cp) return;
         document.getElementById("editModalTitle").textContent = "Edit Complaint / Fault";
         container.innerHTML = `
-          <div><label class="block font-semibold mb-1">Issue Title *</label><input name="title" required value="${esc(cp.title)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Tower</label><select name="tower_id" id="editCompTower" class="w-full px-3 py-2 border rounded-lg bg-white">${towerOpts}</select></div>
+          <div><label class="block font-semibold mb-1">Issue Title *</label><input name="title" required value="${esc(cp.title)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Tower</label><select name="tower_id" id="editCompTower" class="w-full px-3 py-2 border rounded-xl bg-white">${towerOpts}</select></div>
           <div><label class="block font-semibold mb-1">Status</label>
-            <select name="status" id="editCompStatus" class="w-full px-3 py-2 border rounded-lg bg-white">
+            <select name="status" id="editCompStatus" class="w-full px-3 py-2 border rounded-xl bg-white">
               <option value="Open">Open</option>
               <option value="Resolved">Resolved</option>
             </select>
           </div>
-          <div><label class="block font-semibold mb-1">Details</label><input name="issue_details" value="${esc(cp.issue_details || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
+          <div><label class="block font-semibold mb-1">Details</label><input name="issue_details" value="${esc(cp.issue_details || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
         `;
         document.getElementById("editCompTower").value = cp.tower_id || "";
         document.getElementById("editCompStatus").value = cp.status || "Open";
       } else if (entity === "transactions") {
         const tx = state.transactions.find(x => x.id === id);
         if (!tx) return;
-        document.getElementById("editModalTitle").textContent = "Edit Income / Expense Entry";
+        document.getElementById("editModalTitle").textContent = "Edit Income / Expense & GST";
         container.innerHTML = `
           <div><label class="block font-semibold mb-1">Type</label>
-            <select name="type" id="editTxType" class="w-full px-3 py-2 border rounded-lg bg-white">
+            <select name="type" id="editTxType" class="w-full px-3 py-2 border rounded-xl bg-white">
               <option value="Income">Income</option>
               <option value="Expense">Expense</option>
             </select>
           </div>
-          <div><label class="block font-semibold mb-1">Category *</label><input name="category" required value="${esc(tx.category || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Amount (₹) *</label><input name="amount" type="number" step="0.01" required value="${Number(tx.amount || 0)}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div><label class="block font-semibold mb-1">Date *</label><input name="date" type="date" required value="${esc(tx.date || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
-          <div class="sm:col-span-2"><label class="block font-semibold mb-1">Note</label><input name="note" value="${esc(tx.note || "")}" class="w-full px-3 py-2 border rounded-lg" /></div>
+          <div><label class="block font-semibold mb-1">Category *</label><input name="category" required value="${esc(tx.category || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">Amount (₹) *</label><input name="amount" oninput="updateEditModalCalc()" type="number" step="0.01" required value="${Number(tx.amount || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-semibold mb-1">India GST %</label><select name="gst_rate" onchange="updateEditModalCalc()" class="w-full px-3 py-2 border rounded-xl bg-white font-semibold">${buildGstSelectHtml(tx.gst_rate ?? 18)}</select></div>
+          <div><label class="block font-semibold mb-1">GST Mode</label>
+            <select name="gst_mode" id="editTxGstMode" onchange="updateEditModalCalc()" class="w-full px-3 py-2 border rounded-xl bg-white">
+              <option value="INCLUSIVE">With GST (Included)</option>
+              <option value="EXCLUSIVE">Without GST (+GST Extra)</option>
+            </select>
+          </div>
+          <div><label class="block font-semibold mb-1">Date *</label><input name="date" type="date" required value="${esc(tx.date || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div class="sm:col-span-2"><label class="block font-semibold mb-1">Note</label><input name="note" value="${esc(tx.note || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
         `;
         document.getElementById("editTxType").value = tx.type || "Income";
+        document.getElementById("editTxGstMode").value = tx.gst_mode || "INCLUSIVE";
       }
 
+      updateEditModalCalc();
       const modal = document.getElementById("editModal");
       modal.classList.remove("hidden");
       modal.classList.add("flex");
@@ -1360,6 +2288,10 @@
           monthly_rent: Number(raw.monthly_rent || 0)
         };
       } else if (entity === "customers") {
+        const paid = Number(raw.amount_paid || 0);
+        const gstRate = Number(raw.gst_rate || 0);
+        const gstMode = raw.gst_mode || "INCLUSIVE";
+        const g = calcGstBreakdown(paid, gstRate, gstMode);
         payload = {
           name: raw.name.trim(),
           pppoe_username: (raw.pppoe_username || "").trim(),
@@ -1368,8 +2300,13 @@
           tower_id: raw.tower_id || null,
           plan_name: raw.plan_name.trim(),
           plan_price: Number(raw.plan_price || 0),
-          amount_paid: Number(raw.amount_paid || 0),
+          amount_paid: paid,
           due_amount: Number(raw.due_amount || 0),
+          gst_rate: gstRate,
+          gst_mode: gstMode,
+          base_amount: g.base,
+          gst_amount: g.gst,
+          total_with_gst: g.total,
           start_date: raw.start_date || null,
           expiry_date: raw.expiry_date
         };
@@ -1401,10 +2338,18 @@
           resolved_date: raw.status === "Resolved" ? new Date().toISOString().slice(0, 10) : null
         };
       } else if (entity === "transactions") {
+        const amt = Number(raw.amount || 0);
+        const gstRate = Number(raw.gst_rate || 0);
+        const gstMode = raw.gst_mode || "INCLUSIVE";
+        const g = calcGstBreakdown(amt, gstRate, gstMode);
         payload = {
           type: raw.type,
           category: raw.category.trim(),
-          amount: Number(raw.amount || 0),
+          amount: g.total,
+          gst_rate: gstRate,
+          gst_mode: gstMode,
+          base_amount: g.base,
+          gst_amount: g.gst,
           date: raw.date,
           note: raw.note.trim()
         };
@@ -1554,23 +2499,23 @@
     function renderComplaints() {
       const tbody = document.getElementById("complaintsTableBody");
       if (!state.complaints.length) {
-        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-zinc-400">No complaints logged.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="5" class="py-5 text-center text-slate-400">No complaints logged.</td></tr>`;
         return;
       }
       tbody.innerHTML = state.complaints.map(c => {
         const isOpen = c.status === "Open";
         return `
           <tr>
-            <td class="py-2.5 px-3 font-bold text-zinc-900">${esc(c.title)}</td>
-            <td class="py-2.5 px-3">Tower: ${esc(getTowerName(c.tower_id))} ${c.issue_details ? `— ${esc(c.issue_details)}` : ""}</td>
-            <td class="py-2.5 px-3">${esc(c.opened_date || "—")}</td>
-            <td class="py-2.5 px-3">
-              <span class="px-2 py-0.5 rounded font-semibold ${isOpen ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"}">${esc(c.status)}</span>
+            <td class="py-3 px-3 font-bold text-slate-900">${esc(c.title)}</td>
+            <td class="py-3 px-3">Tower: ${esc(getTowerName(c.tower_id))} ${c.issue_details ? `— ${esc(c.issue_details)}` : ""}</td>
+            <td class="py-3 px-3">${esc(c.opened_date || "—")}</td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded-full font-semibold ${isOpen ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}">${esc(c.status)}</span>
             </td>
-            <td class="py-2.5 px-3 flex flex-wrap gap-1.5 items-center">
-              ${isOpen ? `<button onclick="resolveComplaint('${c.id}')" class="px-2 py-1 rounded bg-emerald-600 text-white cursor-pointer">Resolve</button>` : ""}
-              <button onclick="openEditModal('complaints', '${c.id}')" class="px-2 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
-              <button onclick="deleteRow('complaints', '${c.id}')" class="text-[#E60000] hover:underline cursor-pointer">Delete</button>
+            <td class="py-3 px-3 flex flex-wrap gap-1.5 items-center">
+              ${isOpen ? `<button onclick="resolveComplaint('${c.id}')" class="px-2 py-1 rounded-lg bg-emerald-600 text-white cursor-pointer">Resolve</button>` : ""}
+              <button onclick="openEditModal('complaints', '${c.id}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
+              <button onclick="deleteRow('complaints', '${c.id}')" class="text-red-600 hover:underline cursor-pointer">Delete</button>
             </td>
           </tr>
         `;
@@ -1587,15 +2532,24 @@
       refreshAllData();
     }
 
-    // ================= ACCOUNTS (P&L) =================
+    // ================= ACCOUNTS (P&L + GST) =================
     document.getElementById("txDate").value = new Date().toISOString().slice(0, 10);
 
     document.getElementById("txForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      const rawAmt = Number(document.getElementById("txAmount").value || 0);
+      const gstRate = Number(document.getElementById("txGstRate").value || 0);
+      const gstMode = document.getElementById("txGstMode").value;
+      const g = calcGstBreakdown(rawAmt, gstRate, gstMode);
+
       const payload = {
         type: document.getElementById("txType").value,
         category: document.getElementById("txCategory").value.trim(),
-        amount: Number(document.getElementById("txAmount").value || 0),
+        amount: g.total,
+        gst_rate: gstRate,
+        gst_mode: gstMode,
+        base_amount: g.base,
+        gst_amount: g.gst,
         date: document.getElementById("txDate").value,
         note: document.getElementById("txNote").value.trim()
       };
@@ -1603,6 +2557,7 @@
       if (error) return showToast(error.message);
       e.target.reset();
       document.getElementById("txDate").value = new Date().toISOString().slice(0, 10);
+      updateTxFormCalc();
       showToast("Entry added!");
       refreshAllData();
     });
@@ -1617,37 +2572,68 @@
         return true;
       });
 
-      const inc = filtered.filter(x => x.type === "Income").reduce((s, x) => s + Number(x.amount || 0), 0);
-      const exp = filtered.filter(x => x.type === "Expense").reduce((s, x) => s + Number(x.amount || 0), 0);
-      const net = inc - exp;
+      let incTotal = 0, incBase = 0, incGst = 0;
+      let expTotal = 0, expBase = 0, expGst = 0;
 
-      document.getElementById("pnlIncome").textContent = `₹${inc.toLocaleString()}`;
-      document.getElementById("pnlExpense").textContent = `₹${exp.toLocaleString()}`;
+      filtered.forEach(tx => {
+        const g = calcGstBreakdown(tx.amount, tx.gst_rate ?? 18, "INCLUSIVE");
+        const base = Number(tx.base_amount) > 0 ? Number(tx.base_amount) : g.base;
+        const gst = Number(tx.gst_amount) > 0 ? Number(tx.gst_amount) : g.gst;
+        const tot = Number(tx.amount || 0);
+
+        if (tx.type === "Income") {
+          incTotal += tot; incBase += base; incGst += gst;
+        } else {
+          expTotal += tot; expBase += base; expGst += gst;
+        }
+      });
+
+      const netProfit = round2(incTotal - expTotal);
+      const netGst = round2(incGst - expGst);
+
+      document.getElementById("pnlIncome").textContent = `₹${round2(incTotal).toLocaleString()}`;
+      document.getElementById("pnlIncomeBase").textContent = `Without GST: ₹${round2(incBase).toLocaleString()} | Output GST: ₹${round2(incGst).toLocaleString()}`;
+      document.getElementById("pnlExpense").textContent = `₹${round2(expTotal).toLocaleString()}`;
+      document.getElementById("pnlExpenseBase").textContent = `Without GST: ₹${round2(expBase).toLocaleString()} | Input GST: ₹${round2(expGst).toLocaleString()}`;
+
       const pnlEl = document.getElementById("pnlNet");
-      pnlEl.textContent = `${net < 0 ? "-" : ""}₹${Math.abs(net).toLocaleString()}`;
-      pnlEl.className = `text-2xl font-extrabold mt-1 ${net >= 0 ? "text-emerald-600" : "text-[#E60000]"}`;
+      pnlEl.textContent = `${netProfit < 0 ? "-" : ""}₹${Math.abs(netProfit).toLocaleString()}`;
+      pnlEl.className = `text-2xl font-black mt-1.5 num ${netProfit >= 0 ? "text-emerald-600" : "text-red-600"}`;
+
+      document.getElementById("pnlNetGst").textContent = `₹${netGst.toLocaleString()}`;
 
       const tbody = document.getElementById("txTableBody");
       if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="6" class="py-4 text-center text-zinc-400">No transactions found.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="py-5 text-center text-slate-400">No transactions found.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = filtered.map(tx => `
-        <tr>
-          <td class="py-2.5 px-3">${esc(tx.date)}</td>
-          <td class="py-2.5 px-3">
-            <span class="px-2 py-0.5 rounded font-semibold ${tx.type === "Income" ? "bg-emerald-100 text-emerald-700" : "bg-red-100 text-[#E60000]"}">${esc(tx.type)}</span>
-          </td>
-          <td class="py-2.5 px-3 font-semibold">${esc(tx.category || "—")}</td>
-          <td class="py-2.5 px-3">${esc(tx.note || "—")}</td>
-          <td class="py-2.5 px-3 font-bold ${tx.type === "Income" ? "text-emerald-700" : "text-[#E60000]"}">₹${Number(tx.amount || 0).toLocaleString()}</td>
-          <td class="py-2.5 px-3 flex gap-2 items-center">
-            <button onclick="openEditModal('transactions', '${tx.id}')" class="px-2 py-1 rounded bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
-            <button onclick="deleteRow('transactions', '${tx.id}')" class="text-[#E60000] hover:underline cursor-pointer">Delete</button>
-          </td>
-        </tr>
-      `).join("");
+      tbody.innerHTML = filtered.map(tx => {
+        const rate = Number(tx.gst_rate ?? 18);
+        const g = calcGstBreakdown(tx.amount, rate, "INCLUSIVE");
+        const base = Number(tx.base_amount) > 0 ? Number(tx.base_amount) : g.base;
+        const gst = Number(tx.gst_amount) > 0 ? Number(tx.gst_amount) : g.gst;
+
+        return `
+          <tr>
+            <td class="py-3 px-3">${esc(tx.date)}</td>
+            <td class="py-3 px-3">
+              <span class="px-2 py-0.5 rounded-full font-semibold ${tx.type === "Income" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}">${esc(tx.type)}</span>
+            </td>
+            <td class="py-3 px-3">
+              <div class="font-semibold">${esc(tx.category || "—")}</div>
+              <div class="text-[11px] text-slate-500">${esc(tx.note || "")}</div>
+            </td>
+            <td class="py-3 px-3 font-medium">₹${base.toFixed(2)}</td>
+            <td class="py-3 px-3 text-blue-700 font-medium">${rate}% (₹${gst.toFixed(2)})</td>
+            <td class="py-3 px-3 font-bold ${tx.type === "Income" ? "text-emerald-700" : "text-red-600"}">₹${Number(tx.amount || 0).toFixed(2)}</td>
+            <td class="py-3 px-3 flex gap-2 items-center">
+              <button onclick="openEditModal('transactions', '${tx.id}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
+              <button onclick="deleteRow('transactions', '${tx.id}')" class="text-red-600 hover:underline cursor-pointer">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
     }
 
     // ================= BULK SMS =================
@@ -1775,7 +2761,7 @@
       const logs = JSON.parse(localStorage.getItem("isp_sms_logs") || "[]");
       const tbody = document.getElementById("smsLogsBody");
       if (!logs.length) {
-        tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-zinc-400">No SMS broadcasts yet.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-slate-400">No SMS broadcasts yet.</td></tr>`;
         return;
       }
       tbody.innerHTML = logs.map(l => `
@@ -1788,7 +2774,7 @@
       `).join("");
     }
 
-    // ================= REPORTS & CA EXCEL =================
+    // ================= REPORTS & CA GST EXCEL =================
     function setQuickDateRange(mode) {
       const now = new Date();
       const pad = n => String(n).padStart(2, "0");
@@ -1832,65 +2818,89 @@
       if (document.getElementById("chkIncome").checked) {
         const rows = state.transactions
           .filter(t => t.type === "Income" && inDateRange(t.date, from, to))
-          .map(t => ({
-            Date: t.date || "",
-            Type: "Income",
-            Category: t.category || "General Income",
-            Tower: getTowerName(t.tower_id),
-            Particulars: t.note || "",
-            Amount: Number(t.amount || 0)
-          }));
+          .map(t => {
+            const rate = Number(t.gst_rate ?? 18);
+            const g = calcGstBreakdown(t.amount, rate, "INCLUSIVE");
+            const base = Number(t.base_amount) > 0 ? Number(t.base_amount) : g.base;
+            const gst = Number(t.gst_amount) > 0 ? Number(t.gst_amount) : g.gst;
+            return {
+              Date: t.date || "",
+              Category: t.category || "General Income",
+              Tower: getTowerName(t.tower_id),
+              Particulars: t.note || "",
+              Without_GST: round2(base),
+              GST_Percent: `${rate}%`,
+              GST_Amount: round2(gst),
+              With_GST_Total: round2(Number(t.amount || 0))
+            };
+          });
         sections.push({
           key: "Income",
-          title: "Shan WiFi — Income Ledger (No Customer Data)",
-          headers: ["Date", "Type", "Category", "Tower", "Particulars", "Amount"],
+          title: `${state.company.company_name || "Shan WiFi"} — Income GST Ledger`,
+          headers: ["Date", "Category", "Tower", "Particulars", "Without_GST", "GST_Percent", "GST_Amount", "With_GST_Total"],
           rows,
-          totalLabel: "Total Income",
-          totalValue: rows.reduce((s, r) => s + r.Amount, 0)
+          totalLabel: "Total Income (With GST)",
+          totalValue: round2(rows.reduce((s, r) => s + r.With_GST_Total, 0))
         });
       }
 
       if (document.getElementById("chkExpenses").checked) {
         const rows = state.transactions
           .filter(t => t.type === "Expense" && inDateRange(t.date, from, to))
-          .map(t => ({
-            Date: t.date || "",
-            Type: "Expense",
-            Category: t.category || "General Expense",
-            Tower: getTowerName(t.tower_id),
-            Particulars: t.note || "",
-            Amount: Number(t.amount || 0)
-          }));
+          .map(t => {
+            const rate = Number(t.gst_rate ?? 18);
+            const g = calcGstBreakdown(t.amount, rate, "INCLUSIVE");
+            const base = Number(t.base_amount) > 0 ? Number(t.base_amount) : g.base;
+            const gst = Number(t.gst_amount) > 0 ? Number(t.gst_amount) : g.gst;
+            return {
+              Date: t.date || "",
+              Category: t.category || "General Expense",
+              Tower: getTowerName(t.tower_id),
+              Particulars: t.note || "",
+              Without_GST: round2(base),
+              GST_Percent: `${rate}%`,
+              GST_Amount: round2(gst),
+              With_GST_Total: round2(Number(t.amount || 0))
+            };
+          });
         sections.push({
           key: "Expenses",
-          title: "Shan WiFi — Expenses Ledger (No Customer Data)",
-          headers: ["Date", "Type", "Category", "Tower", "Particulars", "Amount"],
+          title: `${state.company.company_name || "Shan WiFi"} — Expenses & Plan Cost GST Ledger`,
+          headers: ["Date", "Category", "Tower", "Particulars", "Without_GST", "GST_Percent", "GST_Amount", "With_GST_Total"],
           rows,
-          totalLabel: "Total Expenses",
-          totalValue: rows.reduce((s, r) => s + r.Amount, 0)
+          totalLabel: "Total Expenses (With GST)",
+          totalValue: round2(rows.reduce((s, r) => s + r.With_GST_Total, 0))
         });
       }
 
       if (document.getElementById("chkCustomers").checked) {
         const rows = state.customers
           .filter(c => inDateRange(c.start_date || c.expiry_date, from, to))
-          .map(c => ({
-            Name: c.name || "",
-            PPPoE: c.pppoe_username || "",
-            Phone: c.phone || "",
-            Address: c.address || "",
-            Tower: getTowerName(c.tower_id),
-            Plan: c.plan_name || "",
-            PlanPrice: Number(c.plan_price || 0),
-            Paid: Number(c.amount_paid || 0),
-            Due: Number(c.due_amount || 0),
-            StartDate: c.start_date || "",
-            ExpiryDate: c.expiry_date || ""
-          }));
+          .map(c => {
+            const paid = Number(c.amount_paid || 0);
+            const cost = Number(c.plan_price || 0);
+            const rate = Number(c.gst_rate ?? 18);
+            const g = calcGstBreakdown(paid, rate, c.gst_mode || "INCLUSIVE");
+            return {
+              Name: c.name || "",
+              PPPoE: c.pppoe_username || "",
+              Phone: c.phone || "",
+              Tower: getTowerName(c.tower_id),
+              Plan: c.plan_name || "",
+              Plan_Cost: cost,
+              Customer_Paid: paid,
+              Net_Profit: round2(paid - cost),
+              Without_GST: g.base,
+              GST_Percent: `${rate}%`,
+              GST_Amount: g.gst,
+              With_GST_Total: g.total,
+              ExpiryDate: c.expiry_date || ""
+            };
+          });
         sections.push({
           key: "Customer Data",
-          title: "Shan WiFi — Customer Data",
-          headers: ["Name", "PPPoE", "Phone", "Address", "Tower", "Plan", "PlanPrice", "Paid", "Due", "StartDate", "ExpiryDate"],
+          title: `${state.company.company_name || "Shan WiFi"} — Customer Data, Profit & GST Breakdown`,
+          headers: ["Name", "PPPoE", "Phone", "Tower", "Plan", "Plan_Cost", "Customer_Paid", "Net_Profit", "Without_GST", "GST_Percent", "GST_Amount", "With_GST_Total", "ExpiryDate"],
           rows
         });
       }
@@ -1908,7 +2918,7 @@
           }));
         sections.push({
           key: "Tower",
-          title: "Shan WiFi — Tower / POP Directory",
+          title: `${state.company.company_name || "Shan WiFi"} — Tower / POP Directory`,
           headers: ["TowerName", "Location", "GPS", "OwnerInfo", "MonthlyRent", "CreatedDate"],
           rows
         });
@@ -1930,7 +2940,7 @@
           }));
         sections.push({
           key: "Device",
-          title: "Shan WiFi — Devices & Cameras Inventory",
+          title: `${state.company.company_name || "Shan WiFi"} — Devices & Cameras Inventory`,
           headers: ["Type", "Model", "SerialNumber", "MAC", "IP", "Location", "InstallDate", "SSID", "Notes"],
           rows
         });
@@ -1957,7 +2967,7 @@
           }));
         sections.push({
           key: "Other",
-          title: "Shan WiFi — Other Records (Complaints & SMS Logs)",
+          title: `${state.company.company_name || "Shan WiFi"} — Other Records`,
           headers: ["Category", "Date", "Tower", "TitleOrTarget", "Details"],
           rows: [...compRows, ...smsRows]
         });
@@ -1976,27 +2986,27 @@
 
       if (!sections.length) {
         summaryEl.textContent = "Selected: None";
-        container.innerHTML = `<p class="text-zinc-400">Koi section select nahi hai. Upar se kam se kam ek checkbox select karein.</p>`;
+        container.innerHTML = `<p class="text-slate-400">Koi section select nahi hai. Upar se kam se kam ek checkbox select karein.</p>`;
         return;
       }
 
       summaryEl.textContent = `Selected: ${sections.map(s => s.key).join(", ")}${rangeLabel}`;
 
       container.innerHTML = sections.map(sec => {
-        const headHtml = sec.headers.map(h => `<th class="py-2 px-3 bg-zinc-50 border-b text-zinc-600">${esc(h)}</th>`).join("");
+        const headHtml = sec.headers.map(h => `<th class="py-2 px-3 bg-slate-50 border-b text-slate-600">${esc(h)}</th>`).join("");
         const bodyHtml = sec.rows.length
           ? sec.rows.slice(0, 15).map(r => `<tr class="border-b">${sec.headers.map(h => `<td class="py-2 px-3">${esc(r[h])}</td>`).join("")}</tr>`).join("")
-          : `<tr><td colspan="${sec.headers.length}" class="py-3 px-3 text-center text-zinc-400">No records in selected date range.</td></tr>`;
+          : `<tr><td colspan="${sec.headers.length}" class="py-3 px-3 text-center text-slate-400">No records in selected date range.</td></tr>`;
 
         const totalRowHtml = sec.totalLabel
-          ? `<tr class="bg-zinc-50 font-bold"><td colspan="${sec.headers.length - 1}" class="py-2 px-3 text-right">${esc(sec.totalLabel)}</td><td class="py-2 px-3">₹${Number(sec.totalValue || 0).toLocaleString()}</td></tr>`
+          ? `<tr class="bg-slate-50 font-bold"><td colspan="${sec.headers.length - 1}" class="py-2 px-3 text-right">${esc(sec.totalLabel)}</td><td class="py-2 px-3">₹${Number(sec.totalValue || 0).toLocaleString()}</td></tr>`
           : "";
 
         return `
-          <div class="border rounded-lg overflow-hidden">
-            <div class="px-3 py-2 bg-zinc-100 font-bold text-zinc-800 flex justify-between">
+          <div class="border border-slate-200 rounded-xl overflow-hidden">
+            <div class="px-3.5 py-2.5 bg-slate-100 font-bold text-slate-800 flex justify-between">
               <span>${esc(sec.title)}</span>
-              <span class="text-[11px] text-zinc-500">${sec.rows.length} rows</span>
+              <span class="text-[11px] text-slate-500">${sec.rows.length} rows</span>
             </div>
             <div class="overflow-x-auto scrollbar-thin">
               <table class="w-full text-left border-collapse">
@@ -2060,9 +3070,9 @@
       const a = document.createElement("a");
       const filePart = sections.map(s => s.key.toLowerCase().replace(/\s+/g, "-")).join("_");
       a.href = URL.createObjectURL(blob);
-      a.download = `Shan-WiFi_CA-Report_${filePart}_${from || "all"}_to_${to || "now"}.xls`;
+      a.download = `Shan-WiFi_CA-GST-Report_${filePart}_${from || "all"}_to_${to || "now"}.xls`;
       a.click();
-      showToast("Excel report downloaded!");
+      showToast("CA GST Excel report downloaded!");
     }
 
     async function deleteRow(table, id) {

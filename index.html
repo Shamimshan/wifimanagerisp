@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Shan WiFi — ISP Billing, GST & Network Suite</title>
+  <title>Shan WiFi — ISP Billing, Sales, Purchase & GST Suite</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -18,7 +18,6 @@
     }
     .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
     .scrollbar-thin::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
-
     @media print {
       body {
         background: #ffffff !important;
@@ -47,7 +46,6 @@
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 antialiased">
-
   <!-- ================= LOGIN SCREEN ================= -->
   <div id="loginScreen" class="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-slate-950 via-slate-900 to-red-950">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl p-8 border border-slate-200">
@@ -57,10 +55,9 @@
         </div>
         <div>
           <h1 class="text-xl font-extrabold text-slate-900 tracking-tight">Shan WiFi Suite</h1>
-          <p class="text-xs text-slate-500 font-medium">ISP Billing, GST Ledger & Tax Invoicing</p>
+          <p class="text-xs text-slate-500 font-medium">ISP Billing, Sales & Purchase Ledger, GST & Network</p>
         </div>
       </div>
-
       <form id="loginForm" class="space-y-4">
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1.5">Admin Email</label>
@@ -77,9 +74,7 @@
           Sign In to Admin Portal
         </button>
       </form>
-
       <p id="loginError" class="mt-3 text-xs text-red-600 font-semibold hidden"></p>
-
       <details class="mt-6 text-xs text-slate-500 border-t border-slate-200 pt-3.5">
         <summary class="cursor-pointer font-semibold text-slate-700">Supabase Project Connection</summary>
         <div class="mt-2.5 space-y-2">
@@ -98,7 +93,6 @@
 
   <!-- ================= MAIN ADMIN APP ================= -->
   <div id="appShell" class="min-h-screen flex flex-col lg:flex-row hidden">
-
     <!-- Mobile Top Bar -->
     <header class="lg:hidden bg-slate-950 text-white px-4 py-3 flex items-center justify-between sticky top-0 z-30 border-b border-slate-800">
       <div class="flex items-center gap-2.5">
@@ -123,7 +117,6 @@
             <div id="adminEmailBadge" class="text-[11px] text-slate-400 truncate">Admin</div>
           </div>
         </div>
-
         <nav class="p-3 space-y-1 text-[13px]">
           <button data-tab="dashboard" onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80 bg-red-600 text-white font-semibold">
             <span>📊</span> Dashboard
@@ -132,16 +125,16 @@
             <span>📡</span> Towers / POPs
           </button>
           <button data-tab="customers" onclick="switchTab('customers')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
-            <span>👥</span> Customers & GST
+            <span>👥</span> Customers & Renewals
+          </button>
+          <button data-tab="accounts" onclick="switchTab('accounts')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
+            <span>💹</span> Sales, Purchase & Profit
           </button>
           <button data-tab="devices" onclick="switchTab('devices')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
             <span>📶</span> Devices & Cameras
           </button>
           <button data-tab="complaints" onclick="switchTab('complaints')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
             <span>🛠️</span> Complaints & Faults
-          </button>
-          <button data-tab="accounts" onclick="switchTab('accounts')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
-            <span>💰</span> Income, Expense & P&L
           </button>
           <button data-tab="invoices" onclick="switchTab('invoices')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
             <span>🧾</span> GST Invoice & Settings
@@ -150,11 +143,10 @@
             <span>📩</span> Bulk SMS Alert
           </button>
           <button data-tab="reports" onclick="switchTab('reports')" class="nav-btn w-full flex items-center gap-2.5 px-3.5 py-2.5 rounded-xl text-left hover:bg-slate-800/80">
-            <span>📑</span> CA GST Excel Report
+            <span>📑</span> CA GST & Profit Excel
           </button>
         </nav>
       </div>
-
       <div class="p-3 border-t border-slate-800/80 space-y-2">
         <button onclick="switchTab('invoices')" class="w-full py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white cursor-pointer">
           🧾 Create GST Invoice
@@ -173,13 +165,13 @@
       <section id="tab-dashboard" class="tab-panel space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full mb-1">Operations Overview</span>
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full mb-1">Operations & Profit Overview</span>
             <h2 class="text-xl font-extrabold text-slate-900">Shan WiFi — Executive Dashboard</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Real-time customer status, net profit (Paid − Recharge Cost), GST tax summary & network assets</p>
+            <p class="text-xs text-slate-500 mt-0.5">Live Sales (Customer Paid), Purchase (Recharge Cost), Net Profit & Subscriber Expiry</p>
           </div>
           <div class="flex gap-2">
-            <button onclick="switchTab('invoices')" class="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
-              + New GST Invoice
+            <button onclick="switchTab('customers')" class="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
+              + Add / Renew Customer
             </button>
             <button onclick="refreshAllData()" class="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold cursor-pointer">
               🔄 Refresh
@@ -191,25 +183,22 @@
           <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
             <div class="text-xs font-semibold text-slate-500">Active Subscribers</div>
             <div id="kpiActiveCustomers" class="text-2xl font-black text-emerald-600 mt-1.5 num">0</div>
-            <div id="kpiExpiredCustomers" class="text-xs text-red-600 font-medium mt-1 num">0 Expired</div>
+            <div id="kpiExpiredCustomers" class="text-xs text-red-600 font-medium mt-1 num">0 Expired | Expiring ≤3d: 0</div>
           </div>
-
           <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div class="text-xs font-semibold text-slate-500">Expiring in ≤ 3 Days</div>
-            <div id="kpiExpiringSoon" class="text-2xl font-black text-amber-600 mt-1.5 num">0</div>
-            <div id="kpiTotalDues" class="text-xs text-slate-500 mt-1 num">Pending Dues: ₹0</div>
+            <div class="text-xs font-semibold text-slate-500">Total Sales (Customer Paid)</div>
+            <div id="kpiTotalSales" class="text-2xl font-black text-emerald-700 mt-1.5 num">₹0</div>
+            <div id="kpiTotalDues" class="text-xs text-amber-700 font-medium mt-1 num">Pending Dues: ₹0</div>
           </div>
-
           <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div class="text-xs font-semibold text-slate-500">Towers & Hardware</div>
-            <div id="kpiTowers" class="text-2xl font-black text-slate-900 mt-1.5 num">0 Towers</div>
-            <div id="kpiDevices" class="text-xs text-slate-500 mt-1 num">0 Devices & Cameras</div>
+            <div class="text-xs font-semibold text-slate-500">Total Purchase & Expense</div>
+            <div id="kpiTotalPurchase" class="text-2xl font-black text-red-600 mt-1.5 num">₹0</div>
+            <div id="kpiPurchaseSplit" class="text-xs text-slate-500 mt-1 num">Recharge: ₹0 | Other Exp: ₹0</div>
           </div>
-
           <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div class="text-xs font-semibold text-slate-500">Net Profit (Income − Expense)</div>
+            <div class="text-xs font-semibold text-slate-500">Net Profit (Sales − Purchase/Exp)</div>
             <div id="kpiNetProfit" class="text-2xl font-black text-slate-900 mt-1.5 num">₹0</div>
-            <div id="kpiIncExp" class="text-xs text-slate-500 mt-1 num">Income: ₹0 | Expense: ₹0</div>
+            <div id="kpiTowersDevices" class="text-xs text-slate-500 mt-1 num">0 Towers | 0 Devices</div>
           </div>
         </div>
 
@@ -224,7 +213,7 @@
                 <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
                   <th class="py-3 px-3">Customer & PPPoE</th>
                   <th class="py-3 px-3">Phone</th>
-                  <th class="py-3 px-3">Paid / Recharge Cost / Profit</th>
+                  <th class="py-3 px-3">Sales (Paid) / Purchase (Recharge) / Profit</th>
                   <th class="py-3 px-3">Expiry Status</th>
                   <th class="py-3 px-3">Actions</th>
                 </tr>
@@ -241,7 +230,6 @@
           <h2 class="text-xl font-extrabold text-slate-900">Towers / POP Locations</h2>
           <p class="text-xs text-slate-500 mt-0.5">Manage wireless & fiber towers, rooftop rents, and GPS coordinates</p>
         </div>
-
         <form id="towerForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
           <input id="towerName" type="text" required placeholder="Tower Name *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
           <input id="towerLocation" type="text" placeholder="Area / Village / Address" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
@@ -252,7 +240,6 @@
             + Add Tower
           </button>
         </form>
-
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
@@ -274,8 +261,8 @@
       <section id="tab-customers" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <h2 class="text-xl font-extrabold text-slate-900">Customers, KYC & GST Billing</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Paid goes to Income, Recharge Amount goes to Expense automatically, and remaining is Profit</p>
+            <h2 class="text-xl font-extrabold text-slate-900">Customers, Renewals & Sales/Purchase Entry</h2>
+            <p class="text-xs text-slate-500 mt-0.5"><b>Paid by Customer</b> → Sales me jayega | <b>Recharge Amount</b> → Purchase me jayega | Profit = Sales − Purchase</p>
           </div>
           <div class="flex flex-wrap gap-2">
             <input id="customerSearch" oninput="renderCustomers()" type="text" placeholder="Search name, PPPoE, phone, Aadhaar, tower..."
@@ -334,24 +321,28 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-3">
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 mb-1">Plan Name</label>
               <input id="custPlan" type="text" placeholder="50 Mbps Monthly" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Paid by Customer (₹) *</label>
-              <input id="custPaid" oninput="updateCustFormCalc()" type="number" step="0.01" placeholder="500" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+              <label class="block text-[11px] font-bold text-emerald-700 mb-1">Paid by Customer (Sales ₹) *</label>
+              <input id="custPaid" oninput="updateCustFormCalc()" type="number" step="0.01" required placeholder="500" class="w-full px-3 py-2 border border-emerald-300 bg-emerald-50/30 rounded-xl text-xs font-semibold" />
             </div>
             <div>
-              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Recharge Amount (₹) *</label>
-              <input id="custPrice" oninput="updateCustFormCalc()" type="number" step="0.01" placeholder="260" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
+              <label class="block text-[11px] font-bold text-red-700 mb-1">Recharge Amt (Purchase ₹) *</label>
+              <input id="custPrice" oninput="updateCustFormCalc()" type="number" step="0.01" required placeholder="260" class="w-full px-3 py-2 border border-red-300 bg-red-50/30 rounded-xl text-xs font-semibold" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-slate-600 mb-1">Pending Due (₹)</label>
+              <input id="custDue" type="number" step="0.01" value="0" placeholder="0" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 mb-1">India GST %</label>
               <select id="custGstRate" onchange="updateCustFormCalc()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white font-semibold">
-                <option value="18" selected>18% GST (Telecom / ISP)</option>
-                <option value="0">0% GST (Exempt / Nil)</option>
+                <option value="18" selected>18% GST</option>
+                <option value="0">0% GST</option>
                 <option value="0.25">0.25% GST</option>
                 <option value="3">3% GST</option>
                 <option value="5">5% GST</option>
@@ -363,8 +354,8 @@
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 mb-1">GST Mode</label>
               <select id="custGstMode" onchange="updateCustFormCalc()" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs bg-white">
-                <option value="INCLUSIVE" selected>With GST (Included)</option>
-                <option value="EXCLUSIVE">Without GST (+GST Extra)</option>
+                <option value="INCLUSIVE" selected>With GST</option>
+                <option value="EXCLUSIVE">Without GST (+GST)</option>
               </select>
             </div>
             <div>
@@ -381,12 +372,12 @@
             <div id="custLiveBreakdown" class="flex flex-wrap gap-x-5 gap-y-1 text-slate-700">
               <span>Without GST: <b>₹0.00</b></span>
               <span>GST (18%): <b>₹0.00</b></span>
-              <span>Income (Paid): <b>₹0.00</b></span>
-              <span>Expense (Recharge): <b>₹0.00</b></span>
-              <span class="text-emerald-700">Profit: <b>₹0.00</b></span>
+              <span class="text-emerald-700">Sales (Paid): <b>₹0.00</b></span>
+              <span class="text-red-700">Purchase (Recharge): <b>₹0.00</b></span>
+              <span class="text-slate-900 font-bold">Net Profit: <b>₹0.00</b></span>
             </div>
             <button type="submit" class="px-5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
-              + Add Customer
+              + Add Customer & Record Sales/Purchase
             </button>
           </div>
         </form>
@@ -397,7 +388,7 @@
               <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
                 <th class="py-3 px-3">Customer, PPPoE & Tower</th>
                 <th class="py-3 px-3">Phone, Aadhaar & Reg. Date</th>
-                <th class="py-3 px-3">Paid, Recharge & Profit</th>
+                <th class="py-3 px-3">Sales (Paid), Purchase (Recharge) & Profit</th>
                 <th class="py-3 px-3">GST Breakdown</th>
                 <th class="py-3 px-3">Expiry / Status</th>
                 <th class="py-3 px-3">Actions</th>
@@ -408,7 +399,108 @@
         </div>
       </section>
 
-      <!-- ================= TAB 4: DEVICES & CAMERAS ================= -->
+      <!-- ================= TAB 4: SALES, PURCHASE & P&L ================= -->
+      <section id="tab-accounts" class="tab-panel hidden space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
+          <div>
+            <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full mb-1">Complete Profit & Loss Ledger</span>
+            <h2 class="text-xl font-extrabold text-slate-900">Sales, Purchase, Expenses & Profit Statement</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Customer Paid = <b>Sales</b> | Customer Recharge = <b>Purchase</b> | Gross Profit = Sales − Purchase | Net Profit = Gross Profit − Other Expenses</p>
+          </div>
+          <div class="flex flex-wrap gap-2 items-center">
+            <select id="txTypeFilter" onchange="renderAccounts()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold">
+              <option value="ALL">All Entries (Sales + Purchase + Exp)</option>
+              <option value="SALES">Sales Only (Customer Paid / Income)</option>
+              <option value="PURCHASE">Purchase Only (Recharge / Stock)</option>
+              <option value="EXPENSE">Other Operating Expenses Only</option>
+            </select>
+            <input id="pnlFrom" type="date" onchange="renderAccounts()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs" />
+            <span class="text-xs text-slate-400">to</span>
+            <input id="pnlTo" type="date" onchange="renderAccounts()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs" />
+          </div>
+        </div>
+
+        <!-- 4 KPI Cards for Sales, Purchase, Gross Profit & Net Profit -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 num">
+          <div class="bg-white p-5 rounded-2xl border border-emerald-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-emerald-700">Total Sales (Customer Paid + Income)</div>
+            <div id="pnlSales" class="text-2xl font-black text-emerald-600 mt-1.5">₹0</div>
+            <div id="pnlSalesBase" class="text-[11px] text-slate-500 mt-1">Without GST: ₹0 | Output GST: ₹0</div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-amber-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-amber-700">Total Purchase (Recharge Cost)</div>
+            <div id="pnlPurchase" class="text-2xl font-black text-amber-600 mt-1.5">₹0</div>
+            <div id="pnlGrossProfit" class="text-[11px] font-bold text-slate-700 mt-1">Gross Profit (Sales − Purchase): ₹0</div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-red-200/80 shadow-sm">
+            <div class="text-xs font-semibold text-red-700">Other Operating Expenses</div>
+            <div id="pnlOtherExp" class="text-2xl font-black text-red-600 mt-1.5">₹0</div>
+            <div id="pnlTotalInputGst" class="text-[11px] text-slate-500 mt-1">Total Input GST (Purchase+Exp): ₹0</div>
+          </div>
+          <div class="bg-white p-5 rounded-2xl border border-slate-300 shadow-sm">
+            <div class="text-xs font-semibold text-slate-600">Net Profit (Sales − Purchase − Exp)</div>
+            <div id="pnlNet" class="text-2xl font-black text-slate-900 mt-1.5">₹0</div>
+            <div id="pnlNetGst" class="text-[11px] text-blue-700 font-semibold mt-1">Net GST Liability: ₹0</div>
+          </div>
+        </div>
+
+        <!-- Manual Entry Form for Sales / Purchase / Operating Expense -->
+        <form id="txForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
+          <div class="text-xs font-bold text-slate-800">+ Add Manual Sales / Purchase / Expense Entry</div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
+            <select id="txType" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white font-bold">
+              <option value="Sales">Sales (+ Customer / Router Sale)</option>
+              <option value="Purchase" selected>Purchase (- Recharge / Stock Buy)</option>
+              <option value="Expense">Expense (- Tower Rent / Wire / Staff)</option>
+            </select>
+            <input id="txCategory" type="text" required placeholder="Category (e.g. Bulk Recharge / Tower Rent) *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="txAmount" oninput="updateTxFormCalc()" type="number" step="0.01" required placeholder="Amount (₹) *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <select id="txGstRate" onchange="updateTxFormCalc()" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white font-semibold">
+              <option value="18" selected>18% GST</option>
+              <option value="0">0% GST (Exempt)</option>
+              <option value="0.25">0.25% GST</option>
+              <option value="3">3% GST</option>
+              <option value="5">5% GST</option>
+              <option value="12">12% GST</option>
+              <option value="28">28% GST</option>
+              <option value="40">40% GST</option>
+            </select>
+            <select id="txGstMode" onchange="updateTxFormCalc()" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white">
+              <option value="INCLUSIVE" selected>With GST (Included)</option>
+              <option value="EXCLUSIVE">Without GST (+GST Extra)</option>
+            </select>
+            <input id="txDate" type="date" required class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+            <input id="txNote" type="text" placeholder="Note / Customer / Bill No." class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
+          </div>
+          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs num">
+            <div id="txLiveBreakdown" class="text-slate-700">
+              Without GST: <b>₹0.00</b> • GST (18%): <b>₹0.00</b> • With GST Total: <b>₹0.00</b>
+            </div>
+            <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
+              + Save Ledger Entry
+            </button>
+          </div>
+        </form>
+
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
+                <th class="py-3 px-3">Date</th>
+                <th class="py-3 px-3">Ledger Type</th>
+                <th class="py-3 px-3">Category & Details</th>
+                <th class="py-3 px-3">Without GST</th>
+                <th class="py-3 px-3">GST % & Tax</th>
+                <th class="py-3 px-3">With GST Total</th>
+                <th class="py-3 px-3">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="txTableBody" class="divide-y divide-slate-100 num"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ================= TAB 5: DEVICES & CAMERAS ================= -->
       <section id="tab-devices" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
@@ -430,7 +522,6 @@
             </select>
           </div>
         </div>
-
         <form id="deviceForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <select id="devType" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white font-semibold">
@@ -447,7 +538,6 @@
             <input id="devMac" type="text" placeholder="MAC Address" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
             <input id="devIp" type="text" placeholder="IP Address (Optional)" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
             <input id="devUser" type="text" placeholder="Login ID / Username" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
             <input id="devPass" type="text" placeholder="Login / Safety Code Password" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
@@ -458,7 +548,6 @@
             </select>
             <input id="devInstallDate" type="date" title="Install Date" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <select id="devCustomer" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white">
               <option value="">Customer / Shop (If at Customer)</option>
@@ -469,7 +558,6 @@
             </button>
           </div>
         </form>
-
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
@@ -486,13 +574,12 @@
         </div>
       </section>
 
-      <!-- ================= TAB 5: COMPLAINTS ================= -->
+      <!-- ================= TAB 6: COMPLAINTS ================= -->
       <section id="tab-complaints" class="tab-panel hidden space-y-6">
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <h2 class="text-xl font-extrabold text-slate-900">Complaints & Fault Log</h2>
           <p class="text-xs text-slate-500 mt-0.5">Track, edit, and resolve outages, cable cuts, and camera/device faults</p>
         </div>
-
         <form id="complaintForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm grid grid-cols-1 md:grid-cols-4 gap-3">
           <input id="compTitle" type="text" required placeholder="Issue Title (e.g. Fiber Cut / Camera Offline) *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
           <select id="compTower" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white">
@@ -503,7 +590,6 @@
             + Log Complaint
           </button>
         </form>
-
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
@@ -516,97 +602,6 @@
               </tr>
             </thead>
             <tbody id="complaintsTableBody" class="divide-y divide-slate-100"></tbody>
-          </table>
-        </div>
-      </section>
-
-      <!-- ================= TAB 6: INCOME, EXPENSE & P&L ================= -->
-      <section id="tab-accounts" class="tab-panel hidden space-y-6">
-        <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-          <div>
-            <h2 class="text-xl font-extrabold text-slate-900">Income, Expense, GST & Profit / Loss</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Customer Paid = Income, Recharge Amount = Expense, Plus your manual expenses = Net Profit</p>
-          </div>
-          <div class="flex gap-2 items-center">
-            <input id="pnlFrom" type="date" onchange="renderAccounts()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs" />
-            <span class="text-xs text-slate-400">to</span>
-            <input id="pnlTo" type="date" onchange="renderAccounts()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 num">
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div class="text-xs font-semibold text-slate-500">Total Income (Paid)</div>
-            <div id="pnlIncome" class="text-2xl font-black text-emerald-600 mt-1.5">₹0</div>
-            <div id="pnlIncomeBase" class="text-[11px] text-slate-500 mt-1">Without GST: ₹0 | Output GST: ₹0</div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div class="text-xs font-semibold text-slate-500">Total Expense (Recharge + Manual)</div>
-            <div id="pnlExpense" class="text-2xl font-black text-red-600 mt-1.5">₹0</div>
-            <div id="pnlExpenseBase" class="text-[11px] text-slate-500 mt-1">Without GST: ₹0 | Input GST: ₹0</div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div class="text-xs font-semibold text-slate-500">Net Profit (Income − Expense)</div>
-            <div id="pnlNet" class="text-2xl font-black text-slate-900 mt-1.5">₹0</div>
-            <div class="text-[11px] text-slate-500 mt-1">e.g. ₹500 Paid − ₹260 Recharge = ₹240</div>
-          </div>
-          <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div class="text-xs font-semibold text-slate-500">Net GST Liability</div>
-            <div id="pnlNetGst" class="text-2xl font-black text-blue-700 mt-1.5">₹0</div>
-            <div class="text-[11px] text-slate-500 mt-1">Output GST − Input GST</div>
-          </div>
-        </div>
-
-        <form id="txForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
-            <select id="txType" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white font-semibold">
-              <option value="Income">Income (+)</option>
-              <option value="Expense" selected>Expense (-)</option>
-            </select>
-            <input id="txCategory" type="text" required placeholder="Category (Tower Rent / Wire / Bill) *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
-            <input id="txAmount" oninput="updateTxFormCalc()" type="number" step="0.01" required placeholder="Amount (₹) *" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
-            <select id="txGstRate" onchange="updateTxFormCalc()" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white font-semibold">
-              <option value="18" selected>18% GST</option>
-              <option value="0">0% GST (Exempt)</option>
-              <option value="0.25">0.25% GST</option>
-              <option value="3">3% GST</option>
-              <option value="5">5% GST</option>
-              <option value="12">12% GST</option>
-              <option value="28">28% GST</option>
-              <option value="40">40% GST</option>
-            </select>
-            <select id="txGstMode" onchange="updateTxFormCalc()" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs bg-white">
-              <option value="INCLUSIVE" selected>With GST (Included)</option>
-              <option value="EXCLUSIVE">Without GST (+GST Extra)</option>
-            </select>
-            <input id="txDate" type="date" required class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
-            <input id="txNote" type="text" placeholder="Note / Receipt No." class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs" />
-          </div>
-
-          <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs num">
-            <div id="txLiveBreakdown" class="text-slate-700">
-              Without GST: <b>₹0.00</b> • GST (18%): <b>₹0.00</b> • With GST Total: <b>₹0.00</b>
-            </div>
-            <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
-              + Add Entry
-            </button>
-          </div>
-        </form>
-
-        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
-          <table class="w-full text-left border-collapse text-xs">
-            <thead>
-              <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
-                <th class="py-3 px-3">Date</th>
-                <th class="py-3 px-3">Type</th>
-                <th class="py-3 px-3">Category & Note</th>
-                <th class="py-3 px-3">Without GST</th>
-                <th class="py-3 px-3">GST % & Tax</th>
-                <th class="py-3 px-3">With GST Total</th>
-                <th class="py-3 px-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="txTableBody" class="divide-y divide-slate-100 num"></tbody>
           </table>
         </div>
       </section>
@@ -626,13 +621,11 @@
           </div>
         </div>
 
-        <!-- Company & Invoice Settings Card -->
         <details id="companySettingsDetails" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm no-print">
           <summary class="px-5 py-4 cursor-pointer font-bold text-sm text-slate-900 flex items-center justify-between">
             <span>🏢 Company Profile, Logo, UPI QR, Signature & Stamp Settings</span>
             <span class="text-[11px] font-medium text-slate-500">Click to open / close</span>
           </summary>
-
           <form id="companySettingsForm" class="px-5 pb-5 pt-2 border-t border-slate-100 space-y-4 text-xs">
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
               <div>
@@ -655,7 +648,6 @@
                 </div>
               </div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5">
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">Contact Phone</label>
@@ -670,7 +662,6 @@
                 <input id="setState" type="text" value="Uttar Pradesh (Code: 09)" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
               </div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3.5">
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">Company Address *</label>
@@ -681,8 +672,6 @@
                 <textarea id="setBankDetails" rows="2" placeholder="A/C: ... | IFSC: ... | UPI: shanwifi@upi" class="w-full px-3 py-2 border border-slate-300 rounded-xl"></textarea>
               </div>
             </div>
-
-            <!-- Uploads: Logo, UPI QR Code, Signature, Stamp -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 pt-1">
               <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
                 <label class="block font-bold text-slate-700">1. Company Logo</label>
@@ -692,7 +681,6 @@
                   <button type="button" onclick="clearAsset('logo_data', 'setLogoFile', 'setLogoPreview')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Remove</button>
                 </div>
               </div>
-
               <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
                 <label class="block font-bold text-slate-700">2. UPI Payment QR Code</label>
                 <input id="setQrFile" type="file" accept="image/*" onchange="handleAssetUpload(event, 'qr_code_data', 'setQrPreview')" class="text-[11px] w-full" />
@@ -701,7 +689,6 @@
                   <button type="button" onclick="clearAsset('qr_code_data', 'setQrFile', 'setQrPreview')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Remove</button>
                 </div>
               </div>
-
               <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
                 <label class="block font-bold text-slate-700">3. Authorized Signature</label>
                 <input id="setSignFile" type="file" accept="image/*" onchange="handleAssetUpload(event, 'signature_data', 'setSignPreview')" class="text-[11px] w-full" />
@@ -710,7 +697,6 @@
                   <button type="button" onclick="clearAsset('signature_data', 'setSignFile', 'setSignPreview')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Remove</button>
                 </div>
               </div>
-
               <div class="p-3 rounded-xl border border-slate-200 bg-slate-50/70 space-y-2">
                 <label class="block font-bold text-slate-700">4. Company Stamp / Seal</label>
                 <input id="setStampFile" type="file" accept="image/*" onchange="handleAssetUpload(event, 'stamp_data', 'setStampPreview')" class="text-[11px] w-full" />
@@ -720,7 +706,6 @@
                 </div>
               </div>
             </div>
-
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 items-end">
               <div>
                 <label class="block font-semibold text-slate-700 mb-1">Default Tax Split Type</label>
@@ -753,7 +738,6 @@
               </select>
             </div>
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
               <label class="block font-semibold text-slate-600 mb-1">Billed To Name *</label>
@@ -772,14 +756,13 @@
               <input id="invCustGstin" oninput="buildInvoiceFromInputs()" type="text" placeholder="Optional GSTIN" class="w-full px-3 py-2 border border-slate-300 rounded-xl uppercase" />
             </div>
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <div>
               <label class="block font-semibold text-slate-600 mb-1">Service / Plan Description</label>
               <input id="invServiceDesc" oninput="buildInvoiceFromInputs()" type="text" value="Broadband Internet Service (Monthly)" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
             </div>
             <div>
-              <label class="block font-semibold text-slate-600 mb-1">Invoice Amount (₹)</label>
+              <label class="block font-semibold text-slate-600 mb-1">Invoice Amount (Paid ₹)</label>
               <input id="invAmountPaid" oninput="buildInvoiceFromInputs()" type="number" step="0.01" value="599" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
             </div>
             <div>
@@ -807,7 +790,6 @@
               <input id="invDate" onchange="buildInvoiceFromInputs()" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
             </div>
           </div>
-
           <div class="flex flex-wrap items-center justify-end gap-2 pt-2">
             <button type="button" onclick="saveInvoiceToCloud()" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer">
               💾 Save & Issue Invoice
@@ -834,7 +816,6 @@
                 <p id="printGstLine" class="text-[11px] font-bold text-slate-800 mt-1"></p>
               </div>
             </div>
-
             <div class="text-right">
               <span class="inline-block px-3 py-1 rounded-full bg-red-50 text-red-700 font-extrabold text-[11px] uppercase tracking-wider">GST Tax Invoice</span>
               <div id="printInvNumber" class="text-base font-extrabold text-slate-900 mt-2">Invoice #: SWF-1001</div>
@@ -842,7 +823,6 @@
               <div id="printStateLine" class="text-[11px] text-slate-500 mt-0.5">Place of Supply: Uttar Pradesh (Code: 09)</div>
             </div>
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/70">
             <div>
               <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Billed To</div>
@@ -856,7 +836,6 @@
               <div id="printBankInfo" class="text-slate-600 mt-1 whitespace-pre-line">Direct Cash / UPI / Bank Transfer</div>
             </div>
           </div>
-
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
@@ -879,8 +858,6 @@
               </tbody>
             </table>
           </div>
-
-          <!-- Bottom Section: Left = UPI QR & Note | Right = Tax Totals + Signature & Stamp -->
           <div class="grid grid-cols-1 md:grid-cols-12 gap-5 pt-2 items-end">
             <div class="md:col-span-6 flex items-end gap-4">
               <div id="printQrBox" class="p-2 rounded-xl border border-slate-200 bg-slate-50 text-center flex-shrink-0 hidden">
@@ -891,7 +868,6 @@
                 <div id="printFooterNote">Thank you for choosing Shan WiFi. Timely renewal ensures uninterrupted internet.</div>
               </div>
             </div>
-
             <div class="md:col-span-6 space-y-4">
               <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-1.5">
                 <div class="flex justify-between text-slate-600">
@@ -904,8 +880,6 @@
                   <span id="sumGrandTotal" class="text-red-600">₹0.00</span>
                 </div>
               </div>
-
-              <!-- Signature & Stamp Area -->
               <div class="flex items-end justify-end gap-5 pt-1 pr-1">
                 <img id="printStampImg" src="" alt="Company Stamp" class="w-20 h-20 object-contain opacity-90 hidden" />
                 <div class="text-center min-w-[140px]">
@@ -921,7 +895,6 @@
           </div>
         </div>
 
-        <!-- Saved Invoices History -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm no-print">
           <h3 class="font-bold text-sm text-slate-900 mb-3">2. Saved GST Invoices</h3>
           <div class="overflow-x-auto scrollbar-thin">
@@ -949,7 +922,6 @@
           <h2 class="text-xl font-extrabold text-slate-900">Bulk SMS Outage / Server Down Alert</h2>
           <p class="text-xs text-slate-500 mt-0.5">Configure your SMS gateway API & broadcast maintenance alerts to customers</p>
         </div>
-
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
           <h3 class="font-bold text-sm text-slate-900">1. SMS Gateway API Configuration</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -970,7 +942,6 @@
             </button>
           </div>
         </div>
-
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
           <h3 class="font-bold text-sm text-slate-900">2. Broadcast Outage SMS</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -981,16 +952,13 @@
               Recipients: 0 customers
             </div>
           </div>
-
           <textarea id="smsMessageBody" rows="3" placeholder="Dear Customer, Shan WiFi network/server is currently under maintenance. Service will be restored shortly."
             class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs"></textarea>
-
           <button type="button" id="sendBulkSmsBtn" onclick="sendBulkOutageSMS()"
             class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
             🚨 Send Bulk SMS Now
           </button>
         </div>
-
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5">
           <h3 class="font-bold text-sm text-slate-900 mb-3">3. Recent Bulk SMS Dispatch Log</h3>
           <div class="overflow-x-auto scrollbar-thin">
@@ -1013,8 +981,8 @@
       <section id="tab-reports" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
-            <h2 class="text-xl font-extrabold text-slate-900">Reports & CA GST / Tax Excel Export</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Export GST tax ledgers & Customer Data reports cleanly for CA filing</p>
+            <h2 class="text-xl font-extrabold text-slate-900">Reports & CA GST / Sales-Purchase Excel Export</h2>
+            <p class="text-xs text-slate-500 mt-0.5">Export Sales, Purchase, Profit & Customer Data reports cleanly for CA filing</p>
           </div>
           <div class="flex gap-2">
             <button type="button" onclick="toggleAllReportChecks(true)" class="px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-300 text-xs font-semibold hover:bg-slate-200 cursor-pointer">
@@ -1025,7 +993,6 @@
             </button>
           </div>
         </div>
-
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-5">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
             <div>
@@ -1043,60 +1010,111 @@
               <button type="button" onclick="setQuickDateRange('ALL')" class="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-xs font-medium cursor-pointer">All Dates</button>
             </div>
           </div>
-
           <div>
             <div class="text-xs font-semibold text-slate-700 mb-2">Select Report Sections:</div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 text-xs">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3 text-xs">
               <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
-                <input type="checkbox" id="chkIncome" checked onchange="renderReportPreview()" class="rep-chk rounded" />
-                <span class="font-semibold text-emerald-700">Income (GST)</span>
+                <input type="checkbox" id="chkSales" checked onchange="renderReportPreview()" class="rep-chk rounded" />
+                <span class="font-semibold text-emerald-700">Sales (Paid)</span>
               </label>
-
+              <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
+                <input type="checkbox" id="chkPurchase" checked onchange="renderReportPreview()" class="rep-chk rounded" />
+                <span class="font-semibold text-amber-700">Purchase (Recharge)</span>
+              </label>
               <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkExpenses" checked onchange="renderReportPreview()" class="rep-chk rounded" />
-                <span class="font-semibold text-red-600">Expenses (GST)</span>
+                <span class="font-semibold text-red-600">Expenses</span>
               </label>
-
               <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkCustomers" onchange="renderReportPreview()" class="rep-chk rounded" />
                 <span class="font-semibold text-slate-800">Customer Data</span>
               </label>
-
               <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkTower" onchange="renderReportPreview()" class="rep-chk rounded" />
                 <span class="font-semibold text-slate-800">Tower</span>
               </label>
-
               <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkDevice" onchange="renderReportPreview()" class="rep-chk rounded" />
                 <span class="font-semibold text-slate-800">Device</span>
               </label>
-
               <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer">
                 <input type="checkbox" id="chkOther" onchange="renderReportPreview()" class="rep-chk rounded" />
                 <span class="font-semibold text-slate-800">Other</span>
               </label>
             </div>
-            <p class="mt-2.5 text-[11px] text-amber-900 bg-amber-50 border border-amber-200 rounded-xl px-3.5 py-2">
-              <b>Customer Data</b> report mein sirf <b>Customer Name, PPPoE ID, Mobile Number, Aadhaar Number, Address, Tower, Registration Date</b> aayenge.
-            </p>
           </div>
-
           <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100">
-            <div id="repSummaryText" class="text-xs font-semibold text-slate-700">Selected: Income, Expenses</div>
+            <div id="repSummaryText" class="text-xs font-semibold text-slate-700">Selected: Sales, Purchase, Expenses</div>
             <button type="button" onclick="downloadExcelReport()"
               class="px-5 py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold shadow-sm cursor-pointer">
-              📥 Download CA GST Excel Report (.xls)
+              📥 Download CA GST & Profit Excel (.xls)
             </button>
           </div>
         </div>
-
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4">
           <h3 class="font-bold text-sm text-slate-900">Live Report Preview</h3>
           <div id="repPreviewContainer" class="space-y-5 text-xs num"></div>
         </div>
       </section>
     </main>
+  </div>
+
+  <!-- ================= CUSTOMER RENEWAL MODAL ================= -->
+  <div id="renewModal" class="fixed inset-0 bg-slate-950/65 z-50 hidden items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-extrabold text-sm text-slate-900">🔄 Renew Customer Plan (Sales & Purchase)</h3>
+        <button onclick="closeRenewModal()" class="text-slate-400 hover:text-slate-800 text-sm font-bold cursor-pointer">✕</button>
+      </div>
+      <div id="renewCustHeader" class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-slate-700"></div>
+      <form id="renewForm" class="space-y-3">
+        <input type="hidden" id="renewCustId" />
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-bold text-emerald-700 mb-1">Paid by Customer (Sales ₹) *</label>
+            <input id="renewPaid" oninput="updateRenewLiveCalc()" type="number" step="0.01" required class="w-full px-3 py-2 border border-emerald-300 bg-emerald-50/30 rounded-xl font-bold" />
+          </div>
+          <div>
+            <label class="block font-bold text-red-700 mb-1">Recharge Amt (Purchase ₹) *</label>
+            <input id="renewPurchase" oninput="updateRenewLiveCalc()" type="number" step="0.01" required class="w-full px-3 py-2 border border-red-300 bg-red-50/30 rounded-xl font-bold" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Extend Days</label>
+            <select id="renewDays" onchange="recalcRenewExpiryDate()" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white font-semibold">
+              <option value="30" selected>30 Days (1 Month)</option>
+              <option value="90">90 Days (3 Months)</option>
+              <option value="180">180 Days (6 Months)</option>
+              <option value="365">365 Days (1 Year)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">New Expiry Date *</label>
+            <input id="renewNewExpiry" type="date" required class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Renewal Entry Date</label>
+            <input id="renewTxDate" type="date" required class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+          </div>
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">Remaining Due (₹)</label>
+            <input id="renewDue" type="number" step="0.01" value="0" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
+          </div>
+        </div>
+        <div id="renewLiveProfitBox" class="p-3 rounded-xl bg-slate-50 border border-slate-200 font-semibold num">
+          Sales: ₹0 | Purchase: ₹0 | Profit: ₹0
+        </div>
+        <div class="flex justify-end gap-2 pt-2 border-t border-slate-100">
+          <button type="button" onclick="closeRenewModal()" class="px-3.5 py-2 rounded-xl border border-slate-300 font-semibold cursor-pointer">Cancel</button>
+          <button type="submit" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold cursor-pointer">
+            Confirm Renewal & Save
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <!-- ================= UNIVERSAL EDIT MODAL ================= -->
@@ -1106,13 +1124,11 @@
         <h3 id="editModalTitle" class="font-extrabold text-sm text-slate-900">Edit Record</h3>
         <button onclick="closeEditModal()" class="text-slate-400 hover:text-slate-800 text-sm font-bold cursor-pointer">✕</button>
       </div>
-
       <form id="editModalForm" class="space-y-3 text-xs">
         <input type="hidden" id="editEntity" />
         <input type="hidden" id="editId" />
         <div id="editFieldsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
         <div id="editLiveCalcBox" class="hidden p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs num"></div>
-
         <div class="flex justify-end gap-2 pt-3 border-t border-slate-100">
           <button type="button" onclick="closeEditModal()" class="px-3.5 py-2 rounded-xl border border-slate-300 text-xs font-semibold cursor-pointer">Cancel</button>
           <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
@@ -1130,13 +1146,10 @@
         <h3 id="transferModalTitle" class="font-extrabold text-sm text-slate-900">Transfer</h3>
         <button onclick="closeTransferModal()" class="text-slate-400 hover:text-slate-800 text-sm font-bold cursor-pointer">✕</button>
       </div>
-
       <div id="transferCurrentInfo" class="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-700"></div>
-
       <form id="transferForm" class="space-y-3 text-xs">
         <input type="hidden" id="transferEntityType" />
         <input type="hidden" id="transferEntityId" />
-
         <div id="transferModeWrap" class="hidden">
           <label class="block font-semibold text-slate-600 mb-1">Move Device To:</label>
           <select id="transferDeviceTargetType" onchange="toggleDeviceTransferInputs()" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white">
@@ -1145,31 +1158,26 @@
             <option value="STOCK">In Stock / Office (Unassigned)</option>
           </select>
         </div>
-
         <div id="transferTowerSelectWrap">
           <label class="block font-semibold text-slate-600 mb-1">Select Destination Tower:</label>
           <select id="transferDestTower" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white">
             <option value="">-- Unassigned / No Tower --</option>
           </select>
         </div>
-
         <div id="transferCustomerSelectWrap" class="hidden">
           <label class="block font-semibold text-slate-600 mb-1">Select Destination Customer / Shop:</label>
           <select id="transferDestCustomer" class="w-full px-3 py-2 border border-slate-300 rounded-xl bg-white">
             <option value="">-- Select Customer --</option>
           </select>
         </div>
-
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Transfer Date:</label>
           <input id="transferDate" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
         </div>
-
         <div>
           <label class="block font-semibold text-slate-600 mb-1">Transfer Note (Optional):</label>
           <input id="transferNote" type="text" placeholder="e.g. Shifted to Tower B" class="w-full px-3 py-2 border border-slate-300 rounded-xl" />
         </div>
-
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" onclick="closeTransferModal()" class="px-3.5 py-2 rounded-xl border border-slate-300 font-medium cursor-pointer">Cancel</button>
           <button type="submit" class="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold cursor-pointer">
@@ -1183,7 +1191,6 @@
   <script>
     const DEFAULT_SUPABASE_URL = "https://zobrjfquplgqiegrtnof.supabase.co";
     const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvYnJqZnF1cGxncWllZ3J0bm9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MTkwNDIsImV4cCI6MjExMTE5NTA0Mn0.7tSegwPfpB9P8TGeNsVhb9l46J_b__B0gLiWdZXy830";
-
     const INDIA_GST_SLABS = [
       { value: 18, label: "18% GST (Telecom / ISP)" },
       { value: 0, label: "0% GST (Exempt / Nil)" },
@@ -1224,6 +1231,19 @@
       }
     };
 
+    // ================= LEDGER CLASSIFICATION (SALES vs PURCHASE vs EXPENSE) =================
+    function classifyTransaction(tx) {
+      const t = (tx.type || "").toLowerCase();
+      const cat = (tx.category || "").toLowerCase();
+      if (t === "sales" || t === "sale" || t === "income") {
+        return "SALES";
+      }
+      if (t === "purchase" || cat.includes("recharge") || cat.includes("purchase") || cat.includes("bandwidth")) {
+        return "PURCHASE";
+      }
+      return "EXPENSE";
+    }
+
     // ================= GST & PROFIT CALCULATOR =================
     function round2(n) {
       return Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
@@ -1257,14 +1277,13 @@
       const rate = Number(document.getElementById("custGstRate").value || 0);
       const mode = document.getElementById("custGstMode").value;
       const g = calcGstBreakdown(paid, rate, mode);
-      const profit = round2(paid - rechargeAmt);
-
+      const profit = round2(g.total - rechargeAmt);
       document.getElementById("custLiveBreakdown").innerHTML = `
         <span>Without GST: <b>₹${g.base.toFixed(2)}</b></span>
         <span>GST (${g.rate}%): <b>₹${g.gst.toFixed(2)}</b></span>
-        <span>Income (Paid): <b>₹${paid.toFixed(2)}</b></span>
-        <span>Expense (Recharge): <b>₹${rechargeAmt.toFixed(2)}</b></span>
-        <span class="${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Profit: <b>₹${profit.toFixed(2)}</b></span>
+        <span class="text-emerald-700">Sales (Paid): <b>₹${g.total.toFixed(2)}</b></span>
+        <span class="text-red-700">Purchase (Recharge): <b>₹${rechargeAmt.toFixed(2)}</b></span>
+        <span class="font-bold ${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Net Profit: <b>₹${profit.toFixed(2)}</b></span>
       `;
     }
 
@@ -1273,7 +1292,6 @@
       const rate = Number(document.getElementById("txGstRate").value || 0);
       const mode = document.getElementById("txGstMode").value;
       const g = calcGstBreakdown(amt, rate, mode);
-
       document.getElementById("txLiveBreakdown").innerHTML = `
         Without GST: <b>₹${g.base.toFixed(2)}</b> • GST (${g.rate}%): <b>₹${g.gst.toFixed(2)}</b> • With GST Total: <b>₹${g.total.toFixed(2)}</b>
       `;
@@ -1283,7 +1301,6 @@
       const entity = document.getElementById("editEntity").value;
       const box = document.getElementById("editLiveCalcBox");
       const form = document.getElementById("editModalForm");
-
       if (entity === "customers") {
         const rechargeAmt = Number(form.querySelector('[name="plan_price"]')?.value || 0);
         const paid = Number(form.querySelector('[name="amount_paid"]')?.value || 0);
@@ -1291,14 +1308,14 @@
         const mode = form.querySelector('[name="gst_mode"]')?.value || "INCLUSIVE";
         const g = calcGstBreakdown(paid, rate, mode);
         const profit = round2(paid - rechargeAmt);
-
         box.classList.remove("hidden");
         box.innerHTML = `
           <div class="flex flex-wrap gap-x-4 gap-y-1 text-slate-700">
             <span>Without GST: <b>₹${g.base.toFixed(2)}</b></span>
             <span>GST (${g.rate}%): <b>₹${g.gst.toFixed(2)}</b></span>
-            <span>With GST Total: <b>₹${g.total.toFixed(2)}</b></span>
-            <span class="${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Profit (${paid} − ${rechargeAmt}): <b>₹${profit.toFixed(2)}</b></span>
+            <span>Sales (Paid): <b>₹${paid.toFixed(2)}</b></span>
+            <span>Purchase (Recharge): <b>₹${rechargeAmt.toFixed(2)}</b></span>
+            <span class="${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Profit: <b>₹${profit.toFixed(2)}</b></span>
           </div>
         `;
       } else if (entity === "transactions") {
@@ -1306,7 +1323,6 @@
         const rate = Number(form.querySelector('[name="gst_rate"]')?.value || 0);
         const mode = form.querySelector('[name="gst_mode"]')?.value || "INCLUSIVE";
         const g = calcGstBreakdown(amt, rate, mode);
-
         box.classList.remove("hidden");
         box.innerHTML = `
           <div class="flex flex-wrap gap-x-4 gap-y-1 text-slate-700">
@@ -1379,7 +1395,6 @@
       document.getElementById("setBankDetails").value = c.bank_details || "";
       document.getElementById("setTaxSplit").value = c.default_gst_mode || "INTRA";
       document.getElementById("setFooterNote").value = c.footer_note || "";
-
       applyPreviewImage("setLogoPreview", c.logo_data);
       applyPreviewImage("setQrPreview", c.qr_code_data);
       applyPreviewImage("setSignPreview", c.signature_data);
@@ -1389,7 +1404,6 @@
       const printImg = document.getElementById("printLogoImg");
       const printFallback = document.getElementById("printLogoFallback");
       document.getElementById("sidebarCompanyName").textContent = c.company_name || "Shan WiFi";
-
       if (c.logo_data) {
         sideBox.innerHTML = `<img src="${c.logo_data}" alt="Logo" class="w-full h-full object-contain bg-white p-0.5" />`;
         printImg.src = c.logo_data;
@@ -1421,12 +1435,10 @@
         default_gst_mode: document.getElementById("setTaxSplit").value || "INTRA",
         footer_note: document.getElementById("setFooterNote").value.trim()
       };
-
       localStorage.setItem("isp_company_settings", JSON.stringify(state.company));
       if (supabaseClient) {
         await supabaseClient.from("company_settings").upsert([{ id: "default", ...state.company }]);
       }
-
       syncCompanySettingsUI();
       buildInvoiceFromInputs();
       showToast("Company & Invoice settings saved!");
@@ -1437,7 +1449,6 @@
       if (!custId) return;
       const c = state.customers.find(x => x.id === custId);
       if (!c) return;
-
       document.getElementById("invCustName").value = c.name || "";
       document.getElementById("invCustPhone").value = c.phone || "";
       document.getElementById("invCustAddr").value = formatFullCustomerAddress(c);
@@ -1460,7 +1471,6 @@
       const mode = document.getElementById("invGstMode").value || "INCLUSIVE";
       const invDate = document.getElementById("invDate").value || new Date().toISOString().slice(0, 10);
       const taxSplit = document.getElementById("setTaxSplit")?.value || comp.default_gst_mode || "INTRA";
-
       const g = calcGstBreakdown(paid, rate, mode);
       const invNum = `${comp.invoice_prefix || "SWF-"}${comp.next_invoice_no || 1001}`;
       const gstClean = cleanGstinText(comp.gstin);
@@ -1473,21 +1483,17 @@
       document.getElementById("printStateLine").textContent = comp.state_name ? `Place of Supply: ${comp.state_name}` : "";
       document.getElementById("printBankInfo").textContent = comp.bank_details || "Cash / UPI / Bank Transfer";
       document.getElementById("printFooterNote").textContent = comp.footer_note || "";
-
       document.getElementById("printInvNumber").textContent = `Invoice #: ${invNum}`;
       document.getElementById("printInvDate").textContent = `Date: ${invDate}`;
-
       document.getElementById("printCustName").textContent = custName;
       document.getElementById("printCustPhone").textContent = `Phone: ${custPhone}`;
       document.getElementById("printCustAddr").textContent = `Address: ${custAddr}`;
       document.getElementById("printCustGstin").textContent = `GSTIN: ${custGstin || "Unregistered / B2C"}`;
-
       document.getElementById("printDescCell").textContent = desc;
       document.getElementById("printTaxableCell").textContent = `₹${g.base.toFixed(2)}`;
       document.getElementById("printRateCell").textContent = `${g.rate}%`;
       document.getElementById("printGstCell").textContent = `₹${g.gst.toFixed(2)}`;
       document.getElementById("printTotalCell").textContent = `₹${g.total.toFixed(2)}`;
-
       document.getElementById("sumTaxable").textContent = `₹${g.base.toFixed(2)}`;
       document.getElementById("sumGrandTotal").textContent = `₹${g.total.toFixed(2)}`;
 
@@ -1504,7 +1510,6 @@
         `;
       }
 
-      // Left QR Box
       const qrBox = document.getElementById("printQrBox");
       const qrImg = document.getElementById("printQrImg");
       if (comp.qr_code_data) {
@@ -1515,7 +1520,6 @@
         qrBox.classList.add("hidden");
       }
 
-      // Bottom-Right Signature & Stamp
       const signImg = document.getElementById("printSignImg");
       if (comp.signature_data) {
         signImg.src = comp.signature_data;
@@ -1548,12 +1552,12 @@
       const mode = document.getElementById("invGstMode").value || "INCLUSIVE";
       const invDate = document.getElementById("invDate").value || new Date().toISOString().slice(0, 10);
       const taxSplit = document.getElementById("setTaxSplit")?.value || comp.default_gst_mode || "INTRA";
-
       const g = calcGstBreakdown(paid, rate, mode);
       const invNum = `${comp.invoice_prefix || "SWF-"}${comp.next_invoice_no || 1001}`;
       const halfGst = round2(g.gst / 2);
 
       const record = {
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
         invoice_number: invNum,
         customer_id: custId,
         customer_name: custName,
@@ -1574,7 +1578,8 @@
       };
 
       if (supabaseClient) {
-        const { error } = await supabaseClient.from("invoices").insert([record]);
+        const { id, ...dbRec } = record;
+        const { error } = await supabaseClient.from("invoices").insert([dbRec]);
         if (error) return showToast(error.message);
         comp.next_invoice_no = Number(comp.next_invoice_no || 1001) + 1;
         await supabaseClient.from("company_settings").upsert([{ id: "default", ...comp }]);
@@ -1582,7 +1587,6 @@
         state.invoices.unshift(record);
         comp.next_invoice_no = Number(comp.next_invoice_no || 1001) + 1;
       }
-
       localStorage.setItem("isp_company_settings", JSON.stringify(comp));
       syncCompanySettingsUI();
       buildInvoiceFromInputs();
@@ -1596,8 +1600,7 @@
         tbody.innerHTML = `<tr><td colspan="7" class="py-4 text-center text-slate-400">No invoices saved yet.</td></tr>`;
         return;
       }
-
-      tbody.innerHTML = state.invoices.map(inv => `
+      tbody.innerHTML = state.invoices.map((inv, idx) => `
         <tr>
           <td class="py-2.5 px-3 font-bold text-slate-900">${esc(inv.invoice_number)}</td>
           <td class="py-2.5 px-3">${esc(inv.invoice_date || "—")}</td>
@@ -1606,7 +1609,7 @@
           <td class="py-2.5 px-3 text-blue-700">${Number(inv.gst_rate || 0)}% (₹${Number((inv.igst_amount || 0) || ((inv.cgst_amount || 0) + (inv.sgst_amount || 0))).toFixed(2)})</td>
           <td class="py-2.5 px-3 font-bold text-slate-900">₹${Number(inv.total_with_gst || 0).toFixed(2)}</td>
           <td class="py-2.5 px-3">
-            <button onclick='loadInvoiceToPreview(${JSON.stringify(inv)})' class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium cursor-pointer">
+            <button onclick="loadInvoiceByIndex(${idx})" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium cursor-pointer">
               Load & Print
             </button>
           </td>
@@ -1614,7 +1617,9 @@
       `).join("");
     }
 
-    function loadInvoiceToPreview(inv) {
+    function loadInvoiceByIndex(idx) {
+      const inv = state.invoices[idx];
+      if (!inv) return;
       document.getElementById("invCustName").value = inv.customer_name || "";
       document.getElementById("invCustPhone").value = inv.customer_phone || "";
       document.getElementById("invCustAddr").value = inv.customer_address || "";
@@ -1652,7 +1657,6 @@
       const { url, key } = getSupabaseCredentials();
       document.getElementById("cfgSupaUrl").value = url.includes("YOUR_PROJECT_ID") ? "" : url;
       document.getElementById("cfgSupaKey").value = key.includes("YOUR_SUPABASE_ANON_PUBLIC_KEY") ? "" : key;
-
       if (!url || url.includes("YOUR_PROJECT_ID") || !key || key.includes("YOUR_SUPABASE_ANON_PUBLIC_KEY")) {
         showLoginError("Setup Supabase URL & Anon Key first using 'Supabase Project Connection' below.");
         return;
@@ -1668,7 +1672,6 @@
       document.getElementById("invDate").value = new Date().toISOString().slice(0, 10);
       syncCompanySettingsUI();
       buildInvoiceFromInputs();
-
       initSupabase();
       if (!supabaseClient) return;
       const { data: { session } } = await supabaseClient.auth.getSession();
@@ -1679,18 +1682,15 @@
       e.preventDefault();
       if (!supabaseClient) initSupabase();
       if (!supabaseClient) return;
-
       const email = document.getElementById("loginEmail").value.trim();
       const password = document.getElementById("loginPassword").value;
       const btn = document.getElementById("loginBtn");
       btn.disabled = true;
       btn.textContent = "Signing in...";
       hideLoginError();
-
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
       btn.disabled = false;
       btn.textContent = "Sign In to Admin Portal";
-
       if (error) showLoginError(error.message);
       else onLoggedIn(data.user);
     });
@@ -1723,7 +1723,6 @@
     function switchTab(tabName) {
       document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
       document.getElementById("tab-" + tabName).classList.remove("hidden");
-
       document.querySelectorAll(".nav-btn").forEach(b => {
         if (b.dataset.tab === tabName) {
           b.classList.add("bg-red-600", "text-white", "font-semibold");
@@ -1731,7 +1730,6 @@
           b.classList.remove("bg-red-600", "text-white", "font-semibold");
         }
       });
-
       if (tabName === "reports") renderReportPreview();
       if (tabName === "invoices") buildInvoiceFromInputs();
       if (window.innerWidth < 1024) document.getElementById("sidebar").classList.add("-translate-x-full");
@@ -1746,7 +1744,7 @@
       t.textContent = msg;
       t.classList.remove("hidden");
       clearTimeout(window._toastTimer);
-      window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3400);
+      window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3600);
     }
 
     async function refreshAllData() {
@@ -1760,19 +1758,16 @@
         supabaseClient.from("invoices").select("*").order("created_at", { ascending: false }),
         supabaseClient.from("company_settings").select("*").eq("id", "default").maybeSingle()
       ]);
-
       state.towers = tRes.data || [];
       state.customers = cRes.data || [];
       state.devices = dRes.data || [];
       state.complaints = compRes.data || [];
       state.transactions = txRes.data || [];
       state.invoices = invRes.data || [];
-
       if (setRes.data) {
         state.company = { ...state.company, ...setRes.data };
         localStorage.setItem("isp_company_settings", JSON.stringify(state.company));
       }
-
       syncCompanySettingsUI();
       populateDropdowns();
       renderDashboard();
@@ -1794,7 +1789,6 @@
       document.getElementById("compTower").innerHTML = `<option value="">Select Tower (Optional)</option>` + towerOptions;
       document.getElementById("smsTargetTower").innerHTML = `<option value="ALL">All Customers</option>` + towerOptions;
       document.getElementById("transferDestTower").innerHTML = `<option value="">-- Unassigned / No Tower --</option>` + towerOptions;
-
       const custOptions = state.customers.map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.phone)})</option>`).join("");
       document.getElementById("devCustomer").innerHTML = `<option value="">Customer / Shop (If at Customer)</option>` + custOptions;
       document.getElementById("transferDestCustomer").innerHTML = `<option value="">-- Select Customer --</option>` + custOptions;
@@ -1814,46 +1808,49 @@
       return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
     }
 
-    // ================= HELPER TO RECORD CUSTOMER INCOME & RECHARGE EXPENSE =================
-    async function recordCustomerBillingTx({ custName, planLabel, paid, rechargeAmt, gstRate, gstMode, towerId, dateStr, isRenewal }) {
+    // ================= AUTO RECORD CUSTOMER SALES & RECHARGE PURCHASE =================
+    async function recordCustomerSalesAndPurchase({ custName, pppoe, planLabel, paid, rechargeAmt, gstRate, gstMode, towerId, dateStr, isRenewal }) {
       const g = calcGstBreakdown(paid, gstRate, gstMode);
-      const tag = isRenewal ? "Renewal" : "New";
+      const tag = isRenewal ? "Renewal" : "New Connection";
+      const userRef = pppoe ? `${custName} [${pppoe}]` : custName;
       const txEntries = [];
 
+      // 1. Customer Paid -> Goes to SALES (stored as type 'Income' in DB for compatibility, displayed & calculated as Sales)
       if (paid > 0) {
         txEntries.push({
           type: "Income",
-          category: "Customer Recharge",
+          category: "Customer Sales",
           tower_id: towerId || null,
           amount: g.total,
           gst_rate: gstRate,
           gst_mode: gstMode,
           base_amount: g.base,
           gst_amount: g.gst,
-          note: `${tag} Paid by ${custName} (${planLabel})`,
+          note: `${tag} Sales: ${userRef} (${planLabel})`,
           date: dateStr
         });
       }
 
+      // 2. Recharge Amount -> Goes to PURCHASE (stored as type 'Expense' with category 'Recharge Purchase')
       if (rechargeAmt > 0) {
         const rg = calcGstBreakdown(rechargeAmt, gstRate, "INCLUSIVE");
         txEntries.push({
           type: "Expense",
-          category: "Recharge Amount",
+          category: "Recharge Purchase",
           tower_id: towerId || null,
           amount: rechargeAmt,
           gst_rate: gstRate,
           gst_mode: "INCLUSIVE",
           base_amount: rg.base,
           gst_amount: rg.gst,
-          note: `${tag} Recharge for ${custName} (${planLabel})`,
+          note: `${tag} Purchase: ${userRef} (${planLabel})`,
           date: dateStr
         });
       }
 
-      if (txEntries.length) {
+      if (txEntries.length && supabaseClient) {
         const { error } = await supabaseClient.from("transactions").insert(txEntries);
-        if (error) showToast("Ledger note: " + error.message);
+        if (error) showToast("Ledger sync error: " + error.message);
       }
     }
 
@@ -1864,36 +1861,45 @@
       const expiringSoonList = state.customers.filter(c => daysUntil(c.expiry_date) <= 3);
       const totalDues = state.customers.reduce((sum, c) => sum + Number(c.due_amount || 0), 0);
 
-      const totalIncome = state.transactions.filter(x => x.type === "Income").reduce((s, x) => s + Number(x.amount || 0), 0);
-      const totalExpense = state.transactions.filter(x => x.type === "Expense").reduce((s, x) => s + Number(x.amount || 0), 0);
-      const net = round2(totalIncome - totalExpense);
-      const camCount = state.devices.filter(d => d.device_type === "Camera").length;
+      let totalSales = 0;
+      let totalPurchase = 0;
+      let totalOtherExp = 0;
+      state.transactions.forEach(tx => {
+        const kind = classifyTransaction(tx);
+        const amt = Number(tx.amount || 0);
+        if (kind === "SALES") totalSales += amt;
+        else if (kind === "PURCHASE") totalPurchase += amt;
+        else totalOtherExp += amt;
+      });
+
+      const totalOutflow = round2(totalPurchase + totalOtherExp);
+      const netProfit = round2(totalSales - totalOutflow);
 
       document.getElementById("kpiActiveCustomers").textContent = active;
-      document.getElementById("kpiExpiredCustomers").textContent = `${expired} Expired`;
-      document.getElementById("kpiExpiringSoon").textContent = expiringSoonList.length;
-      document.getElementById("kpiTotalDues").textContent = `Pending Dues: ₹${totalDues.toLocaleString()}`;
-      document.getElementById("kpiTowers").textContent = `${state.towers.length} Towers`;
-      document.getElementById("kpiDevices").textContent = `${state.devices.length} Total (${camCount} Cameras)`;
+      document.getElementById("kpiExpiredCustomers").textContent = `${expired} Expired | Expiring ≤3d: ${expiringSoonList.length}`;
+      document.getElementById("kpiTotalSales").textContent = `₹${round2(totalSales).toLocaleString()}`;
+      document.getElementById("kpiTotalDues").textContent = `Pending Dues: ₹${round2(totalDues).toLocaleString()}`;
+      document.getElementById("kpiTotalPurchase").textContent = `₹${totalOutflow.toLocaleString()}`;
+      document.getElementById("kpiPurchaseSplit").textContent = `Purchase: ₹${round2(totalPurchase).toLocaleString()} | Exp: ₹${round2(totalOtherExp).toLocaleString()}`;
 
       const netEl = document.getElementById("kpiNetProfit");
-      netEl.textContent = `${net < 0 ? "-" : ""}₹${Math.abs(net).toLocaleString()}`;
-      netEl.className = `text-2xl font-black mt-1.5 num ${net >= 0 ? "text-emerald-600" : "text-red-600"}`;
-      document.getElementById("kpiIncExp").textContent = `Income: ₹${totalIncome.toLocaleString()} | Expense: ₹${totalExpense.toLocaleString()}`;
+      netEl.textContent = `${netProfit < 0 ? "-" : ""}₹${Math.abs(netProfit).toLocaleString()}`;
+      netEl.className = `text-2xl font-black mt-1.5 num ${netProfit >= 0 ? "text-emerald-600" : "text-red-600"}`;
+      document.getElementById("kpiTowersDevices").textContent = `${state.towers.length} Towers | ${state.devices.length} Devices`;
 
       const tbody = document.getElementById("dashExpiringBody");
       if (!expiringSoonList.length) {
         tbody.innerHTML = `<tr><td colspan="5" class="py-5 text-center text-slate-400">No customers expiring soon or expired.</td></tr>`;
         return;
       }
-
       tbody.innerHTML = expiringSoonList.slice(0, 10).map(c => {
         const d = daysUntil(c.expiry_date);
-        const profit = round2(Number(c.amount_paid || 0) - Number(c.plan_price || 0));
+        const sales = Number(c.amount_paid || 0);
+        const purchase = Number(c.plan_price || 0);
+        const profit = round2(sales - purchase);
         const badge = d < 0
           ? `<span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">Expired (${Math.abs(d)}d)</span>`
           : `<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-semibold">${d === 0 ? "Today" : d + "d left"}</span>`;
-
         return `
           <tr>
             <td class="py-3 px-3">
@@ -1902,13 +1908,13 @@
             </td>
             <td class="py-3 px-3">${esc(c.phone)}</td>
             <td class="py-3 px-3">
-              Paid: <b>₹${Number(c.amount_paid || 0)}</b> | Recharge: ₹${Number(c.plan_price || 0)}
+              Sales: <b class="text-emerald-700">₹${sales}</b> | Purchase: <b class="text-red-700">₹${purchase}</b>
               <span class="ml-1 font-bold ${profit >= 0 ? "text-emerald-700" : "text-red-600"}">(Profit: ₹${profit})</span>
             </td>
             <td class="py-3 px-3">${esc(c.expiry_date || "—")} ${badge}</td>
             <td class="py-3 px-3 flex flex-wrap gap-1.5">
-              <button onclick='sendWhatsAppReminder(${JSON.stringify(c)})' class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
-              <button onclick="renewCustomer('${c.id}')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium cursor-pointer">+30d</button>
+              <button onclick="sendWhatsAppReminderById('${c.id}')" class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
+              <button onclick="openRenewModal('${c.id}')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium cursor-pointer">Renew</button>
               <button onclick="openEditModal('customers', '${c.id}')" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
             </td>
           </tr>
@@ -1962,20 +1968,21 @@
     document.getElementById("customerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const custName = document.getElementById("custName").value.trim();
+      const pppoe = document.getElementById("custPppoe").value.trim();
       const paid = Number(document.getElementById("custPaid").value || 0);
       const rechargeAmt = Number(document.getElementById("custPrice").value || 0);
+      const due = Number(document.getElementById("custDue").value || 0);
       const gstRate = Number(document.getElementById("custGstRate").value || 0);
       const gstMode = document.getElementById("custGstMode").value;
       const g = calcGstBreakdown(paid, gstRate, gstMode);
-      const due = Math.max(0, round2(rechargeAmt - paid));
       const towerVal = document.getElementById("custTower").value || null;
       const startVal = document.getElementById("custStart").value || new Date().toISOString().slice(0, 10);
-      const regVal = document.getElementById("custRegDate").value || null;
+      const regVal = document.getElementById("custRegDate").value || startVal;
       const planLabel = document.getElementById("custPlan").value.trim() || "Internet Plan";
 
       const payload = {
         name: custName,
-        pppoe_username: document.getElementById("custPppoe").value.trim(),
+        pppoe_username: pppoe,
         phone: document.getElementById("custPhone").value.trim(),
         aadhaar_number: document.getElementById("custAadhaar").value.trim(),
         address: document.getElementById("custAddress").value.trim(),
@@ -1985,7 +1992,7 @@
         tower_id: towerVal,
         plan_name: planLabel,
         plan_price: rechargeAmt,
-        amount_paid: paid,
+        amount_paid: g.total,
         due_amount: due,
         gst_rate: gstRate,
         gst_mode: gstMode,
@@ -1999,13 +2006,14 @@
       const { error } = await supabaseClient.from("customers").insert([payload]);
       if (error) return showToast(error.message);
 
-      await recordCustomerBillingTx({
+      await recordCustomerSalesAndPurchase({
         custName,
+        pppoe,
         planLabel,
-        paid,
+        paid: g.total,
         rechargeAmt,
         gstRate,
-        gstMode,
+        gstMode: "INCLUSIVE",
         towerId: towerVal,
         dateStr: startVal,
         isRenewal: false
@@ -2013,14 +2021,13 @@
 
       e.target.reset();
       updateCustFormCalc();
-      showToast(`Added! Paid ₹${paid} (Income), Recharge ₹${rechargeAmt} (Expense), Profit ₹${round2(paid - rechargeAmt)}`);
+      showToast(`Saved! Sales: ₹${g.total} | Purchase: ₹${rechargeAmt} | Profit: ₹${round2(g.total - rechargeAmt)}`);
       refreshAllData();
     });
 
     function renderCustomers() {
       const q = (document.getElementById("customerSearch").value || "").toLowerCase();
       const filter = document.getElementById("customerFilter").value;
-
       const list = state.customers.filter(c => {
         const d = daysUntil(c.expiry_date);
         if (filter === "EXPIRING" && !(d >= 0 && d <= 3)) return false;
@@ -2043,13 +2050,12 @@
 
       tbody.innerHTML = list.map(c => {
         const d = daysUntil(c.expiry_date);
-        const paid = Number(c.amount_paid || 0);
-        const rechargeAmt = Number(c.plan_price || 0);
-        const profit = round2(paid - rechargeAmt);
+        const sales = Number(c.amount_paid || 0);
+        const purchase = Number(c.plan_price || 0);
+        const profit = round2(sales - purchase);
         const gstRate = Number(c.gst_rate ?? 18);
-        const g = calcGstBreakdown(paid, gstRate, c.gst_mode || "INCLUSIVE");
+        const g = calcGstBreakdown(sales, gstRate, "INCLUSIVE");
         const fullAddr = formatFullCustomerAddress(c);
-
         let statusBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">Active (${d}d)</span>`;
         if (d < 0) statusBadge = `<span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">Expired</span>`;
         else if (d <= 3) statusBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-semibold">Expiring (${d}d)</span>`;
@@ -2068,8 +2074,10 @@
             </td>
             <td class="py-3 px-3">
               <div class="text-[11px] text-slate-500">${esc(c.plan_name || "Plan")}</div>
-              <div>Paid: <b>₹${paid}</b> | Recharge: <b>₹${rechargeAmt}</b></div>
-              <div class="text-[11px] font-bold ${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Profit: ₹${profit}</div>
+              <div>Sales (Paid): <b class="text-emerald-700">₹${sales}</b> | Purchase: <b class="text-red-700">₹${purchase}</b></div>
+              <div class="text-[11px] font-bold ${profit >= 0 ? "text-emerald-700" : "text-red-600"}">
+                Profit: ₹${profit} ${Number(c.due_amount) > 0 ? `<span class="text-amber-700 ml-1">(Due: ₹${c.due_amount})</span>` : ""}
+              </div>
             </td>
             <td class="py-3 px-3">
               <div class="text-[11px] text-slate-600">Without GST: <b>₹${g.base.toFixed(2)}</b></div>
@@ -2082,8 +2090,8 @@
             </td>
             <td class="py-3 px-3 space-y-1.5">
               <div class="flex flex-wrap gap-1.5">
-                <button onclick='sendWhatsAppReminder(${JSON.stringify(c)})' class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
-                <button onclick="renewCustomer('${c.id}')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium cursor-pointer">+30d</button>
+                <button onclick="sendWhatsAppReminderById('${c.id}')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">WhatsApp</button>
+                <button onclick="openRenewModal('${c.id}')" class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-medium cursor-pointer">Renew</button>
                 <button onclick="openEditModal('customers', '${c.id}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
                 <button onclick="openTransferModal('CUSTOMER', '${c.id}')" class="px-2 py-1 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-medium cursor-pointer">⇄</button>
               </div>
@@ -2096,53 +2104,244 @@
       }).join("");
     }
 
-    async function renewCustomer(id) {
+    // ================= SMART RENEWAL MODAL (SALES + PURCHASE ENTRY) =================
+    function openRenewModal(id) {
       const cust = state.customers.find(c => c.id === id);
       if (!cust) return;
-      const baseDate = daysUntil(cust.expiry_date) >= 0 ? new Date(cust.expiry_date + "T00:00:00") : new Date();
-      baseDate.setDate(baseDate.getDate() + 30);
-      const newExpiry = baseDate.toISOString().slice(0, 10);
-      const todayStr = new Date().toISOString().slice(0, 10);
+      document.getElementById("renewCustId").value = cust.id;
+      document.getElementById("renewCustHeader").innerHTML = `
+        <b>Customer:</b> ${esc(cust.name)} ${cust.pppoe_username ? `(${esc(cust.pppoe_username)})` : ""}<br/>
+        <b>Plan:</b> ${esc(cust.plan_name || "Broadband")} • <b>Current Expiry:</b> ${esc(cust.expiry_date || "N/A")}
+      `;
+      document.getElementById("renewPaid").value = Number(cust.amount_paid || 0);
+      document.getElementById("renewPurchase").value = Number(cust.plan_price || 0);
+      document.getElementById("renewDue").value = Number(cust.due_amount || 0);
+      document.getElementById("renewDays").value = "30";
+      document.getElementById("renewTxDate").value = new Date().toISOString().slice(0, 10);
+      recalcRenewExpiryDate();
+      updateRenewLiveCalc();
 
-      const paid = Number(cust.amount_paid || cust.plan_price || 0);
-      const rechargeAmt = Number(cust.plan_price || 0);
+      const modal = document.getElementById("renewModal");
+      modal.classList.remove("hidden");
+      modal.classList.add("flex");
+    }
+
+    function closeRenewModal() {
+      const modal = document.getElementById("renewModal");
+      modal.classList.add("hidden");
+      modal.classList.remove("flex");
+    }
+
+    function recalcRenewExpiryDate() {
+      const custId = document.getElementById("renewCustId").value;
+      const cust = state.customers.find(c => c.id === custId);
+      const days = Number(document.getElementById("renewDays").value || 30);
+      const baseDate = (cust && daysUntil(cust.expiry_date) >= 0)
+        ? new Date(cust.expiry_date + "T00:00:00")
+        : new Date();
+      baseDate.setDate(baseDate.getDate() + days);
+      document.getElementById("renewNewExpiry").value = baseDate.toISOString().slice(0, 10);
+    }
+
+    function updateRenewLiveCalc() {
+      const sales = Number(document.getElementById("renewPaid").value || 0);
+      const purchase = Number(document.getElementById("renewPurchase").value || 0);
+      const profit = round2(sales - purchase);
+      document.getElementById("renewLiveProfitBox").innerHTML = `
+        <span class="text-emerald-700">Sales (Paid): ₹${sales.toFixed(2)}</span> •
+        <span class="text-red-700">Purchase (Recharge): ₹${purchase.toFixed(2)}</span> •
+        <span class="${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Profit: ₹${profit.toFixed(2)}</span>
+      `;
+    }
+
+    document.getElementById("renewForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const id = document.getElementById("renewCustId").value;
+      const cust = state.customers.find(c => c.id === id);
+      if (!cust) return;
+
+      const paid = Number(document.getElementById("renewPaid").value || 0);
+      const rechargeAmt = Number(document.getElementById("renewPurchase").value || 0);
+      const newExpiry = document.getElementById("renewNewExpiry").value;
+      const txDate = document.getElementById("renewTxDate").value || new Date().toISOString().slice(0, 10);
+      const due = Number(document.getElementById("renewDue").value || 0);
       const gstRate = Number(cust.gst_rate ?? 18);
-      const gstMode = cust.gst_mode || "INCLUSIVE";
+      const g = calcGstBreakdown(paid, gstRate, "INCLUSIVE");
 
       const { error } = await supabaseClient.from("customers").update({
-        start_date: todayStr,
-        expiry_date: newExpiry,
-        due_amount: 0
+        amount_paid: paid,
+        plan_price: rechargeAmt,
+        due_amount: due,
+        base_amount: g.base,
+        gst_amount: g.gst,
+        total_with_gst: g.total,
+        start_date: txDate,
+        expiry_date: newExpiry
       }).eq("id", id);
-
       if (error) return showToast(error.message);
 
-      await recordCustomerBillingTx({
+      await recordCustomerSalesAndPurchase({
         custName: cust.name || "Customer",
+        pppoe: cust.pppoe_username || "",
         planLabel: cust.plan_name || "Internet Plan",
         paid,
         rechargeAmt,
         gstRate,
-        gstMode,
+        gstMode: "INCLUSIVE",
         towerId: cust.tower_id || null,
-        dateStr: todayStr,
+        dateStr: txDate,
         isRenewal: true
       });
 
-      showToast(`Renewed till ${newExpiry} | Profit: ₹${round2(paid - rechargeAmt)}`);
+      closeRenewModal();
+      showToast(`Renewed till ${newExpiry} | Sales: ₹${paid} | Purchase: ₹${rechargeAmt} | Profit: ₹${round2(paid - rechargeAmt)}`);
       refreshAllData();
-    }
+    });
 
-    function sendWhatsAppReminder(cust) {
+    function sendWhatsAppReminderById(id) {
+      const cust = state.customers.find(c => c.id === id);
+      if (!cust) return;
       let phone = (cust.phone || "").replace(/\D/g, "");
       if (phone.length === 10) phone = "91" + phone;
-      const paid = Number(cust.amount_paid || cust.plan_price || 0);
+      const paid = Number(cust.amount_paid || 0);
       const gstRate = Number(cust.gst_rate ?? 18);
-      const g = calcGstBreakdown(paid, gstRate, cust.gst_mode || "INCLUSIVE");
+      const g = calcGstBreakdown(paid, gstRate, "INCLUSIVE");
       const dueText = Number(cust.due_amount) > 0 ? ` (Pending Due: Rs.${cust.due_amount})` : "";
       const pppoeText = cust.pppoe_username ? ` [PPPoE: ${cust.pppoe_username}]` : "";
       const msg = `Namaste ${cust.name}${pppoeText}, ${state.company.company_name || "Shan WiFi"} par aapka plan (${cust.plan_name || "Wi-Fi"}) ${cust.expiry_date} ko expire ho raha hai / hai. Amount: Rs.${g.total.toFixed(2)} (Base Rs.${g.base.toFixed(2)} + ${g.rate}% GST Rs.${g.gst.toFixed(2)})${dueText}. Kripya samay par recharge karwayein.`;
       window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
+    }
+
+    // ================= ACCOUNTS (SALES, PURCHASE & P&L) =================
+    document.getElementById("txDate").value = new Date().toISOString().slice(0, 10);
+    document.getElementById("txForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const uiType = document.getElementById("txType").value;
+      const rawAmt = Number(document.getElementById("txAmount").value || 0);
+      const gstRate = Number(document.getElementById("txGstRate").value || 0);
+      const gstMode = document.getElementById("txGstMode").value;
+      const g = calcGstBreakdown(rawAmt, gstRate, gstMode);
+
+      const dbType = uiType === "Sales" ? "Income" : "Expense";
+      let cat = document.getElementById("txCategory").value.trim();
+      if (uiType === "Purchase" && !cat.toLowerCase().includes("purchase") && !cat.toLowerCase().includes("recharge")) {
+        cat = `Purchase - ${cat}`;
+      }
+
+      const payload = {
+        type: dbType,
+        category: cat,
+        amount: g.total,
+        gst_rate: gstRate,
+        gst_mode: gstMode,
+        base_amount: g.base,
+        gst_amount: g.gst,
+        date: document.getElementById("txDate").value,
+        note: document.getElementById("txNote").value.trim()
+      };
+      const { error } = await supabaseClient.from("transactions").insert([payload]);
+      if (error) return showToast(error.message);
+      e.target.reset();
+      document.getElementById("txDate").value = new Date().toISOString().slice(0, 10);
+      updateTxFormCalc();
+      showToast(`${uiType} entry saved!`);
+      refreshAllData();
+    });
+
+    function renderAccounts() {
+      const from = document.getElementById("pnlFrom").value;
+      const to = document.getElementById("pnlTo").value;
+      const typeFilter = document.getElementById("txTypeFilter").value;
+
+      const dateFiltered = state.transactions.filter(tx => {
+        if (from && tx.date < from) return false;
+        if (to && tx.date > to) return false;
+        return true;
+      });
+
+      let salesTotal = 0, salesBase = 0, salesGst = 0;
+      let purchaseTotal = 0, purchaseGst = 0;
+      let otherExpTotal = 0, otherExpGst = 0;
+
+      dateFiltered.forEach(tx => {
+        const kind = classifyTransaction(tx);
+        const g = calcGstBreakdown(tx.amount, tx.gst_rate ?? 18, "INCLUSIVE");
+        const base = Number(tx.base_amount) > 0 ? Number(tx.base_amount) : g.base;
+        const gst = Number(tx.gst_amount) > 0 ? Number(tx.gst_amount) : g.gst;
+        const tot = Number(tx.amount || 0);
+
+        if (kind === "SALES") {
+          salesTotal += tot; salesBase += base; salesGst += gst;
+        } else if (kind === "PURCHASE") {
+          purchaseTotal += tot; purchaseGst += gst;
+        } else {
+          otherExpTotal += tot; otherExpGst += gst;
+        }
+      });
+
+      const grossProfit = round2(salesTotal - purchaseTotal);
+      const netProfit = round2(salesTotal - purchaseTotal - otherExpTotal);
+      const totalInputGst = round2(purchaseGst + otherExpGst);
+      const netGst = round2(salesGst - totalInputGst);
+
+      document.getElementById("pnlSales").textContent = `₹${round2(salesTotal).toLocaleString()}`;
+      document.getElementById("pnlSalesBase").textContent = `Without GST: ₹${round2(salesBase).toLocaleString()} | Output GST: ₹${round2(salesGst).toLocaleString()}`;
+      document.getElementById("pnlPurchase").textContent = `₹${round2(purchaseTotal).toLocaleString()}`;
+      document.getElementById("pnlGrossProfit").textContent = `Gross Profit (Sales − Purchase): ₹${grossProfit.toLocaleString()}`;
+      document.getElementById("pnlOtherExp").textContent = `₹${round2(otherExpTotal).toLocaleString()}`;
+      document.getElementById("pnlTotalInputGst").textContent = `Total Input GST (Purchase+Exp): ₹${totalInputGst.toLocaleString()}`;
+
+      const pnlEl = document.getElementById("pnlNet");
+      pnlEl.textContent = `${netProfit < 0 ? "-" : ""}₹${Math.abs(netProfit).toLocaleString()}`;
+      pnlEl.className = `text-2xl font-black mt-1.5 num ${netProfit >= 0 ? "text-emerald-600" : "text-red-600"}`;
+      document.getElementById("pnlNetGst").textContent = `Net GST Liability: ₹${netGst.toLocaleString()}`;
+
+      const visibleList = dateFiltered.filter(tx => {
+        if (typeFilter === "ALL") return true;
+        return classifyTransaction(tx) === typeFilter;
+      });
+
+      const tbody = document.getElementById("txTableBody");
+      if (!visibleList.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="py-5 text-center text-slate-400">No ledger entries found.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = visibleList.map(tx => {
+        const kind = classifyTransaction(tx);
+        const rate = Number(tx.gst_rate ?? 18);
+        const g = calcGstBreakdown(tx.amount, rate, "INCLUSIVE");
+        const base = Number(tx.base_amount) > 0 ? Number(tx.base_amount) : g.base;
+        const gst = Number(tx.gst_amount) > 0 ? Number(tx.gst_amount) : g.gst;
+
+        let badgeHtml = `<span class="px-2 py-0.5 rounded-full font-semibold bg-red-50 text-red-700">Expense (-)</span>`;
+        let amtColor = "text-red-600";
+        if (kind === "SALES") {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full font-semibold bg-emerald-50 text-emerald-700">Sales (+)</span>`;
+          amtColor = "text-emerald-700";
+        } else if (kind === "PURCHASE") {
+          badgeHtml = `<span class="px-2 py-0.5 rounded-full font-semibold bg-amber-50 text-amber-800">Purchase (-)</span>`;
+          amtColor = "text-amber-700";
+        }
+
+        return `
+          <tr>
+            <td class="py-3 px-3">${esc(tx.date)}</td>
+            <td class="py-3 px-3">${badgeHtml}</td>
+            <td class="py-3 px-3">
+              <div class="font-semibold">${esc(tx.category || "—")}</div>
+              <div class="text-[11px] text-slate-500">${esc(tx.note || "")}</div>
+            </td>
+            <td class="py-3 px-3 font-medium">₹${base.toFixed(2)}</td>
+            <td class="py-3 px-3 text-blue-700 font-medium">${rate}% (₹${gst.toFixed(2)})</td>
+            <td class="py-3 px-3 font-bold ${amtColor}">₹${Number(tx.amount || 0).toFixed(2)}</td>
+            <td class="py-3 px-3 flex gap-2 items-center">
+              <button onclick="openEditModal('transactions', '${tx.id}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
+              <button onclick="deleteRow('transactions', '${tx.id}')" class="text-red-600 hover:underline cursor-pointer">Delete</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
     }
 
     // ================= DEVICES & CAMERAS =================
@@ -2150,7 +2349,6 @@
       e.preventDefault();
       const towerId = document.getElementById("devTower").value || null;
       const custId = document.getElementById("devCustomer").value || null;
-
       const payload = {
         device_type: document.getElementById("devType").value,
         model: document.getElementById("devModel").value.trim(),
@@ -2167,7 +2365,6 @@
         install_date: document.getElementById("devInstallDate").value || new Date().toISOString().slice(0, 10),
         notes: document.getElementById("devNotes").value.trim()
       };
-
       const { error } = await supabaseClient.from("devices").insert([payload]);
       if (error) return showToast(error.message);
       e.target.reset();
@@ -2178,7 +2375,6 @@
     function renderDevices() {
       const q = (document.getElementById("deviceSearch").value || "").toLowerCase();
       const typeFilter = document.getElementById("deviceTypeFilter").value;
-
       const list = state.devices.filter(d => {
         if (typeFilter !== "ALL" && d.device_type !== typeFilter) return false;
         if (!q) return true;
@@ -2190,23 +2386,19 @@
           || (d.notes || "").toLowerCase().includes(q)
           || getTowerName(d.tower_id).toLowerCase().includes(q);
       });
-
       const tbody = document.getElementById("devicesTableBody");
       if (!list.length) {
         tbody.innerHTML = `<tr><td colspan="5" class="py-5 text-center text-slate-400">No devices or cameras found.</td></tr>`;
         return;
       }
-
       tbody.innerHTML = list.map((d, idx) => {
         const cust = state.customers.find(c => c.id === d.customer_id);
         const placedAt = d.tower_id
           ? `Tower: ${getTowerName(d.tower_id)}`
           : (cust ? `Customer: ${cust.name}` : "In Stock / Office");
-
         const typeBadge = d.device_type === "Camera"
           ? `<span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-bold">📷 Camera</span>`
           : `<span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-800 font-semibold">${esc(d.device_type)}</span>`;
-
         return `
           <tr>
             <td class="py-3 px-3">
@@ -2224,7 +2416,7 @@
               <div class="flex items-center gap-1.5 mt-0.5">
                 <span>Pass:</span>
                 <span id="devpass-${idx}" data-secret="${esc(d.admin_password || "")}" class="font-mono">${d.admin_password ? "••••••" : "—"}</span>
-                ${d.admin_password ? `<button onclick="toggleSecret('devpass-${idx}')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Show</button><button onclick="copyText('${esc(d.admin_password)}')" class="text-[11px] text-slate-500 hover:underline cursor-pointer">Copy</button>` : ""}
+                ${d.admin_password ? `<button onclick="toggleSecret('devpass-${idx}')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Show</button><button onclick="copySecret('devpass-${idx}')" class="text-[11px] text-slate-500 hover:underline cursor-pointer">Copy</button>` : ""}
               </div>
             </td>
             <td class="py-3 px-3">
@@ -2232,7 +2424,7 @@
               <div class="flex items-center gap-1.5 mt-0.5">
                 <span>PSK:</span>
                 <span id="wifipass-${idx}" data-secret="${esc(d.wifi_password || "")}" class="font-mono">${d.wifi_password ? "••••••" : "—"}</span>
-                ${d.wifi_password ? `<button onclick="toggleSecret('wifipass-${idx}')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Show</button><button onclick="copyText('${esc(d.wifi_password)}')" class="text-[11px] text-slate-500 hover:underline cursor-pointer">Copy</button>` : ""}
+                ${d.wifi_password ? `<button onclick="toggleSecret('wifipass-${idx}')" class="text-[11px] text-red-600 hover:underline cursor-pointer">Show</button><button onclick="copySecret('wifipass-${idx}')" class="text-[11px] text-slate-500 hover:underline cursor-pointer">Copy</button>` : ""}
               </div>
             </td>
             <td class="py-3 px-3 space-y-1.5">
@@ -2247,6 +2439,19 @@
           </tr>
         `;
       }).join("");
+    }
+
+    function toggleSecret(id) {
+      const el = document.getElementById(id);
+      const secret = el.dataset.secret;
+      el.textContent = el.textContent === "••••••" ? secret : "••••••";
+    }
+
+    function copySecret(id) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      navigator.clipboard.writeText(el.dataset.secret || "");
+      showToast("Copied to clipboard!");
     }
 
     // ================= UNIVERSAL EDIT MODAL =================
@@ -2277,7 +2482,7 @@
       } else if (entity === "customers") {
         const c = state.customers.find(x => x.id === id);
         if (!c) return;
-        document.getElementById("editModalTitle").textContent = "Edit Customer, KYC & GST Billing";
+        document.getElementById("editModalTitle").textContent = "Edit Customer, Sales, Purchase & GST";
         container.innerHTML = `
           <div><label class="block font-semibold mb-1">Customer Name *</label><input name="name" required value="${esc(c.name)}" class="w-full px-3 py-2 border rounded-xl" /></div>
           <div><label class="block font-semibold mb-1">PPPoE ID</label><input name="pppoe_username" value="${esc(c.pppoe_username || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
@@ -2289,8 +2494,8 @@
           <div><label class="block font-semibold mb-1">Registration Date</label><input name="registration_date" type="date" value="${esc(c.registration_date || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
           <div><label class="block font-semibold mb-1">Tower</label><select name="tower_id" id="editCustTower" class="w-full px-3 py-2 border rounded-xl bg-white">${towerOpts}</select></div>
           <div><label class="block font-semibold mb-1">Plan Name</label><input name="plan_name" value="${esc(c.plan_name || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
-          <div><label class="block font-semibold mb-1">Recharge Amount (₹)</label><input name="plan_price" oninput="updateEditModalCalc()" type="number" step="0.01" value="${Number(c.plan_price || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
-          <div><label class="block font-semibold mb-1">Amount Paid (₹)</label><input name="amount_paid" oninput="updateEditModalCalc()" type="number" step="0.01" value="${Number(c.amount_paid || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-bold text-emerald-700 mb-1">Paid by Customer (Sales ₹)</label><input name="amount_paid" oninput="updateEditModalCalc()" type="number" step="0.01" value="${Number(c.amount_paid || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
+          <div><label class="block font-bold text-red-700 mb-1">Recharge Amt (Purchase ₹)</label><input name="plan_price" oninput="updateEditModalCalc()" type="number" step="0.01" value="${Number(c.plan_price || 0)}" class="w-full px-3 py-2 border rounded-xl" /></div>
           <div><label class="block font-semibold mb-1">India GST %</label><select name="gst_rate" onchange="updateEditModalCalc()" class="w-full px-3 py-2 border rounded-xl bg-white font-semibold">${buildGstSelectHtml(c.gst_rate ?? 18)}</select></div>
           <div><label class="block font-semibold mb-1">GST Mode</label>
             <select name="gst_mode" id="editCustGstMode" onchange="updateEditModalCalc()" class="w-full px-3 py-2 border rounded-xl bg-white">
@@ -2356,12 +2561,14 @@
       } else if (entity === "transactions") {
         const tx = state.transactions.find(x => x.id === id);
         if (!tx) return;
-        document.getElementById("editModalTitle").textContent = "Edit Income / Expense & GST";
+        const kind = classifyTransaction(tx);
+        document.getElementById("editModalTitle").textContent = "Edit Sales / Purchase / Expense Entry";
         container.innerHTML = `
-          <div><label class="block font-semibold mb-1">Type</label>
-            <select name="type" id="editTxType" class="w-full px-3 py-2 border rounded-xl bg-white">
-              <option value="Income">Income</option>
-              <option value="Expense">Expense</option>
+          <div><label class="block font-semibold mb-1">Ledger Type</label>
+            <select name="ui_type" id="editTxType" class="w-full px-3 py-2 border rounded-xl bg-white font-semibold">
+              <option value="Sales">Sales (+)</option>
+              <option value="Purchase">Purchase (-)</option>
+              <option value="Expense">Expense (-)</option>
             </select>
           </div>
           <div><label class="block font-semibold mb-1">Category *</label><input name="category" required value="${esc(tx.category || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
@@ -2376,10 +2583,9 @@
           <div><label class="block font-semibold mb-1">Date *</label><input name="date" type="date" required value="${esc(tx.date || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
           <div class="sm:col-span-2"><label class="block font-semibold mb-1">Note</label><input name="note" value="${esc(tx.note || "")}" class="w-full px-3 py-2 border rounded-xl" /></div>
         `;
-        document.getElementById("editTxType").value = tx.type || "Income";
+        document.getElementById("editTxType").value = kind === "SALES" ? "Sales" : (kind === "PURCHASE" ? "Purchase" : "Expense");
         document.getElementById("editTxGstMode").value = tx.gst_mode || "INCLUSIVE";
       }
-
       updateEditModalCalc();
       const modal = document.getElementById("editModal");
       modal.classList.remove("hidden");
@@ -2398,7 +2604,6 @@
       const id = document.getElementById("editId").value;
       const fd = new FormData(e.target);
       const raw = Object.fromEntries(fd.entries());
-
       let payload = {};
       if (entity === "towers") {
         payload = {
@@ -2467,9 +2672,14 @@
         const gstRate = Number(raw.gst_rate || 0);
         const gstMode = raw.gst_mode || "INCLUSIVE";
         const g = calcGstBreakdown(amt, gstRate, gstMode);
+        const dbType = raw.ui_type === "Sales" ? "Income" : "Expense";
+        let cat = raw.category.trim();
+        if (raw.ui_type === "Purchase" && !cat.toLowerCase().includes("purchase") && !cat.toLowerCase().includes("recharge")) {
+          cat = `Purchase - ${cat}`;
+        }
         payload = {
-          type: raw.type,
-          category: raw.category.trim(),
+          type: dbType,
+          category: cat,
           amount: g.total,
           gst_rate: gstRate,
           gst_mode: gstMode,
@@ -2479,7 +2689,6 @@
           note: raw.note.trim()
         };
       }
-
       const { error } = await supabaseClient.from(entity).update(payload).eq("id", id);
       if (error) return showToast(error.message);
       closeEditModal();
@@ -2493,7 +2702,6 @@
       document.getElementById("transferEntityId").value = entityId;
       document.getElementById("transferDate").value = new Date().toISOString().slice(0, 10);
       document.getElementById("transferNote").value = "";
-
       if (entityType === "CUSTOMER") {
         const cust = state.customers.find(c => c.id === entityId);
         if (!cust) return;
@@ -2509,7 +2717,6 @@
         if (!dev) return;
         const cust = state.customers.find(c => c.id === dev.customer_id);
         const currentLoc = dev.tower_id ? `Tower: ${getTowerName(dev.tower_id)}` : (cust ? `Customer: ${cust.name}` : "In Stock / Office");
-
         document.getElementById("transferModalTitle").textContent = "Transfer Device / Camera Location";
         document.getElementById("transferCurrentInfo").innerHTML =
           `<b>Device:</b> ${esc(dev.device_type)} — ${esc(dev.model)} (SN: ${esc(dev.serial_number)})<br/><b>Current Location:</b> ${esc(currentLoc)}`;
@@ -2519,7 +2726,6 @@
         document.getElementById("transferDestCustomer").value = dev.customer_id || "";
         toggleDeviceTransferInputs();
       }
-
       const modal = document.getElementById("transferModal");
       modal.classList.remove("hidden");
       modal.classList.add("flex");
@@ -2543,13 +2749,11 @@
       const entityId = document.getElementById("transferEntityId").value;
       const tDate = document.getElementById("transferDate").value || new Date().toISOString().slice(0, 10);
       const tNote = document.getElementById("transferNote").value.trim();
-
       if (entityType === "CUSTOMER") {
         const cust = state.customers.find(c => c.id === entityId);
         const oldTowerName = getTowerName(cust.tower_id);
         const newTowerId = document.getElementById("transferDestTower").value || null;
         const newTowerName = getTowerName(newTowerId);
-
         const { error } = await supabaseClient.from("customers").update({ tower_id: newTowerId }).eq("id", entityId);
         if (error) return showToast(error.message);
         closeTransferModal();
@@ -2559,10 +2763,8 @@
         const dev = state.devices.find(d => d.id === entityId);
         const mode = document.getElementById("transferDeviceTargetType").value;
         const oldLoc = dev.tower_id ? getTowerName(dev.tower_id) : "Previous Location";
-
         let updateObj = { install_date: tDate };
         let newLocLabel = "In Stock";
-
         if (mode === "TOWER") {
           const newTowerId = document.getElementById("transferDestTower").value || null;
           updateObj.tower_id = newTowerId;
@@ -2581,10 +2783,8 @@
           updateObj.customer_id = null;
           updateObj.location_type = "Stock";
         }
-
         const historyTag = `[Transferred ${tDate}: ${oldLoc} → ${newLocLabel}${tNote ? " - " + tNote : ""}]`;
         updateObj.notes = dev.notes ? `${dev.notes} | ${historyTag}` : historyTag;
-
         const { error } = await supabaseClient.from("devices").update(updateObj).eq("id", entityId);
         if (error) return showToast(error.message);
         closeTransferModal();
@@ -2592,17 +2792,6 @@
         refreshAllData();
       }
     });
-
-    function toggleSecret(id) {
-      const el = document.getElementById(id);
-      const secret = el.dataset.secret;
-      el.textContent = el.textContent === "••••••" ? secret : "••••••";
-    }
-
-    function copyText(txt) {
-      navigator.clipboard.writeText(txt);
-      showToast("Copied to clipboard!");
-    }
 
     // ================= COMPLAINTS =================
     document.getElementById("complaintForm").addEventListener("submit", async (e) => {
@@ -2655,110 +2844,6 @@
       if (error) return showToast(error.message);
       showToast("Complaint marked resolved!");
       refreshAllData();
-    }
-
-    // ================= ACCOUNTS (P&L + GST) =================
-    document.getElementById("txDate").value = new Date().toISOString().slice(0, 10);
-
-    document.getElementById("txForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const rawAmt = Number(document.getElementById("txAmount").value || 0);
-      const gstRate = Number(document.getElementById("txGstRate").value || 0);
-      const gstMode = document.getElementById("txGstMode").value;
-      const g = calcGstBreakdown(rawAmt, gstRate, gstMode);
-
-      const payload = {
-        type: document.getElementById("txType").value,
-        category: document.getElementById("txCategory").value.trim(),
-        amount: g.total,
-        gst_rate: gstRate,
-        gst_mode: gstMode,
-        base_amount: g.base,
-        gst_amount: g.gst,
-        date: document.getElementById("txDate").value,
-        note: document.getElementById("txNote").value.trim()
-      };
-      const { error } = await supabaseClient.from("transactions").insert([payload]);
-      if (error) return showToast(error.message);
-      e.target.reset();
-      document.getElementById("txDate").value = new Date().toISOString().slice(0, 10);
-      updateTxFormCalc();
-      showToast("Entry added!");
-      refreshAllData();
-    });
-
-    function renderAccounts() {
-      const from = document.getElementById("pnlFrom").value;
-      const to = document.getElementById("pnlTo").value;
-
-      const filtered = state.transactions.filter(tx => {
-        if (from && tx.date < from) return false;
-        if (to && tx.date > to) return false;
-        return true;
-      });
-
-      let incTotal = 0, incBase = 0, incGst = 0;
-      let expTotal = 0, expBase = 0, expGst = 0;
-
-      filtered.forEach(tx => {
-        const g = calcGstBreakdown(tx.amount, tx.gst_rate ?? 18, "INCLUSIVE");
-        const base = Number(tx.base_amount) > 0 ? Number(tx.base_amount) : g.base;
-        const gst = Number(tx.gst_amount) > 0 ? Number(tx.gst_amount) : g.gst;
-        const tot = Number(tx.amount || 0);
-
-        if (tx.type === "Income") {
-          incTotal += tot; incBase += base; incGst += gst;
-        } else {
-          expTotal += tot; expBase += base; expGst += gst;
-        }
-      });
-
-      const netProfit = round2(incTotal - expTotal);
-      const netGst = round2(incGst - expGst);
-
-      document.getElementById("pnlIncome").textContent = `₹${round2(incTotal).toLocaleString()}`;
-      document.getElementById("pnlIncomeBase").textContent = `Without GST: ₹${round2(incBase).toLocaleString()} | Output GST: ₹${round2(incGst).toLocaleString()}`;
-      document.getElementById("pnlExpense").textContent = `₹${round2(expTotal).toLocaleString()}`;
-      document.getElementById("pnlExpenseBase").textContent = `Without GST: ₹${round2(expBase).toLocaleString()} | Input GST: ₹${round2(expGst).toLocaleString()}`;
-
-      const pnlEl = document.getElementById("pnlNet");
-      pnlEl.textContent = `${netProfit < 0 ? "-" : ""}₹${Math.abs(netProfit).toLocaleString()}`;
-      pnlEl.className = `text-2xl font-black mt-1.5 num ${netProfit >= 0 ? "text-emerald-600" : "text-red-600"}`;
-
-      document.getElementById("pnlNetGst").textContent = `₹${netGst.toLocaleString()}`;
-
-      const tbody = document.getElementById("txTableBody");
-      if (!filtered.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="py-5 text-center text-slate-400">No transactions found.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.map(tx => {
-        const rate = Number(tx.gst_rate ?? 18);
-        const g = calcGstBreakdown(tx.amount, rate, "INCLUSIVE");
-        const base = Number(tx.base_amount) > 0 ? Number(tx.base_amount) : g.base;
-        const gst = Number(tx.gst_amount) > 0 ? Number(tx.gst_amount) : g.gst;
-
-        return `
-          <tr>
-            <td class="py-3 px-3">${esc(tx.date)}</td>
-            <td class="py-3 px-3">
-              <span class="px-2 py-0.5 rounded-full font-semibold ${tx.type === "Income" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-700"}">${esc(tx.type)}</span>
-            </td>
-            <td class="py-3 px-3">
-              <div class="font-semibold">${esc(tx.category || "—")}</div>
-              <div class="text-[11px] text-slate-500">${esc(tx.note || "")}</div>
-            </td>
-            <td class="py-3 px-3 font-medium">₹${base.toFixed(2)}</td>
-            <td class="py-3 px-3 text-blue-700 font-medium">${rate}% (₹${gst.toFixed(2)})</td>
-            <td class="py-3 px-3 font-bold ${tx.type === "Income" ? "text-emerald-700" : "text-red-600"}">₹${Number(tx.amount || 0).toFixed(2)}</td>
-            <td class="py-3 px-3 flex gap-2 items-center">
-              <button onclick="openEditModal('transactions', '${tx.id}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
-              <button onclick="deleteRow('transactions', '${tx.id}')" class="text-red-600 hover:underline cursor-pointer">Delete</button>
-            </td>
-          </tr>
-        `;
-      }).join("");
     }
 
     // ================= BULK SMS =================
@@ -2817,21 +2902,16 @@
       const cfg = JSON.parse(localStorage.getItem("isp_sms_cfg") || "{}");
       const msgTemplate = document.getElementById("smsMessageBody").value.trim();
       const recipients = getTargetCustomers();
-
       if (!cfg.endpoint) return showToast("Please configure SMS Gateway API URL first!");
       if (!msgTemplate) return showToast("Please enter the outage SMS message!");
       if (!recipients.length) return showToast("No recipients found for selected target!");
-
       const btn = document.getElementById("sendBulkSmsBtn");
       btn.disabled = true;
       btn.textContent = `Sending to ${recipients.length}...`;
-
       const keys = parseKeysMap(cfg.queryKeys);
       const phones = recipients.map(c => c.phone.replace(/\D/g, "")).filter(Boolean);
-
       let sentCount = 0;
       let failedCount = 0;
-
       try {
         if (cfg.method === "GET") {
           const urlObj = new URL(cfg.endpoint);
@@ -2840,7 +2920,6 @@
           if (cfg.templateId) urlObj.searchParams.set("template_id", cfg.templateId);
           urlObj.searchParams.set(keys.mobileKey, phones.join(","));
           urlObj.searchParams.set(keys.msgKey, msgTemplate);
-
           const res = await fetch(urlObj.toString(), { method: "GET" });
           if (res.ok) sentCount = phones.length;
           else failedCount = phones.length;
@@ -2851,7 +2930,6 @@
           if (cfg.templateId) bodyObj.template_id = cfg.templateId;
           bodyObj[keys.mobileKey] = phones.join(",");
           bodyObj[keys.msgKey] = msgTemplate;
-
           const isJson = cfg.method === "POST_JSON";
           const res = await fetch(cfg.endpoint, {
             method: "POST",
@@ -2865,7 +2943,6 @@
         failedCount = phones.length;
         showToast("Request failed (Check API URL or CORS). Logged below.");
       }
-
       const logs = JSON.parse(localStorage.getItem("isp_sms_logs") || "[]");
       logs.unshift({
         time: new Date().toLocaleString(),
@@ -2876,7 +2953,6 @@
       });
       localStorage.setItem("isp_sms_logs", JSON.stringify(logs.slice(0, 50)));
       renderSmsLogs();
-
       btn.disabled = false;
       btn.textContent = "🚨 Send Bulk SMS Now";
       showToast(`SMS Batch Finished: ${sentCount} sent, ${failedCount} failed`);
@@ -2904,7 +2980,6 @@
       const now = new Date();
       const pad = n => String(n).padStart(2, "0");
       const fmt = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-
       if (mode === "THIS_MONTH") {
         document.getElementById("repFromDate").value = fmt(new Date(now.getFullYear(), now.getMonth(), 1));
         document.getElementById("repToDate").value = fmt(new Date(now.getFullYear(), now.getMonth() + 1, 0));
@@ -2934,63 +3009,64 @@
       return true;
     }
 
+    function mapLedgerToReportRow(t) {
+      const rate = Number(t.gst_rate ?? 18);
+      const g = calcGstBreakdown(t.amount, rate, "INCLUSIVE");
+      const base = Number(t.base_amount) > 0 ? Number(t.base_amount) : g.base;
+      const gst = Number(t.gst_amount) > 0 ? Number(t.gst_amount) : g.gst;
+      return {
+        Date: t.date || "",
+        Category: t.category || "",
+        Tower: getTowerName(t.tower_id),
+        Particulars: t.note || "",
+        Without_GST: round2(base),
+        GST_Percent: `${rate}%`,
+        GST_Amount: round2(gst),
+        With_GST_Total: round2(Number(t.amount || 0))
+      };
+    }
+
     function getSelectedReportSections() {
       const from = document.getElementById("repFromDate").value;
       const to = document.getElementById("repToDate").value;
       const smsLogs = JSON.parse(localStorage.getItem("isp_sms_logs") || "[]");
       const sections = [];
 
-      if (document.getElementById("chkIncome").checked) {
+      if (document.getElementById("chkSales").checked) {
         const rows = state.transactions
-          .filter(t => t.type === "Income" && inDateRange(t.date, from, to))
-          .map(t => {
-            const rate = Number(t.gst_rate ?? 18);
-            const g = calcGstBreakdown(t.amount, rate, "INCLUSIVE");
-            const base = Number(t.base_amount) > 0 ? Number(t.base_amount) : g.base;
-            const gst = Number(t.gst_amount) > 0 ? Number(t.gst_amount) : g.gst;
-            return {
-              Date: t.date || "",
-              Category: t.category || "General Income",
-              Tower: getTowerName(t.tower_id),
-              Particulars: t.note || "",
-              Without_GST: round2(base),
-              GST_Percent: `${rate}%`,
-              GST_Amount: round2(gst),
-              With_GST_Total: round2(Number(t.amount || 0))
-            };
-          });
+          .filter(t => classifyTransaction(t) === "SALES" && inDateRange(t.date, from, to))
+          .map(mapLedgerToReportRow);
         sections.push({
-          key: "Income",
-          title: `${state.company.company_name || "Shan WiFi"} — Income GST Ledger`,
+          key: "Sales",
+          title: `${state.company.company_name || "Shan WiFi"} — Sales GST Ledger (Customer Paid)`,
           headers: ["Date", "Category", "Tower", "Particulars", "Without_GST", "GST_Percent", "GST_Amount", "With_GST_Total"],
           rows,
-          totalLabel: "Total Income (With GST)",
+          totalLabel: "Total Sales (With GST)",
+          totalValue: round2(rows.reduce((s, r) => s + r.With_GST_Total, 0))
+        });
+      }
+
+      if (document.getElementById("chkPurchase").checked) {
+        const rows = state.transactions
+          .filter(t => classifyTransaction(t) === "PURCHASE" && inDateRange(t.date, from, to))
+          .map(mapLedgerToReportRow);
+        sections.push({
+          key: "Purchase",
+          title: `${state.company.company_name || "Shan WiFi"} — Purchase GST Ledger (Recharge Cost)`,
+          headers: ["Date", "Category", "Tower", "Particulars", "Without_GST", "GST_Percent", "GST_Amount", "With_GST_Total"],
+          rows,
+          totalLabel: "Total Purchase (With GST)",
           totalValue: round2(rows.reduce((s, r) => s + r.With_GST_Total, 0))
         });
       }
 
       if (document.getElementById("chkExpenses").checked) {
         const rows = state.transactions
-          .filter(t => t.type === "Expense" && inDateRange(t.date, from, to))
-          .map(t => {
-            const rate = Number(t.gst_rate ?? 18);
-            const g = calcGstBreakdown(t.amount, rate, "INCLUSIVE");
-            const base = Number(t.base_amount) > 0 ? Number(t.base_amount) : g.base;
-            const gst = Number(t.gst_amount) > 0 ? Number(t.gst_amount) : g.gst;
-            return {
-              Date: t.date || "",
-              Category: t.category || "General Expense",
-              Tower: getTowerName(t.tower_id),
-              Particulars: t.note || "",
-              Without_GST: round2(base),
-              GST_Percent: `${rate}%`,
-              GST_Amount: round2(gst),
-              With_GST_Total: round2(Number(t.amount || 0))
-            };
-          });
+          .filter(t => classifyTransaction(t) === "EXPENSE" && inDateRange(t.date, from, to))
+          .map(mapLedgerToReportRow);
         sections.push({
           key: "Expenses",
-          title: `${state.company.company_name || "Shan WiFi"} — Expenses & Recharge GST Ledger`,
+          title: `${state.company.company_name || "Shan WiFi"} — Operating Expenses Ledger`,
           headers: ["Date", "Category", "Tower", "Particulars", "Without_GST", "GST_Percent", "GST_Amount", "With_GST_Total"],
           rows,
           totalLabel: "Total Expenses (With GST)",
@@ -3008,12 +3084,15 @@
             Aadhaar_Number: c.aadhaar_number || "",
             Address: formatFullCustomerAddress(c),
             Tower: getTowerName(c.tower_id),
+            Sales_Paid: Number(c.amount_paid || 0),
+            Purchase_Recharge: Number(c.plan_price || 0),
+            Profit: round2(Number(c.amount_paid || 0) - Number(c.plan_price || 0)),
             Registration_Date: c.registration_date || ""
           }));
         sections.push({
           key: "Customer Data",
-          title: `${state.company.company_name || "Shan WiFi"} — Customer Directory`,
-          headers: ["Customer_Name", "PPPoE_ID", "Mobile_Number", "Aadhaar_Number", "Address", "Tower", "Registration_Date"],
+          title: `${state.company.company_name || "Shan WiFi"} — Customer Directory & Profit`,
+          headers: ["Customer_Name", "PPPoE_ID", "Mobile_Number", "Aadhaar_Number", "Address", "Tower", "Sales_Paid", "Purchase_Recharge", "Profit", "Registration_Date"],
           rows
         });
       }
@@ -3085,7 +3164,6 @@
           rows: [...compRows, ...smsRows]
         });
       }
-
       return { sections, from, to };
     }
 
@@ -3093,28 +3171,22 @@
       const container = document.getElementById("repPreviewContainer");
       const summaryEl = document.getElementById("repSummaryText");
       if (!container || !summaryEl) return;
-
       const { sections, from, to } = getSelectedReportSections();
       const rangeLabel = (from || to) ? ` (${from || "Start"} to ${to || "End"})` : " (All Dates)";
-
       if (!sections.length) {
         summaryEl.textContent = "Selected: None";
         container.innerHTML = `<p class="text-slate-400">Koi section select nahi hai. Upar se kam se kam ek checkbox select karein.</p>`;
         return;
       }
-
       summaryEl.textContent = `Selected: ${sections.map(s => s.key).join(", ")}${rangeLabel}`;
-
       container.innerHTML = sections.map(sec => {
         const headHtml = sec.headers.map(h => `<th class="py-2 px-3 bg-slate-50 border-b text-slate-600">${esc(h)}</th>`).join("");
         const bodyHtml = sec.rows.length
           ? sec.rows.slice(0, 15).map(r => `<tr class="border-b">${sec.headers.map(h => `<td class="py-2 px-3">${esc(r[h])}</td>`).join("")}</tr>`).join("")
           : `<tr><td colspan="${sec.headers.length}" class="py-3 px-3 text-center text-slate-400">No records in selected date range.</td></tr>`;
-
         const totalRowHtml = sec.totalLabel
           ? `<tr class="bg-slate-50 font-bold"><td colspan="${sec.headers.length - 1}" class="py-2 px-3 text-right">${esc(sec.totalLabel)}</td><td class="py-2 px-3">₹${Number(sec.totalValue || 0).toLocaleString()}</td></tr>`
           : "";
-
         return `
           <div class="border border-slate-200 rounded-xl overflow-hidden">
             <div class="px-3.5 py-2.5 bg-slate-100 font-bold text-slate-800 flex justify-between">
@@ -3135,7 +3207,6 @@
     function downloadExcelReport() {
       const { sections, from, to } = getSelectedReportSections();
       if (!sections.length) return showToast("Please select at least one report section!");
-
       const periodStr = `${from || "Beginning"} to ${to || "Present"}`;
       const worksheetsXml = sections.map(sec => {
         const sheetName = sec.key.replace(/[\\/?*\[\]:]/g, "").slice(0, 31);
@@ -3178,14 +3249,13 @@
         <body>${htmlTables}</body>
         </html>
       `;
-
       const blob = new Blob([excelWorkbook], { type: "application/vnd.ms-excel;charset=utf-8;" });
       const a = document.createElement("a");
       const filePart = sections.map(s => s.key.toLowerCase().replace(/\s+/g, "-")).join("_");
       a.href = URL.createObjectURL(blob);
-      a.download = `Shan-WiFi_CA-GST-Report_${filePart}_${from || "all"}_to_${to || "now"}.xls`;
+      a.download = `Shan-WiFi_Sales-Purchase-CA-Report_${filePart}_${from || "all"}_to_${to || "now"}.xls`;
       a.click();
-      showToast("CA GST Excel report downloaded!");
+      showToast("Sales, Purchase & CA GST Excel report downloaded!");
     }
 
     async function deleteRow(table, id) {

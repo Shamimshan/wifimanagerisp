@@ -90,7 +90,6 @@
       </details>
     </div>
   </div>
-
   <!-- ================= MAIN ADMIN APP ================= -->
   <div id="appShell" class="min-h-screen flex flex-col lg:flex-row hidden">
     <!-- Mobile Top Bar -->
@@ -104,7 +103,6 @@
         <button onclick="logoutAdmin()" class="px-3 py-1.5 rounded-lg bg-red-600 text-xs font-semibold">Logout</button>
       </div>
     </header>
-
     <!-- Sidebar -->
     <aside id="sidebar" class="w-64 bg-slate-950 text-slate-300 flex-shrink-0 flex flex-col justify-between fixed lg:sticky lg:top-0 lg:h-screen inset-y-0 left-0 z-40 transform -translate-x-full lg:translate-x-0 transition-transform duration-200 border-r border-slate-800/80">
       <div class="overflow-y-auto scrollbar-thin">
@@ -156,20 +154,21 @@
         </button>
       </div>
     </aside>
-
     <!-- Content Area -->
     <main class="flex-1 p-4 md:p-6 lg:p-8 overflow-x-hidden max-w-7xl w-full mx-auto">
       <div id="toast" class="fixed bottom-5 right-5 z-50 hidden px-4 py-2.5 rounded-xl bg-slate-900 border-l-4 border-red-500 text-white text-xs font-semibold shadow-xl"></div>
-
       <!-- ================= TAB 1: DASHBOARD ================= -->
       <section id="tab-dashboard" class="tab-panel space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
             <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-red-600 bg-red-50 px-2.5 py-0.5 rounded-full mb-1">Operations & Profit Overview</span>
             <h2 class="text-xl font-extrabold text-slate-900">Shan WiFi — Executive Dashboard</h2>
-            <p class="text-xs text-slate-500 mt-0.5">Live Sales (Customer Paid), Purchase (Recharge Cost), Net Profit & Subscriber Expiry</p>
+            <p class="text-xs text-slate-500 mt-0.5">Live Sales (Customer Paid), Purchase (Recharge Cost), Net Profit, Complaints & Subscriber Expiry</p>
           </div>
-          <div class="flex gap-2">
+          <div class="flex flex-wrap gap-2">
+            <button onclick="switchTab('complaints')" class="px-3.5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold cursor-pointer">
+              🛠️ Log / Manage Faults
+            </button>
             <button onclick="switchTab('customers')" class="px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold cursor-pointer">
               + Add / Renew Customer
             </button>
@@ -178,7 +177,6 @@
             </button>
           </div>
         </div>
-
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
           <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
             <div class="text-xs font-semibold text-slate-500">Active Subscribers</div>
@@ -199,6 +197,58 @@
             <div class="text-xs font-semibold text-slate-500">Net Profit (Sales − Purchase/Exp)</div>
             <div id="kpiNetProfit" class="text-2xl font-black text-slate-900 mt-1.5 num">₹0</div>
             <div id="kpiTowersDevices" class="text-xs text-slate-500 mt-1 num">0 Towers | 0 Devices</div>
+          </div>
+        </div>
+
+        <!-- ================= DASHBOARD: COMPLAINTS & FAULTS SUMMARY + LIVE LIST ================= -->
+        <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-5 space-y-4">
+          <div class="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <span class="inline-block text-[11px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full mb-1">Service & Fault Tracker</span>
+              <h3 class="font-bold text-sm text-slate-900">Complaints & Faults Status (Baki vs Solved)</h3>
+            </div>
+            <button onclick="switchTab('complaints')" class="text-xs text-red-600 font-bold hover:underline cursor-pointer">
+              Manage All Complaints →
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 num">
+            <div class="p-4 rounded-xl bg-amber-50/70 border border-amber-200 flex items-center justify-between">
+              <div>
+                <div class="text-[11px] font-bold uppercase tracking-wider text-amber-800">Baki / Pending (Open)</div>
+                <div id="dashCompOpenCount" class="text-2xl font-black text-amber-700 mt-0.5">0</div>
+              </div>
+              <span class="text-xl">⏳</span>
+            </div>
+            <div class="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 flex items-center justify-between">
+              <div>
+                <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-800">Solve Ho Gaya (Resolved)</div>
+                <div id="dashCompResolvedCount" class="text-2xl font-black text-emerald-700 mt-0.5">0</div>
+              </div>
+              <span class="text-xl">✅</span>
+            </div>
+            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+              <div>
+                <div class="text-[11px] font-bold uppercase tracking-wider text-slate-600">Total Logged Faults</div>
+                <div id="dashCompTotalCount" class="text-2xl font-black text-slate-900 mt-0.5">0</div>
+              </div>
+              <span class="text-xl">🛠️</span>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto scrollbar-thin">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead>
+                <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 uppercase text-[11px] tracking-wider">
+                  <th class="py-2.5 px-3">Issue</th>
+                  <th class="py-2.5 px-3">Tower / Details</th>
+                  <th class="py-2.5 px-3">Date</th>
+                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2.5 px-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dashComplaintsBody" class="divide-y divide-slate-100 num"></tbody>
+            </table>
           </div>
         </div>
 
@@ -223,7 +273,6 @@
           </div>
         </div>
       </section>
-
       <!-- ================= TAB 2: TOWERS ================= -->
       <section id="tab-towers" class="tab-panel hidden space-y-6">
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -256,7 +305,6 @@
           </table>
         </div>
       </section>
-
       <!-- ================= TAB 3: CUSTOMERS ================= -->
       <section id="tab-customers" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -275,7 +323,6 @@
             </select>
           </div>
         </div>
-
         <form id="customerForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3.5">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             <div>
@@ -301,7 +348,6 @@
               </select>
             </div>
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 mb-1">Address / Village</label>
@@ -320,7 +366,6 @@
               <input id="custRegDate" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-8 gap-3">
             <div>
               <label class="block text-[11px] font-semibold text-slate-600 mb-1">Plan Name</label>
@@ -367,7 +412,6 @@
               <input id="custExpiry" type="date" required class="w-full px-3 py-2 border border-slate-300 rounded-xl text-xs" />
             </div>
           </div>
-
           <div class="flex flex-wrap items-center justify-between gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs num">
             <div id="custLiveBreakdown" class="flex flex-wrap gap-x-5 gap-y-1 text-slate-700">
               <span>Without GST: <b>₹0.00</b></span>
@@ -381,7 +425,6 @@
             </button>
           </div>
         </form>
-
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
@@ -398,7 +441,6 @@
           </table>
         </div>
       </section>
-
       <!-- ================= TAB 4: SALES, PURCHASE & P&L ================= -->
       <section id="tab-accounts" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -419,7 +461,6 @@
             <input id="pnlTo" type="date" onchange="renderAccounts()" class="px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs" />
           </div>
         </div>
-
         <!-- 4 KPI Cards for Sales, Purchase, Gross Profit & Net Profit -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 num">
           <div class="bg-white p-5 rounded-2xl border border-emerald-200/80 shadow-sm">
@@ -443,7 +484,6 @@
             <div id="pnlNetGst" class="text-[11px] text-blue-700 font-semibold mt-1">Net GST Liability: ₹0</div>
           </div>
         </div>
-
         <!-- Manual Entry Form for Sales / Purchase / Operating Expense -->
         <form id="txForm" class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
           <div class="text-xs font-bold text-slate-800">+ Add Manual Sales / Purchase / Expense Entry</div>
@@ -481,7 +521,6 @@
             </button>
           </div>
         </form>
-
         <div class="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-x-auto scrollbar-thin">
           <table class="w-full text-left border-collapse text-xs">
             <thead>
@@ -499,7 +538,6 @@
           </table>
         </div>
       </section>
-
       <!-- ================= TAB 5: DEVICES & CAMERAS ================= -->
       <section id="tab-devices" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -573,7 +611,6 @@
           </table>
         </div>
       </section>
-
       <!-- ================= TAB 6: COMPLAINTS ================= -->
       <section id="tab-complaints" class="tab-panel hidden space-y-6">
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -605,7 +642,6 @@
           </table>
         </div>
       </section>
-
       <!-- ================= TAB 7: GST INVOICE & COMPANY SETTINGS ================= -->
       <section id="tab-invoices" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm no-print">
@@ -620,7 +656,6 @@
             </button>
           </div>
         </div>
-
         <details id="companySettingsDetails" class="bg-white rounded-2xl border border-slate-200/80 shadow-sm no-print">
           <summary class="px-5 py-4 cursor-pointer font-bold text-sm text-slate-900 flex items-center justify-between">
             <span>🏢 Company Profile, Logo, UPI QR, Signature & Stamp Settings</span>
@@ -726,7 +761,6 @@
             </div>
           </form>
         </details>
-
         <!-- Invoice Builder Card -->
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-4 text-xs no-print">
           <div class="flex flex-wrap items-center justify-between gap-2">
@@ -799,7 +833,6 @@
             </button>
           </div>
         </div>
-
         <!-- Printable A4 GST Tax Invoice Preview -->
         <div id="invoicePrintable" class="bg-white rounded-2xl border border-slate-300 shadow-sm p-6 md:p-8 max-w-4xl mx-auto space-y-6 text-xs num">
           <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200 pb-5">
@@ -894,7 +927,6 @@
             </div>
           </div>
         </div>
-
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm no-print">
           <h3 class="font-bold text-sm text-slate-900 mb-3">2. Saved GST Invoices</h3>
           <div class="overflow-x-auto scrollbar-thin">
@@ -915,7 +947,6 @@
           </div>
         </div>
       </section>
-
       <!-- ================= TAB 8: BULK SMS OUTAGE ALERT ================= -->
       <section id="tab-sms" class="tab-panel hidden space-y-6">
         <div class="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -976,7 +1007,6 @@
           </div>
         </div>
       </section>
-
       <!-- ================= TAB 9: REPORTS (CA / GST EXCEL) ================= -->
       <section id="tab-reports" class="tab-panel hidden space-y-6">
         <div class="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm">
@@ -1058,7 +1088,6 @@
       </section>
     </main>
   </div>
-
   <!-- ================= CUSTOMER RENEWAL MODAL ================= -->
   <div id="renewModal" class="fixed inset-0 bg-slate-950/65 z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 text-xs">
@@ -1116,7 +1145,6 @@
       </form>
     </div>
   </div>
-
   <!-- ================= UNIVERSAL EDIT MODAL ================= -->
   <div id="editModal" class="fixed inset-0 bg-slate-950/65 z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] overflow-y-auto">
@@ -1138,7 +1166,6 @@
       </form>
     </div>
   </div>
-
   <!-- ================= TRANSFER MODAL ================= -->
   <div id="transferModal" class="fixed inset-0 bg-slate-950/65 z-50 hidden items-center justify-center p-4">
     <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
@@ -1187,7 +1214,6 @@
       </form>
     </div>
   </div>
-
   <script>
     const DEFAULT_SUPABASE_URL = "https://zobrjfquplgqiegrtnof.supabase.co";
     const DEFAULT_SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpvYnJqZnF1cGxncWllZ3J0bm9mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MTkwNDIsImV4cCI6MjExMTE5NTA0Mn0.7tSegwPfpB9P8TGeNsVhb9l46J_b__B0gLiWdZXy830";
@@ -1201,6 +1227,41 @@
       { value: 28, label: "28% GST" },
       { value: 40, label: "40% GST" }
     ];
+
+    // ================= STRICT 7-COLUMN CUSTOMER DATA CONFIG =================
+    const CUSTOMER_DATA_COLUMNS = [
+      "Customer_Name",
+      "PPPoE_ID",
+      "Mobile_Number",
+      "Aadhaar_Number",
+      "Address",
+      "Tower",
+      "Registration_Date"
+    ];
+
+    function buildCustomerDataRows(customers) {
+      return (customers || []).map(c => {
+        const resolvedTower =
+          c.Tower ||
+          c.tower ||
+          (c.tower_id ? getTowerName(c.tower_id) : "");
+        const resolvedAddress =
+          c.Address ||
+          c.address ||
+          formatFullCustomerAddress(c) ||
+          "";
+
+        return {
+          Customer_Name: c.Customer_Name || c.name || "",
+          PPPoE_ID: c.PPPoE_ID || c.pppoe_id || c.pppoe_username || "",
+          Mobile_Number: c.Mobile_Number || c.mobile || c.phone || "",
+          Aadhaar_Number: c.Aadhaar_Number || c.aadhaar || c.aadhaar_number || "",
+          Address: resolvedAddress,
+          Tower: resolvedTower === "Unassigned" && !c.tower_id ? "" : resolvedTower,
+          Registration_Date: c.Registration_Date || c.registration_date || c.start_date || ""
+        };
+      });
+    }
 
     let supabaseClient = null;
     let state = {
@@ -1230,7 +1291,6 @@
         footer_note: "Thank you for choosing Shan WiFi. Timely renewal ensures uninterrupted internet."
       }
     };
-
     // ================= LEDGER CLASSIFICATION (SALES vs PURCHASE vs EXPENSE) =================
     function classifyTransaction(tx) {
       const t = (tx.type || "").toLowerCase();
@@ -1243,12 +1303,10 @@
       }
       return "EXPENSE";
     }
-
     // ================= GST & PROFIT CALCULATOR =================
     function round2(n) {
       return Math.round((Number(n || 0) + Number.EPSILON) * 100) / 100;
     }
-
     function calcGstBreakdown(amount, rate, mode) {
       const amt = Number(amount || 0);
       const r = Number(rate ?? 18);
@@ -1263,14 +1321,12 @@
       const gst = round2(amt - base);
       return { base, gst, total: round2(amt), rate: r, mode: "INCLUSIVE" };
     }
-
     function formatFullCustomerAddress(c) {
       return [c.address, c.district, c.pin_code ? `PIN: ${c.pin_code}` : ""]
         .map(v => (v || "").trim())
         .filter(Boolean)
         .join(", ");
     }
-
     function updateCustFormCalc() {
       const paid = Number(document.getElementById("custPaid").value || 0);
       const rechargeAmt = Number(document.getElementById("custPrice").value || 0);
@@ -1286,7 +1342,6 @@
         <span class="font-bold ${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Net Profit: <b>₹${profit.toFixed(2)}</b></span>
       `;
     }
-
     function updateTxFormCalc() {
       const amt = Number(document.getElementById("txAmount").value || 0);
       const rate = Number(document.getElementById("txGstRate").value || 0);
@@ -1296,7 +1351,6 @@
         Without GST: <b>₹${g.base.toFixed(2)}</b> • GST (${g.rate}%): <b>₹${g.gst.toFixed(2)}</b> • With GST Total: <b>₹${g.total.toFixed(2)}</b>
       `;
     }
-
     function updateEditModalCalc() {
       const entity = document.getElementById("editEntity").value;
       const box = document.getElementById("editLiveCalcBox");
@@ -1335,7 +1389,6 @@
         box.classList.add("hidden");
       }
     }
-
     // ================= ASSETS UPLOAD (LOGO, QR, SIGNATURE, STAMP) =================
     function handleAssetUpload(event, fieldKey, previewId) {
       const file = event.target.files?.[0];
@@ -1352,7 +1405,6 @@
       };
       reader.readAsDataURL(file);
     }
-
     function clearAsset(fieldKey, inputId, previewId) {
       state.company[fieldKey] = "";
       const inp = document.getElementById(inputId);
@@ -1362,7 +1414,6 @@
       syncCompanySettingsUI();
       buildInvoiceFromInputs();
     }
-
     function applyPreviewImage(previewId, dataUrl) {
       const el = document.getElementById(previewId);
       if (!el) return;
@@ -1374,13 +1425,11 @@
         el.classList.add("hidden");
       }
     }
-
     function cleanGstinText(raw) {
       const val = (raw || "").trim().toUpperCase();
       if (!val) return "";
       return val.replace(/^GSTIN\s*[:\-]?\s*/i, "");
     }
-
     function syncCompanySettingsUI() {
       const c = state.company;
       document.getElementById("setCompanyName").value = c.company_name || "Shan WiFi";
@@ -1399,7 +1448,6 @@
       applyPreviewImage("setQrPreview", c.qr_code_data);
       applyPreviewImage("setSignPreview", c.signature_data);
       applyPreviewImage("setStampPreview", c.stamp_data);
-
       const sideBox = document.getElementById("sidebarLogoBox");
       const printImg = document.getElementById("printLogoImg");
       const printFallback = document.getElementById("printLogoFallback");
@@ -1417,7 +1465,6 @@
         printFallback.classList.remove("hidden");
       }
     }
-
     document.getElementById("companySettingsForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       state.company = {
@@ -1443,7 +1490,6 @@
       buildInvoiceFromInputs();
       showToast("Company & Invoice settings saved!");
     });
-
     function autofillInvoiceFromCustomer() {
       const custId = document.getElementById("invCustomerSelect").value;
       if (!custId) return;
@@ -1458,7 +1504,6 @@
       document.getElementById("invGstMode").value = c.gst_mode || "INCLUSIVE";
       buildInvoiceFromInputs();
     }
-
     function buildInvoiceFromInputs() {
       const comp = state.company;
       const custName = document.getElementById("invCustName").value.trim() || "Walk-in Customer";
@@ -1474,7 +1519,6 @@
       const g = calcGstBreakdown(paid, rate, mode);
       const invNum = `${comp.invoice_prefix || "SWF-"}${comp.next_invoice_no || 1001}`;
       const gstClean = cleanGstinText(comp.gstin);
-
       document.getElementById("printCompanyName").textContent = comp.company_name || "Shan WiFi";
       document.getElementById("printTagline").textContent = comp.tagline || "";
       document.getElementById("printAddress").textContent = comp.address || "";
@@ -1496,7 +1540,6 @@
       document.getElementById("printTotalCell").textContent = `₹${g.total.toFixed(2)}`;
       document.getElementById("sumTaxable").textContent = `₹${g.base.toFixed(2)}`;
       document.getElementById("sumGrandTotal").textContent = `₹${g.total.toFixed(2)}`;
-
       const halfGst = round2(g.gst / 2);
       const halfRate = round2(g.rate / 2);
       if (taxSplit === "IGST") {
@@ -1509,7 +1552,6 @@
           <div class="flex justify-between"><span>SGST (${halfRate}%):</span><span>₹${halfGst.toFixed(2)}</span></div>
         `;
       }
-
       const qrBox = document.getElementById("printQrBox");
       const qrImg = document.getElementById("printQrImg");
       if (comp.qr_code_data) {
@@ -1519,7 +1561,6 @@
         qrImg.src = "";
         qrBox.classList.add("hidden");
       }
-
       const signImg = document.getElementById("printSignImg");
       if (comp.signature_data) {
         signImg.src = comp.signature_data;
@@ -1528,7 +1569,6 @@
         signImg.src = "";
         signImg.classList.add("hidden");
       }
-
       const stampImg = document.getElementById("printStampImg");
       if (comp.stamp_data) {
         stampImg.src = comp.stamp_data;
@@ -1538,7 +1578,6 @@
         stampImg.classList.add("hidden");
       }
     }
-
     async function saveInvoiceToCloud() {
       const comp = state.company;
       const custId = document.getElementById("invCustomerSelect").value || null;
@@ -1555,7 +1594,6 @@
       const g = calcGstBreakdown(paid, rate, mode);
       const invNum = `${comp.invoice_prefix || "SWF-"}${comp.next_invoice_no || 1001}`;
       const halfGst = round2(g.gst / 2);
-
       const record = {
         id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
         invoice_number: invNum,
@@ -1576,7 +1614,6 @@
         total_with_gst: g.total,
         invoice_date: invDate
       };
-
       if (supabaseClient) {
         const { id, ...dbRec } = record;
         const { error } = await supabaseClient.from("invoices").insert([dbRec]);
@@ -1593,7 +1630,6 @@
       renderSavedInvoices();
       showToast(`Invoice ${invNum} saved!`);
     }
-
     function renderSavedInvoices() {
       const tbody = document.getElementById("savedInvoicesBody");
       if (!state.invoices.length) {
@@ -1616,7 +1652,6 @@
         </tr>
       `).join("");
     }
-
     function loadInvoiceByIndex(idx) {
       const inv = state.invoices[idx];
       if (!inv) return;
@@ -1632,7 +1667,6 @@
       document.getElementById("printInvNumber").textContent = `Invoice #: ${inv.invoice_number}`;
       document.getElementById("invoicePrintable").scrollIntoView({ behavior: "smooth" });
     }
-
     // ================= SUPABASE INIT & AUTH =================
     function getSupabaseCredentials() {
       const savedUrl = localStorage.getItem("isp_supa_url");
@@ -1642,7 +1676,6 @@
         key: (savedKey && !savedKey.includes("YOUR_SUPABASE_ANON_PUBLIC_KEY")) ? savedKey : DEFAULT_SUPABASE_ANON_KEY
       };
     }
-
     function saveSupabaseConfig() {
       const url = document.getElementById("cfgSupaUrl").value.trim();
       const key = document.getElementById("cfgSupaKey").value.trim();
@@ -1652,7 +1685,6 @@
       initSupabase();
       showToast("Supabase config saved!");
     }
-
     function initSupabase() {
       const { url, key } = getSupabaseCredentials();
       document.getElementById("cfgSupaUrl").value = url.includes("YOUR_PROJECT_ID") ? "" : url;
@@ -1663,7 +1695,6 @@
       }
       supabaseClient = window.supabase.createClient(url, key);
     }
-
     async function checkSession() {
       const localComp = localStorage.getItem("isp_company_settings");
       if (localComp) {
@@ -1677,7 +1708,6 @@
       const { data: { session } } = await supabaseClient.auth.getSession();
       if (session) onLoggedIn(session.user);
     }
-
     document.getElementById("loginForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       if (!supabaseClient) initSupabase();
@@ -1694,7 +1724,6 @@
       if (error) showLoginError(error.message);
       else onLoggedIn(data.user);
     });
-
     function onLoggedIn(user) {
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("appShell").classList.remove("hidden");
@@ -1704,22 +1733,18 @@
       renderSmsLogs();
       refreshAllData();
     }
-
     async function logoutAdmin() {
       if (supabaseClient) await supabaseClient.auth.signOut();
       location.reload();
     }
-
     function showLoginError(msg) {
       const el = document.getElementById("loginError");
       el.textContent = msg;
       el.classList.remove("hidden");
     }
-
     function hideLoginError() {
       document.getElementById("loginError").classList.add("hidden");
     }
-
     function switchTab(tabName) {
       document.querySelectorAll(".tab-panel").forEach(p => p.classList.add("hidden"));
       document.getElementById("tab-" + tabName).classList.remove("hidden");
@@ -1732,13 +1757,12 @@
       });
       if (tabName === "reports") renderReportPreview();
       if (tabName === "invoices") buildInvoiceFromInputs();
+      if (tabName === "dashboard") renderDashboard();
       if (window.innerWidth < 1024) document.getElementById("sidebar").classList.add("-translate-x-full");
     }
-
     function toggleSidebar() {
       document.getElementById("sidebar").classList.toggle("-translate-x-full");
     }
-
     function showToast(msg) {
       const t = document.getElementById("toast");
       t.textContent = msg;
@@ -1746,7 +1770,6 @@
       clearTimeout(window._toastTimer);
       window._toastTimer = setTimeout(() => t.classList.add("hidden"), 3600);
     }
-
     async function refreshAllData() {
       if (!supabaseClient) return;
       const [tRes, cRes, dRes, compRes, txRes, invRes, setRes] = await Promise.all([
@@ -1781,7 +1804,6 @@
       updateSmsRecipientCount();
       renderReportPreview();
     }
-
     function populateDropdowns() {
       const towerOptions = state.towers.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join("");
       document.getElementById("custTower").innerHTML = `<option value="">Select Tower (Optional)</option>` + towerOptions;
@@ -1794,12 +1816,10 @@
       document.getElementById("transferDestCustomer").innerHTML = `<option value="">-- Select Customer --</option>` + custOptions;
       document.getElementById("invCustomerSelect").innerHTML = `<option value="">-- Custom / Walk-in Billing --</option>` + custOptions;
     }
-
     function getTowerName(id) {
       const found = state.towers.find(t => t.id === id);
       return found ? found.name : "Unassigned";
     }
-
     function daysUntil(dateStr) {
       if (!dateStr) return 9999;
       const today = new Date();
@@ -1807,15 +1827,12 @@
       const target = new Date(dateStr + "T00:00:00");
       return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
     }
-
     // ================= AUTO RECORD CUSTOMER SALES & RECHARGE PURCHASE =================
     async function recordCustomerSalesAndPurchase({ custName, pppoe, planLabel, paid, rechargeAmt, gstRate, gstMode, towerId, dateStr, isRenewal }) {
       const g = calcGstBreakdown(paid, gstRate, gstMode);
       const tag = isRenewal ? "Renewal" : "New Connection";
       const userRef = pppoe ? `${custName} [${pppoe}]` : custName;
       const txEntries = [];
-
-      // 1. Customer Paid -> Goes to SALES (stored as type 'Income' in DB for compatibility, displayed & calculated as Sales)
       if (paid > 0) {
         txEntries.push({
           type: "Income",
@@ -1830,8 +1847,6 @@
           date: dateStr
         });
       }
-
-      // 2. Recharge Amount -> Goes to PURCHASE (stored as type 'Expense' with category 'Recharge Purchase')
       if (rechargeAmt > 0) {
         const rg = calcGstBreakdown(rechargeAmt, gstRate, "INCLUSIVE");
         txEntries.push({
@@ -1847,20 +1862,55 @@
           date: dateStr
         });
       }
-
       if (txEntries.length && supabaseClient) {
         const { error } = await supabaseClient.from("transactions").insert(txEntries);
         if (error) showToast("Ledger sync error: " + error.message);
       }
     }
-
     // ================= DASHBOARD =================
+    function renderDashboardComplaintsSection() {
+      const allComp = state.complaints || [];
+      const openList = allComp.filter(c => (c.status || "Open").toLowerCase() !== "resolved");
+      const resolvedList = allComp.filter(c => (c.status || "").toLowerCase() === "resolved");
+
+      document.getElementById("dashCompOpenCount").textContent = openList.length;
+      document.getElementById("dashCompResolvedCount").textContent = resolvedList.length;
+      document.getElementById("dashCompTotalCount").textContent = allComp.length;
+
+      const tbody = document.getElementById("dashComplaintsBody");
+      if (!allComp.length) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-4 text-center text-slate-400">Koi complaint ya fault log nahi hua hai.</td></tr>`;
+        return;
+      }
+
+      // Show Open (Baki) complaints first, then recent Resolved ones (up to 8 rows on dashboard)
+      const ordered = [...openList, ...resolvedList].slice(0, 8);
+      tbody.innerHTML = ordered.map(c => {
+        const isOpen = (c.status || "Open").toLowerCase() !== "resolved";
+        return `
+          <tr>
+            <td class="py-2.5 px-3 font-bold text-slate-900">${esc(c.title)}</td>
+            <td class="py-2.5 px-3">Tower: ${esc(getTowerName(c.tower_id))} ${c.issue_details ? `— ${esc(c.issue_details)}` : ""}</td>
+            <td class="py-2.5 px-3">${esc(c.opened_date || "—")}</td>
+            <td class="py-2.5 px-3">
+              <span class="px-2 py-0.5 rounded-full font-semibold ${isOpen ? "bg-amber-50 text-amber-700" : "bg-emerald-50 text-emerald-700"}">
+                ${isOpen ? "Baki (Open)" : "Solved (Resolved)"}
+              </span>
+            </td>
+            <td class="py-2.5 px-3 flex flex-wrap gap-1.5 items-center">
+              ${isOpen ? `<button onclick="resolveComplaint('${c.id}')" class="px-2 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium cursor-pointer">Solve</button>` : ""}
+              <button onclick="openEditModal('complaints', '${c.id}')" class="px-2 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium cursor-pointer">Edit</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+    }
+
     function renderDashboard() {
       const expired = state.customers.filter(c => daysUntil(c.expiry_date) < 0).length;
       const active = state.customers.length - expired;
       const expiringSoonList = state.customers.filter(c => daysUntil(c.expiry_date) <= 3);
       const totalDues = state.customers.reduce((sum, c) => sum + Number(c.due_amount || 0), 0);
-
       let totalSales = 0;
       let totalPurchase = 0;
       let totalOtherExp = 0;
@@ -1871,21 +1921,20 @@
         else if (kind === "PURCHASE") totalPurchase += amt;
         else totalOtherExp += amt;
       });
-
       const totalOutflow = round2(totalPurchase + totalOtherExp);
       const netProfit = round2(totalSales - totalOutflow);
-
       document.getElementById("kpiActiveCustomers").textContent = active;
       document.getElementById("kpiExpiredCustomers").textContent = `${expired} Expired | Expiring ≤3d: ${expiringSoonList.length}`;
       document.getElementById("kpiTotalSales").textContent = `₹${round2(totalSales).toLocaleString()}`;
       document.getElementById("kpiTotalDues").textContent = `Pending Dues: ₹${round2(totalDues).toLocaleString()}`;
       document.getElementById("kpiTotalPurchase").textContent = `₹${totalOutflow.toLocaleString()}`;
       document.getElementById("kpiPurchaseSplit").textContent = `Purchase: ₹${round2(totalPurchase).toLocaleString()} | Exp: ₹${round2(totalOtherExp).toLocaleString()}`;
-
       const netEl = document.getElementById("kpiNetProfit");
       netEl.textContent = `${netProfit < 0 ? "-" : ""}₹${Math.abs(netProfit).toLocaleString()}`;
       netEl.className = `text-2xl font-black mt-1.5 num ${netProfit >= 0 ? "text-emerald-600" : "text-red-600"}`;
       document.getElementById("kpiTowersDevices").textContent = `${state.towers.length} Towers | ${state.devices.length} Devices`;
+
+      renderDashboardComplaintsSection();
 
       const tbody = document.getElementById("dashExpiringBody");
       if (!expiringSoonList.length) {
@@ -1921,7 +1970,6 @@
         `;
       }).join("");
     }
-
     // ================= TOWERS =================
     document.getElementById("towerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1938,7 +1986,6 @@
       showToast("Tower added!");
       refreshAllData();
     });
-
     function renderTowers() {
       const tbody = document.getElementById("towersTableBody");
       if (!state.towers.length) {
@@ -1963,7 +2010,6 @@
         `;
       }).join("");
     }
-
     // ================= CUSTOMERS =================
     document.getElementById("customerForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1979,7 +2025,6 @@
       const startVal = document.getElementById("custStart").value || new Date().toISOString().slice(0, 10);
       const regVal = document.getElementById("custRegDate").value || startVal;
       const planLabel = document.getElementById("custPlan").value.trim() || "Internet Plan";
-
       const payload = {
         name: custName,
         pppoe_username: pppoe,
@@ -2002,10 +2047,8 @@
         start_date: startVal,
         expiry_date: document.getElementById("custExpiry").value
       };
-
       const { error } = await supabaseClient.from("customers").insert([payload]);
       if (error) return showToast(error.message);
-
       await recordCustomerSalesAndPurchase({
         custName,
         pppoe,
@@ -2018,13 +2061,11 @@
         dateStr: startVal,
         isRenewal: false
       });
-
       e.target.reset();
       updateCustFormCalc();
       showToast(`Saved! Sales: ₹${g.total} | Purchase: ₹${rechargeAmt} | Profit: ₹${round2(g.total - rechargeAmt)}`);
       refreshAllData();
     });
-
     function renderCustomers() {
       const q = (document.getElementById("customerSearch").value || "").toLowerCase();
       const filter = document.getElementById("customerFilter").value;
@@ -2041,13 +2082,11 @@
           || formatFullCustomerAddress(c).toLowerCase().includes(q)
           || getTowerName(c.tower_id).toLowerCase().includes(q);
       });
-
       const tbody = document.getElementById("customersTableBody");
       if (!list.length) {
         tbody.innerHTML = `<tr><td colspan="6" class="py-5 text-center text-slate-400">No matching customers.</td></tr>`;
         return;
       }
-
       tbody.innerHTML = list.map(c => {
         const d = daysUntil(c.expiry_date);
         const sales = Number(c.amount_paid || 0);
@@ -2059,7 +2098,6 @@
         let statusBadge = `<span class="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-semibold">Active (${d}d)</span>`;
         if (d < 0) statusBadge = `<span class="px-2 py-0.5 rounded-full bg-red-50 text-red-700 font-semibold">Expired</span>`;
         else if (d <= 3) statusBadge = `<span class="px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 font-semibold">Expiring (${d}d)</span>`;
-
         return `
           <tr>
             <td class="py-3 px-3">
@@ -2103,7 +2141,6 @@
         `;
       }).join("");
     }
-
     // ================= SMART RENEWAL MODAL (SALES + PURCHASE ENTRY) =================
     function openRenewModal(id) {
       const cust = state.customers.find(c => c.id === id);
@@ -2120,18 +2157,15 @@
       document.getElementById("renewTxDate").value = new Date().toISOString().slice(0, 10);
       recalcRenewExpiryDate();
       updateRenewLiveCalc();
-
       const modal = document.getElementById("renewModal");
       modal.classList.remove("hidden");
       modal.classList.add("flex");
     }
-
     function closeRenewModal() {
       const modal = document.getElementById("renewModal");
       modal.classList.add("hidden");
       modal.classList.remove("flex");
     }
-
     function recalcRenewExpiryDate() {
       const custId = document.getElementById("renewCustId").value;
       const cust = state.customers.find(c => c.id === custId);
@@ -2142,7 +2176,6 @@
       baseDate.setDate(baseDate.getDate() + days);
       document.getElementById("renewNewExpiry").value = baseDate.toISOString().slice(0, 10);
     }
-
     function updateRenewLiveCalc() {
       const sales = Number(document.getElementById("renewPaid").value || 0);
       const purchase = Number(document.getElementById("renewPurchase").value || 0);
@@ -2153,13 +2186,11 @@
         <span class="${profit >= 0 ? "text-emerald-700" : "text-red-600"}">Profit: ₹${profit.toFixed(2)}</span>
       `;
     }
-
     document.getElementById("renewForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const id = document.getElementById("renewCustId").value;
       const cust = state.customers.find(c => c.id === id);
       if (!cust) return;
-
       const paid = Number(document.getElementById("renewPaid").value || 0);
       const rechargeAmt = Number(document.getElementById("renewPurchase").value || 0);
       const newExpiry = document.getElementById("renewNewExpiry").value;
@@ -2167,7 +2198,6 @@
       const due = Number(document.getElementById("renewDue").value || 0);
       const gstRate = Number(cust.gst_rate ?? 18);
       const g = calcGstBreakdown(paid, gstRate, "INCLUSIVE");
-
       const { error } = await supabaseClient.from("customers").update({
         amount_paid: paid,
         plan_price: rechargeAmt,
@@ -2179,7 +2209,6 @@
         expiry_date: newExpiry
       }).eq("id", id);
       if (error) return showToast(error.message);
-
       await recordCustomerSalesAndPurchase({
         custName: cust.name || "Customer",
         pppoe: cust.pppoe_username || "",
@@ -2192,12 +2221,10 @@
         dateStr: txDate,
         isRenewal: true
       });
-
       closeRenewModal();
       showToast(`Renewed till ${newExpiry} | Sales: ₹${paid} | Purchase: ₹${rechargeAmt} | Profit: ₹${round2(paid - rechargeAmt)}`);
       refreshAllData();
     });
-
     function sendWhatsAppReminderById(id) {
       const cust = state.customers.find(c => c.id === id);
       if (!cust) return;
@@ -2211,7 +2238,6 @@
       const msg = `Namaste ${cust.name}${pppoeText}, ${state.company.company_name || "Shan WiFi"} par aapka plan (${cust.plan_name || "Wi-Fi"}) ${cust.expiry_date} ko expire ho raha hai / hai. Amount: Rs.${g.total.toFixed(2)} (Base Rs.${g.base.toFixed(2)} + ${g.rate}% GST Rs.${g.gst.toFixed(2)})${dueText}. Kripya samay par recharge karwayein.`;
       window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, "_blank");
     }
-
     // ================= ACCOUNTS (SALES, PURCHASE & P&L) =================
     document.getElementById("txDate").value = new Date().toISOString().slice(0, 10);
     document.getElementById("txForm").addEventListener("submit", async (e) => {
@@ -2221,13 +2247,11 @@
       const gstRate = Number(document.getElementById("txGstRate").value || 0);
       const gstMode = document.getElementById("txGstMode").value;
       const g = calcGstBreakdown(rawAmt, gstRate, gstMode);
-
       const dbType = uiType === "Sales" ? "Income" : "Expense";
       let cat = document.getElementById("txCategory").value.trim();
       if (uiType === "Purchase" && !cat.toLowerCase().includes("purchase") && !cat.toLowerCase().includes("recharge")) {
         cat = `Purchase - ${cat}`;
       }
-
       const payload = {
         type: dbType,
         category: cat,
@@ -2247,29 +2271,24 @@
       showToast(`${uiType} entry saved!`);
       refreshAllData();
     });
-
     function renderAccounts() {
       const from = document.getElementById("pnlFrom").value;
       const to = document.getElementById("pnlTo").value;
       const typeFilter = document.getElementById("txTypeFilter").value;
-
       const dateFiltered = state.transactions.filter(tx => {
         if (from && tx.date < from) return false;
         if (to && tx.date > to) return false;
         return true;
       });
-
       let salesTotal = 0, salesBase = 0, salesGst = 0;
       let purchaseTotal = 0, purchaseGst = 0;
       let otherExpTotal = 0, otherExpGst = 0;
-
       dateFiltered.forEach(tx => {
         const kind = classifyTransaction(tx);
         const g = calcGstBreakdown(tx.amount, tx.gst_rate ?? 18, "INCLUSIVE");
         const base = Number(tx.base_amount) > 0 ? Number(tx.base_amount) : g.base;
         const gst = Number(tx.gst_amount) > 0 ? Number(tx.gst_amount) : g.gst;
         const tot = Number(tx.amount || 0);
-
         if (kind === "SALES") {
           salesTotal += tot; salesBase += base; salesGst += gst;
         } else if (kind === "PURCHASE") {
@@ -2278,42 +2297,35 @@
           otherExpTotal += tot; otherExpGst += gst;
         }
       });
-
       const grossProfit = round2(salesTotal - purchaseTotal);
       const netProfit = round2(salesTotal - purchaseTotal - otherExpTotal);
       const totalInputGst = round2(purchaseGst + otherExpGst);
       const netGst = round2(salesGst - totalInputGst);
-
       document.getElementById("pnlSales").textContent = `₹${round2(salesTotal).toLocaleString()}`;
       document.getElementById("pnlSalesBase").textContent = `Without GST: ₹${round2(salesBase).toLocaleString()} | Output GST: ₹${round2(salesGst).toLocaleString()}`;
       document.getElementById("pnlPurchase").textContent = `₹${round2(purchaseTotal).toLocaleString()}`;
       document.getElementById("pnlGrossProfit").textContent = `Gross Profit (Sales − Purchase): ₹${grossProfit.toLocaleString()}`;
       document.getElementById("pnlOtherExp").textContent = `₹${round2(otherExpTotal).toLocaleString()}`;
       document.getElementById("pnlTotalInputGst").textContent = `Total Input GST (Purchase+Exp): ₹${totalInputGst.toLocaleString()}`;
-
       const pnlEl = document.getElementById("pnlNet");
       pnlEl.textContent = `${netProfit < 0 ? "-" : ""}₹${Math.abs(netProfit).toLocaleString()}`;
       pnlEl.className = `text-2xl font-black mt-1.5 num ${netProfit >= 0 ? "text-emerald-600" : "text-red-600"}`;
       document.getElementById("pnlNetGst").textContent = `Net GST Liability: ₹${netGst.toLocaleString()}`;
-
       const visibleList = dateFiltered.filter(tx => {
         if (typeFilter === "ALL") return true;
         return classifyTransaction(tx) === typeFilter;
       });
-
       const tbody = document.getElementById("txTableBody");
       if (!visibleList.length) {
         tbody.innerHTML = `<tr><td colspan="7" class="py-5 text-center text-slate-400">No ledger entries found.</td></tr>`;
         return;
       }
-
       tbody.innerHTML = visibleList.map(tx => {
         const kind = classifyTransaction(tx);
         const rate = Number(tx.gst_rate ?? 18);
         const g = calcGstBreakdown(tx.amount, rate, "INCLUSIVE");
         const base = Number(tx.base_amount) > 0 ? Number(tx.base_amount) : g.base;
         const gst = Number(tx.gst_amount) > 0 ? Number(tx.gst_amount) : g.gst;
-
         let badgeHtml = `<span class="px-2 py-0.5 rounded-full font-semibold bg-red-50 text-red-700">Expense (-)</span>`;
         let amtColor = "text-red-600";
         if (kind === "SALES") {
@@ -2323,7 +2335,6 @@
           badgeHtml = `<span class="px-2 py-0.5 rounded-full font-semibold bg-amber-50 text-amber-800">Purchase (-)</span>`;
           amtColor = "text-amber-700";
         }
-
         return `
           <tr>
             <td class="py-3 px-3">${esc(tx.date)}</td>
@@ -2343,7 +2354,6 @@
         `;
       }).join("");
     }
-
     // ================= DEVICES & CAMERAS =================
     document.getElementById("deviceForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -2371,7 +2381,6 @@
       showToast("Device / Camera saved!");
       refreshAllData();
     });
-
     function renderDevices() {
       const q = (document.getElementById("deviceSearch").value || "").toLowerCase();
       const typeFilter = document.getElementById("deviceTypeFilter").value;
@@ -2440,34 +2449,29 @@
         `;
       }).join("");
     }
-
     function toggleSecret(id) {
       const el = document.getElementById(id);
       const secret = el.dataset.secret;
       el.textContent = el.textContent === "••••••" ? secret : "••••••";
     }
-
     function copySecret(id) {
       const el = document.getElementById(id);
       if (!el) return;
       navigator.clipboard.writeText(el.dataset.secret || "");
       showToast("Copied to clipboard!");
     }
-
     // ================= UNIVERSAL EDIT MODAL =================
     function buildGstSelectHtml(selectedVal) {
       return INDIA_GST_SLABS.map(s =>
         `<option value="${s.value}" ${Number(selectedVal) === s.value ? "selected" : ""}>${s.label}</option>`
       ).join("");
     }
-
     function openEditModal(entity, id) {
       document.getElementById("editEntity").value = entity;
       document.getElementById("editId").value = id;
       const container = document.getElementById("editFieldsContainer");
       const towerOpts = `<option value="">-- Unassigned --</option>` + state.towers.map(t => `<option value="${t.id}">${esc(t.name)}</option>`).join("");
       const custOpts = `<option value="">-- None --</option>` + state.customers.map(c => `<option value="${c.id}">${esc(c.name)} (${esc(c.phone)})</option>`).join("");
-
       if (entity === "towers") {
         const t = state.towers.find(x => x.id === id);
         if (!t) return;
@@ -2591,13 +2595,11 @@
       modal.classList.remove("hidden");
       modal.classList.add("flex");
     }
-
     function closeEditModal() {
       const modal = document.getElementById("editModal");
       modal.classList.add("hidden");
       modal.classList.remove("flex");
     }
-
     document.getElementById("editModalForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const entity = document.getElementById("editEntity").value;
@@ -2695,7 +2697,6 @@
       showToast("Updated successfully!");
       refreshAllData();
     });
-
     // ================= TRANSFER MODAL =================
     function openTransferModal(entityType, entityId) {
       document.getElementById("transferEntityType").value = entityType;
@@ -2730,19 +2731,16 @@
       modal.classList.remove("hidden");
       modal.classList.add("flex");
     }
-
     function toggleDeviceTransferInputs() {
       const mode = document.getElementById("transferDeviceTargetType").value;
       document.getElementById("transferTowerSelectWrap").classList.toggle("hidden", mode !== "TOWER");
       document.getElementById("transferCustomerSelectWrap").classList.toggle("hidden", mode !== "CUSTOMER");
     }
-
     function closeTransferModal() {
       const modal = document.getElementById("transferModal");
       modal.classList.add("hidden");
       modal.classList.remove("flex");
     }
-
     document.getElementById("transferForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const entityType = document.getElementById("transferEntityType").value;
@@ -2792,7 +2790,6 @@
         refreshAllData();
       }
     });
-
     // ================= COMPLAINTS =================
     document.getElementById("complaintForm").addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -2809,7 +2806,6 @@
       showToast("Complaint logged!");
       refreshAllData();
     });
-
     function renderComplaints() {
       const tbody = document.getElementById("complaintsTableBody");
       if (!state.complaints.length) {
@@ -2817,7 +2813,7 @@
         return;
       }
       tbody.innerHTML = state.complaints.map(c => {
-        const isOpen = c.status === "Open";
+        const isOpen = (c.status || "Open").toLowerCase() !== "resolved";
         return `
           <tr>
             <td class="py-3 px-3 font-bold text-slate-900">${esc(c.title)}</td>
@@ -2835,7 +2831,6 @@
         `;
       }).join("");
     }
-
     async function resolveComplaint(id) {
       const { error } = await supabaseClient.from("complaints").update({
         status: "Resolved",
@@ -2845,7 +2840,6 @@
       showToast("Complaint marked resolved!");
       refreshAllData();
     }
-
     // ================= BULK SMS =================
     function saveSmsConfig() {
       const cfg = {
@@ -2859,7 +2853,6 @@
       localStorage.setItem("isp_sms_cfg", JSON.stringify(cfg));
       showToast("SMS Gateway settings saved!");
     }
-
     function loadSmsConfigToUI() {
       const raw = localStorage.getItem("isp_sms_cfg");
       if (!raw) return;
@@ -2873,7 +2866,6 @@
         document.getElementById("smsQueryKeys").value = cfg.queryKeys || "";
       } catch (_) {}
     }
-
     function getTargetCustomers() {
       const target = document.getElementById("smsTargetTower").value;
       return state.customers.filter(c => {
@@ -2882,12 +2874,10 @@
         return c.tower_id === target;
       });
     }
-
     function updateSmsRecipientCount() {
       const list = getTargetCustomers();
       document.getElementById("smsRecipientCount").textContent = `Recipients: ${list.length} customers with phone numbers`;
     }
-
     function parseKeysMap(str) {
       const map = { mobileKey: "mobiles", msgKey: "message", keyParam: "api_key" };
       if (!str) return map;
@@ -2897,7 +2887,6 @@
       });
       return map;
     }
-
     async function sendBulkOutageSMS() {
       const cfg = JSON.parse(localStorage.getItem("isp_sms_cfg") || "{}");
       const msgTemplate = document.getElementById("smsMessageBody").value.trim();
@@ -2957,7 +2946,6 @@
       btn.textContent = "🚨 Send Bulk SMS Now";
       showToast(`SMS Batch Finished: ${sentCount} sent, ${failedCount} failed`);
     }
-
     function renderSmsLogs() {
       const logs = JSON.parse(localStorage.getItem("isp_sms_logs") || "[]");
       const tbody = document.getElementById("smsLogsBody");
@@ -2974,7 +2962,6 @@
         </tr>
       `).join("");
     }
-
     // ================= REPORTS & CA GST EXCEL =================
     function setQuickDateRange(mode) {
       const now = new Date();
@@ -2996,19 +2983,16 @@
       }
       renderReportPreview();
     }
-
     function toggleAllReportChecks(checked) {
       document.querySelectorAll(".rep-chk").forEach(ch => { ch.checked = checked; });
       renderReportPreview();
     }
-
     function inDateRange(dateStr, from, to) {
       if (!dateStr) return !from && !to;
       if (from && dateStr < from) return false;
       if (to && dateStr > to) return false;
       return true;
     }
-
     function mapLedgerToReportRow(t) {
       const rate = Number(t.gst_rate ?? 18);
       const g = calcGstBreakdown(t.amount, rate, "INCLUSIVE");
@@ -3025,13 +3009,11 @@
         With_GST_Total: round2(Number(t.amount || 0))
       };
     }
-
     function getSelectedReportSections() {
       const from = document.getElementById("repFromDate").value;
       const to = document.getElementById("repToDate").value;
       const smsLogs = JSON.parse(localStorage.getItem("isp_sms_logs") || "[]");
       const sections = [];
-
       if (document.getElementById("chkSales").checked) {
         const rows = state.transactions
           .filter(t => classifyTransaction(t) === "SALES" && inDateRange(t.date, from, to))
@@ -3045,7 +3027,6 @@
           totalValue: round2(rows.reduce((s, r) => s + r.With_GST_Total, 0))
         });
       }
-
       if (document.getElementById("chkPurchase").checked) {
         const rows = state.transactions
           .filter(t => classifyTransaction(t) === "PURCHASE" && inDateRange(t.date, from, to))
@@ -3059,7 +3040,6 @@
           totalValue: round2(rows.reduce((s, r) => s + r.With_GST_Total, 0))
         });
       }
-
       if (document.getElementById("chkExpenses").checked) {
         const rows = state.transactions
           .filter(t => classifyTransaction(t) === "EXPENSE" && inDateRange(t.date, from, to))
@@ -3073,30 +3053,18 @@
           totalValue: round2(rows.reduce((s, r) => s + r.With_GST_Total, 0))
         });
       }
-
       if (document.getElementById("chkCustomers").checked) {
-        const rows = state.customers
-          .filter(c => inDateRange(c.registration_date || c.start_date || c.expiry_date, from, to))
-          .map(c => ({
-            Customer_Name: c.name || "",
-            PPPoE_ID: c.pppoe_username || "",
-            Mobile_Number: c.phone || "",
-            Aadhaar_Number: c.aadhaar_number || "",
-            Address: formatFullCustomerAddress(c),
-            Tower: getTowerName(c.tower_id),
-            Sales_Paid: Number(c.amount_paid || 0),
-            Purchase_Recharge: Number(c.plan_price || 0),
-            Profit: round2(Number(c.amount_paid || 0) - Number(c.plan_price || 0)),
-            Registration_Date: c.registration_date || ""
-          }));
+        const filteredCustomers = state.customers.filter(c =>
+          inDateRange(c.registration_date || c.start_date || c.expiry_date, from, to)
+        );
+        const rows = buildCustomerDataRows(filteredCustomers);
         sections.push({
           key: "Customer Data",
-          title: `${state.company.company_name || "Shan WiFi"} — Customer Directory & Profit`,
-          headers: ["Customer_Name", "PPPoE_ID", "Mobile_Number", "Aadhaar_Number", "Address", "Tower", "Sales_Paid", "Purchase_Recharge", "Profit", "Registration_Date"],
+          title: `${state.company.company_name || "Shan WiFi"} — Customer Directory`,
+          headers: CUSTOMER_DATA_COLUMNS,
           rows
         });
       }
-
       if (document.getElementById("chkTower").checked) {
         const rows = state.towers
           .filter(t => inDateRange((t.created_at || "").slice(0, 10), from, to))
@@ -3115,7 +3083,6 @@
           rows
         });
       }
-
       if (document.getElementById("chkDevice").checked) {
         const rows = state.devices
           .filter(d => inDateRange(d.install_date || (d.created_at || "").slice(0, 10), from, to))
@@ -3137,7 +3104,6 @@
           rows
         });
       }
-
       if (document.getElementById("chkOther").checked) {
         const compRows = state.complaints
           .filter(c => inDateRange(c.opened_date, from, to))
@@ -3166,7 +3132,6 @@
       }
       return { sections, from, to };
     }
-
     function renderReportPreview() {
       const container = document.getElementById("repPreviewContainer");
       const summaryEl = document.getElementById("repSummaryText");
@@ -3203,7 +3168,6 @@
         `;
       }).join("");
     }
-
     function downloadExcelReport() {
       const { sections, from, to } = getSelectedReportSections();
       if (!sections.length) return showToast("Please select at least one report section!");
@@ -3222,7 +3186,6 @@
         }
         return `<x:Worksheet><x:Name>${esc(sheetName)}</x:Name><Table>${rowsHtml.join("\n")}</Table></x:Worksheet>`;
       }).join("\n");
-
       const htmlTables = sections.map(sec => {
         const head = `<tr>${sec.headers.map(h => `<th style="background:#fee2e2;border:1px solid #cbd5e1;padding:6px;">${esc(h)}</th>`).join("")}</tr>`;
         const body = sec.rows.map(r => `<tr>${sec.headers.map(h => `<td style="border:1px solid #cbd5e1;padding:5px;">${esc(r[h])}</td>`).join("")}</tr>`).join("");
@@ -3237,7 +3200,6 @@
           </table>
         `;
       }).join("\n");
-
       const excelWorkbook = `
         <html xmlns:o="urn:schemas-microsoft-com:office:office"
               xmlns:x="urn:schemas-microsoft-com:office:excel"
@@ -3257,7 +3219,6 @@
       a.click();
       showToast("Sales, Purchase & CA GST Excel report downloaded!");
     }
-
     async function deleteRow(table, id) {
       if (!confirm("Are you sure you want to delete this record?")) return;
       const { error } = await supabaseClient.from(table).delete().eq("id", id);
@@ -3265,7 +3226,6 @@
       showToast("Deleted!");
       refreshAllData();
     }
-
     function esc(str) {
       return String(str ?? "")
         .replace(/&/g, "&amp;")
@@ -3274,7 +3234,6 @@
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
     }
-
     checkSession();
   </script>
 </body>
